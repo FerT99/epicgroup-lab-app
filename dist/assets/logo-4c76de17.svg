@@ -1,0 +1,54 @@
+<svg width="200" height="80" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Definiciones de gradientes -->
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#8b5cf6"/>
+      <stop offset="100%" stopColor="#a78bfa"/>
+    </linearGradient>
+    
+    <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#ffffff"/>
+      <stop offset="100%" stopColor="#e5e7eb"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Elemento decorativo orbital con estrella -->
+  <path d="M15 25 Q40 15 65 25 Q90 35 115 25" 
+        stroke="url(#starGradient)" 
+        strokeWidth="3" 
+        fill="none" 
+        strokeLinecap="round"/>
+  
+  <!-- Estrella en la parte superior izquierda -->
+  <g transform="translate(15, 20)">
+    <path d="M0 -8 L2 -2 L8 0 L2 2 L0 8 L-2 2 L-8 0 L-2 -2 Z" 
+          fill="url(#starGradient)"/>
+  </g>
+  
+  <!-- Letra E estilizada -->
+  <path d="M70 15 L70 65 M70 15 L120 15 M70 40 L110 40 M70 65 L120 65" 
+        stroke="url(#logoGradient)" 
+        strokeWidth="8" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"/>
+  
+  <!-- Texto EPICGROUP -->
+  <text x="100" y="50" 
+        fontFamily="Arial, sans-serif" 
+        fontSize="24" 
+        fontWeight="bold" 
+        textAnchor="middle" 
+        fill="white">
+    EPICGROUP
+  </text>
+  
+  <!-- Texto LAB -->
+  <text x="100" y="70" 
+        fontFamily="Arial, sans-serif" 
+        fontSize="16" 
+        fontWeight="normal" 
+        textAnchor="middle" 
+        fill="white">
+    LAB
+  </text>
+</svg>
