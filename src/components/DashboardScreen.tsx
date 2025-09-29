@@ -1,8 +1,6 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { auth } from '../lib/supabase'
+import React from 'react'
 import { User } from '@supabase/supabase-js'
-import Sidebar from './Sidebar'
+import { useNavigate } from 'react-router-dom'
 import './DashboardScreen.css'
 
 interface DashboardScreenProps {
@@ -10,125 +8,65 @@ interface DashboardScreenProps {
 }
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const navigate = useNavigate()
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut()
-      navigate('/login')
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error)
-    }
+  const handleNavigation = (path: string) => {
+    navigate(path)
   }
 
   return (
     <div className="dashboard-screen">
-      <Sidebar isCollapsed={sidebarCollapsed} />
+      {/* Logo EPICGROUP LAB en esquina superior izquierda */}
+      <div className="logo-container-top">
+        <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
+      </div>
       
-      <div className="main-content">
-        <div className="content-header">
-          <button 
-            className="sidebar-toggle"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          >
-            ☰
-          </button>
-          <h1 className="page-title">Dashboard</h1>
-          <div className="user-menu">
-            <span className="user-email">{user.email}</span>
-            <button className="logout-btn" onClick={handleLogout}>
-              Cerrar Sesión
-            </button>
+      {/* Barra de navegación superior */}
+      <div className="top-navbar">
+        <div className="navbar-content">
+          <div className="navbar-left">
           </div>
-        </div>
-        
-        <div className="dashboard-content">
-          <div className="welcome-section">
-            <h2 className="welcome-title">¡Bienvenido, {user.user_metadata?.full_name || 'Usuario'}!</h2>
-            <p className="welcome-subtitle">Aquí tienes un resumen de tu progreso educativo</p>
+          
+          <div className="navbar-center">
+            <nav className="nav-links">
+              <button onClick={() => handleNavigation('/dashboard')} className="nav-link">Mis cursos</button>
+              <button onClick={() => handleNavigation('/quotes')} className="nav-link">Frases del día</button>
+              <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
+              <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>
+            </nav>
           </div>
-
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-icon">📚</div>
-              <div className="stat-info">
-                <h3 className="stat-number">3</h3>
-                <p className="stat-label">Cursos Activos</p>
-              </div>
-            </div>
-            
-            <div className="stat-card">
-              <div className="stat-icon">🎯</div>
-              <div className="stat-info">
-                <h3 className="stat-number">75%</h3>
-                <p className="stat-label">Progreso Promedio</p>
-              </div>
-            </div>
-            
-            <div className="stat-card">
-              <div className="stat-icon">🏆</div>
-              <div className="stat-info">
-                <h3 className="stat-number">12</h3>
-                <p className="stat-label">Logros Desbloqueados</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="courses-section">
-            <h3 className="section-title">Mis Cursos</h3>
-            <div className="courses-grid">
-              <div className="course-card">
-                <div className="course-image">
-                  <div className="course-icon">🚀</div>
-                </div>
-                <div className="course-info">
-                  <h4 className="course-name">Desarrollo Web</h4>
-                  <p className="course-description">HTML, CSS y JavaScript</p>
-                  <div className="course-progress">
-                    <div className="progress-bar">
-                      <div className="progress-fill" style={{width: '75%'}}></div>
-                    </div>
-                    <span className="progress-text">75%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="course-card">
-                <div className="course-image">
-                  <div className="course-icon">🎨</div>
-                </div>
-                <div className="course-info">
-                  <h4 className="course-name">Diseño UX/UI</h4>
-                  <p className="course-description">Principios de diseño</p>
-                  <div className="course-progress">
-                    <div className="progress-bar">
-                      <div className="progress-fill" style={{width: '45%'}}></div>
-                    </div>
-                    <span className="progress-text">45%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="course-card">
-                <div className="course-image">
-                  <div className="course-icon">📱</div>
-                </div>
-                <div className="course-info">
-                  <h4 className="course-name">React Native</h4>
-                  <p className="course-description">Apps móviles</p>
-                  <div className="course-progress">
-                    <div className="progress-bar">
-                      <div className="progress-fill" style={{width: '90%'}}></div>
-                    </div>
-                    <span className="progress-text">90%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          
+          <div className="navbar-right">
+            <button className="menu-toggle">☰</button>
           </div>
         </div>
       </div>
+      
+        <div className="dashboard-content">
+          {/* Sección de bienvenida con fondo morado */}
+          <div className="welcome-section">
+            <div className="welcome-content">
+              <div className="welcome-text">
+                <h1 className="welcome-title">¡Bienvenid@!</h1>
+                <h2 className="user-name">{user.user_metadata?.full_name || user.email}</h2>
+                <div className="progress-info">
+                  <span className="medal-icon">🏅 3.5 →</span>
+                  <p className="progress-text" color="white">Haz click para descubrir tu progreso! sigue avanzando y llega a la meta.</p>
+                </div>
+                <button className="level-up-btn">¡Sube de nivel!</button>
+              </div>
+            </div>
+            
+            {/* Elementos espaciales */}
+            <div className="space-composition">
+              <img src="/src/assets/image10.png" alt="Astronauta" className="astronaut-image_fl" />
+              <img src="/src/assets/image11.png" alt="Elemento decorativo" className="space-image_Element_E" />
+              <img src="/src/assets/image_9.png" alt="Elemento decorativo" className="space-image_green" />
+            </div>
+          </div>
+
+        </div>
+
     </div>
   )
 }

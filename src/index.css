@@ -22,7 +22,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #8b5cf6 100%) !important;
   min-height: 100vh;
   color: var(--white);
   overflow-x: hidden;

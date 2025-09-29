@@ -1,184 +1,128 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { auth } from '../lib/supabase'
-import Logo from './Logo'
-import astronautUrl from '../assets/astronauta.png'
-import './LoginScreen.css'
+import React, { useState } from 'react';
+import { auth } from '../lib/supabase';
+import './LoginScreen.css';
 
 const LoginScreen: React.FC = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
     try {
-      const { data, error: signInError } = await auth.signIn(email, password)
-      
-      if (signInError) {
-        setError(signInError.message)
-      } else if (data.user) {
-        // Login exitoso, redirigir al dashboard
-        navigate('/dashboard')
-      }
-    } catch (err) {
-      setError('Error inesperado. Intenta de nuevo.')
-    } finally {
-      setLoading(false)
-    }
-  }
+      const { data, error } = await auth.signIn(email, password);
 
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setError('Por favor ingresa tu email primero')
-      return
-    }
-
-    setLoading(true)
-    setError('')
-
-    try {
-      const { error: resetError } = await auth.resetPassword(email)
-      
-      if (resetError) {
-        setError(resetError.message)
+      if (error) {
+        console.error('Error al iniciar sesión:', error.message);
+        alert('Error al iniciar sesión: ' + error.message);
       } else {
-        setError('Se envió un enlace de recuperación a tu email')
+        console.log('Login exitoso:', data.user);
+        // La redirección se maneja automáticamente por el App.tsx
+        // cuando detecta el cambio en el estado de autenticación
       }
-    } catch (err) {
-      setError('Error inesperado. Intenta de nuevo.')
+    } catch (error) {
+      console.error('Error inesperado:', error);
+      alert('Error inesperado al iniciar sesión');
     } finally {
-      setLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="login-screen">
-      <div className="container">
-        <div className="login-content">
-          <Logo size="large" />
-          
-          <div className="avatar-container">
-            <div className="avatar">
-              <img 
-                src={astronautUrl} 
-                alt="Astronauta" 
-                className="astronaut-image"
-              />
-            </div>
-          </div>
+    <div className="login-container">
+      {/* Fondo con gradiente espacial */}
+      <div className="background-gradient">
+        {/* Elementos decorativos */}
+        <div className="stars">
+          <div className="star star-1"></div>
+          <div className="star star-2"></div>
+          <div className="star star-3"></div>
+          <div className="star star-4"></div>
+          <div className="star star-5"></div>
+        </div>
+        
+        {/* Planetas decorativos */}
+        <div className="planets">
+          <div className="planet planet-1"></div>
+          <div className="planet planet-2"></div>
+        </div>
+      </div>
 
-          <form className="form" onSubmit={handleLogin}>
+      {/* Logo EPICGROUP LAB */}
+      <div className="logo-container">
+        <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
+        <div className="logo-text">
+
+        </div>
+      </div>
+
+
+      {/* Formulario flotante transparente */}
+      <div className="floating-form-container">
+        <div className="floating-form">
+          <div className="form-header">
+            <h2>Bienvenido</h2>
+            <p>Inicia sesión en tu cuenta</p>
+          </div>
+          
+          <form onSubmit={handleSubmit} className="login-form">
             <div className="input-group">
+              <label htmlFor="email">Correo electrónico</label>
               <input
                 type="email"
-                className="input"
-                placeholder="usuario"
+                id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
                 required
               />
             </div>
             
             <div className="input-group">
+              <label htmlFor="password">Contraseña</label>
               <input
                 type="password"
-                className="input"
-                placeholder="contraseña"
+                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
                 required
               />
             </div>
-
-            {error && (
-              <div className="error-message">
-                {error}
-              </div>
-            )}
-
-            <div className="forgot-password">
-              <button
-                type="button"
-                className="forgot-link"
-                onClick={handleForgotPassword}
-                disabled={loading}
-              >
-                ¿olvidaste la contraseña?
-              </button>
+            
+            <div className="form-options">
+              <label className="remember-me">
+                <input type="checkbox" />
+                <span>Recordarme</span>
+              </label>
+              <a href="#" className="forgot-password">¿Olvidaste tu contraseña?</a>
             </div>
-
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
-              {loading ? 'Accediendo...' : 'acceder'}
+            
+            <button type="submit" className="login-button" disabled={isLoading}>
+              {isLoading ? (
+                <div className="loading-spinner"></div>
+              ) : (
+                'Iniciar Sesión'
+              )}
             </button>
           </form>
-        </div>
-
-        {/* Cards de cursos activos */}
-        <div className="courses-section">
-          <h2 className="courses-title">Cursos Activos</h2>
-          <div className="courses-grid">
-            <div className="course-card">
-              <div className="course-image">
-                <div className="course-icon">🚀</div>
-              </div>
-              <div className="course-info">
-                <h3 className="course-name">Desarrollo Web</h3>
-                <p className="course-description">Aprende HTML, CSS y JavaScript</p>
-                <div className="course-progress">
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{width: '75%'}}></div>
-                  </div>
-                  <span className="progress-text">75%</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="course-card">
-              <div className="course-image">
-                <div className="course-icon">🎨</div>
-              </div>
-              <div className="course-info">
-                <h3 className="course-name">Diseño UX/UI</h3>
-                <p className="course-description">Principios de diseño centrado en el usuario</p>
-                <div className="course-progress">
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{width: '45%'}}></div>
-                  </div>
-                  <span className="progress-text">45%</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="course-card">
-              <div className="course-image">
-                <div className="course-icon">📱</div>
-              </div>
-              <div className="course-info">
-                <h3 className="course-name">React Native</h3>
-                <p className="course-description">Desarrollo de apps móviles</p>
-                <div className="course-progress">
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{width: '90%'}}></div>
-                  </div>
-                  <span className="progress-text">90%</span>
-                </div>
-              </div>
-            </div>
+          
+          <div className="form-footer">
+            <p>¿No tienes cuenta? <a href="#" className="signup-link">Regístrate aquí</a></p>
           </div>
         </div>
       </div>
-    </div>
-  )
-}
 
-export default LoginScreen
+      {/* Elementos decorativos adicionales */}
+      <div className="decorative-elements">
+        <div className="floating-shape shape-1"></div>
+        <div className="floating-shape shape-2"></div>
+        <div className="floating-shape shape-3"></div>
+      </div>
+    </div>
+  );
+};
+
+export default LoginScreen;

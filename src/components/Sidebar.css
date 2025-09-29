@@ -16,43 +16,112 @@
   width: 80px;
 }
 
-.sidebar-header {
-  padding: 24px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+.welcome-section {
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
-.logo-container {
+.welcome-card {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+  border-radius: 16px;
+  padding: 20px;
   display: flex;
   align-items: center;
   gap: 16px;
+  box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.logo-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, var(--white) 0%, var(--light-purple) 100%);
-  border-radius: 12px;
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(20px, -20px);
+}
+
+.welcome-avatar {
+  width: 70px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--primary-blue);
   flex-shrink: 0;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-.logo-title {
+.astronaut-image {
+  width: 190%;
+  height: 150%;
+  border-radius: 90%;
+}
+
+.welcome-content {
+  flex: 1;
+  color: white;
+}
+
+.welcome-greeting {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.welcome-name {
   font-size: 18px;
   font-weight: 700;
-  color: var(--white);
-  line-height: 1.2;
+  margin: 0 0 12px 0;
+  color: white;
 }
 
-.logo-subtitle {
+.achievement-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59, 130, 246, 0.8);
+  padding: 8px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.badge-number {
+  width: 24px;
+  height: 24px;
+  background: #f97316;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
   font-size: 12px;
-  color: var(--light-purple);
-  font-weight: 500;
-  margin-top: 2px;
+  font-weight: 700;
+}
+
+.medal-icon {
+  font-size: 16px;
+}
+
+.achievement-score {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.arrow-icon {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: 4px;
 }
 
 .sidebar-nav {
@@ -111,8 +180,8 @@
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 70px;
+  height: 70px;
   background: var(--accent-purple);
   border-radius: 50%;
   display: flex;
@@ -142,13 +211,6 @@
     width: 100%;
   }
   
-  .sidebar-header {
-    padding: 16px 20px;
-  }
-  
-  .logo-container {
-    justify-content: center;
-  }
   
   .sidebar-nav {
     padding: 16px 0;
@@ -156,5 +218,49 @@
   
   .nav-item {
     padding: 12px 20px;
+  }
+  
+  .welcome-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .welcome-card {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .welcome-avatar {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .astronaut-image {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .welcome-greeting {
+    font-size: 14px;
+  }
+  
+  .welcome-name {
+    font-size: 16px;
+  }
+  
+  .achievement-badge {
+    padding: 6px 10px;
+  }
+  
+  .medal-icon {
+    font-size: 14px;
+  }
+  
+  .achievement-score {
+    font-size: 12px;
+  }
+  
+  .arrow-icon {
+    font-size: 12px;
   }
 }

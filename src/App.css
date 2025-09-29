@@ -45,6 +45,16 @@
   border: 2px solid var(--white);
 }
 
+.space-image {
+  width: 50%;
+  width: 50%;
+   }
+
+   .main-logo {
+    width: 70%;
+    width: 70%;
+   }
+
 .btn-secondary:hover {
   background: var(--white);
   color: var(--primary-blue);
@@ -182,7 +192,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #8b5cf6 100%) !important;
   color: var(--white);
 }
 

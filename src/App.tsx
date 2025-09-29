@@ -4,6 +4,9 @@ import { User } from '@supabase/supabase-js'
 import { auth } from './lib/supabase'
 import LoginScreen from './components/LoginScreen'
 import DashboardScreen from './components/DashboardScreen'
+import CourseDetailScreen from './components/CourseDetailScreen'
+import ProgressScreen from './components/ProgressScreen'
+import QuotesScreen from './components/QuotesScreen'
 import './App.css'
 
 function App() {
@@ -40,6 +43,18 @@ function App() {
           <Route 
             path="/dashboard" 
             element={user ? <DashboardScreen user={user} /> : <Navigate to="/login" replace />} 
+          />
+          <Route 
+            path="/course/:courseId" 
+            element={user ? <CourseDetailScreen user={user} /> : <Navigate to="/login" replace />} 
+          />
+          <Route 
+            path="/progress" 
+            element={user ? <ProgressScreen user={user} /> : <Navigate to="/login" replace />} 
+          />
+          <Route 
+            path="/quotes" 
+            element={user ? <QuotesScreen user={user} /> : <Navigate to="/login" replace />} 
           />
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
