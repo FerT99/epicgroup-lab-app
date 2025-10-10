@@ -1,105 +1,130 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { auth } from '../lib/supabase'
+import React from 'react'
 import { User } from '@supabase/supabase-js'
-import Sidebar from './Sidebar'
+import { useNavigate } from 'react-router-dom'
 import './ProgressScreen.css'
 
 interface ProgressScreenProps {
   user: User
 }
 
-const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+const ProgressScreen: React.FC<ProgressScreenProps> = ({ user: _user }) => {
   const navigate = useNavigate()
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut()
-      navigate('/login')
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error)
+  const handleNavigation = (path: string) => {
+    navigate(path)
+  }
+  // Datos hardcodeados para las 4 cards
+  const courses = [
+    {
+      id: 1,
+      title: "NEGOCIOS",
+      completedSteps: 2,
+      totalSteps: 7
+    },
+    {
+      id: 2,
+      title: "INGLÉS",
+      completedSteps: 4,
+      totalSteps: 7
+    },
+    {
+      id: 3,
+      title: "UI/UX",
+      completedSteps: 1,
+      totalSteps: 7
+    },
+    {
+      id: 4,
+      title: "MARKETING",
+      completedSteps: 3,
+      totalSteps: 7
     }
+  ]
+
+
+  const handleCompleteCourse = (courseId: number) => {
+    console.log(`Completando curso ${courseId}`)
+    // Redirigir al mapa del curso
+    navigate('/course-map')
   }
 
   return (
     <div className="progress-screen">
-      <Sidebar isCollapsed={sidebarCollapsed} />
-      
-      <div className="main-content">
-        <div className="content-header">
-          <button 
-            className="sidebar-toggle"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          >
-            ☰
-          </button>
-          <h1 className="page-title">Progreso</h1>
-          <div className="user-menu">
-            <span className="user-email">{user.email}</span>
-            <button className="logout-btn" onClick={handleLogout}>
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-        
-        <div className="progress-content">
-          {/* Título de la sección */}
-          <div className="section-header">
-            <h2 className="section-title">Progreso de Cursos</h2>
-            <p className="section-subtitle">¡Un paso más a la meta!</p>
+      {/* Logo EPICGROUP LAB en esquina superior izquierda */}
+      <div className="logo-container-top" onClick={() => handleNavigation('/dashboard')}>
+        <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
+      </div>
+
+      {/* Barra de navegación superior */}
+      <div className="top-navbar">
+        <div className="navbar-content">
+          <div className="navbar-left">
           </div>
           
-          {/* Cards de progreso de cursos */}
-          <div className="course-progress-cards">
-            {/* Card NEW STARTECH */}
-            <div className="course-progress-card">
-              <div className="card-header">
-                <div className="course-icon">🚀</div>
-                <div className="course-title">NEW STARTECH</div>
-              </div>
-              <div className="progress-steps">
-                <div className="step-line"></div>
-                <div className="step-circles">
-                  <div className="step-circle completed">01</div>
-                  <div className="step-circle completed">02</div>
-                  <div className="step-circle pending">03</div>
-                  <div className="step-circle pending">04</div>
-                  <div className="step-circle pending">05</div>
-                  <div className="step-circle pending">06</div>
-                  <div className="step-circle pending">07</div>
-                </div>
-              </div>
-              <div className="course-completion">
-                <span className="completion-text">Curso completo</span>
-                <span className="completion-arrow">▶</span>
-              </div>
-            </div>
-
-            {/* Card INGLÉS */}
-            <div className="course-progress-card">
-              <div className="card-header">
-                <div className="course-icon">📚</div>
-                <div className="course-title">INGLÉS</div>
-              </div>
-              <div className="progress-steps">
-                <div className="step-line"></div>
-                <div className="step-circles">
-                  <div className="step-circle completed">01</div>
-                  <div className="step-circle completed">02</div>
-                  <div className="step-circle pending">03</div>
-                  <div className="step-circle pending">04</div>
-                  <div className="step-circle pending">05</div>
-                  <div className="step-circle pending">06</div>
-                  <div className="step-circle pending">07</div>
-                </div>
-              </div>
-              <div className="course-completion">
-                <span className="completion-text">Curso completo</span>
-                <span className="completion-arrow">▶</span>
-              </div>
-            </div>
+          <div className="navbar-center">
+            <nav className="nav-links">
+              <button onClick={() => handleNavigation('/progress')} className="nav-link">Mis cursos</button>
+              <button onClick={() => handleNavigation('/quotes')} className="nav-link">Frases del día</button>
+              <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
+              <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>
+            </nav>
           </div>
+          
+          <div className="navbar-right">
+            <button className="menu-toggle">☰</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Contenido principal */}
+      <div className="progress-content">
+        <h1 className="progress-title">Mi Progreso</h1>
+        
+        {/* Grid de cursos */}
+        <div className="courses-grid">
+          {courses.map((course) => (
+            <div 
+              key={course.id} 
+              className="course-card"
+              onClick={() => handleCompleteCourse(course.id)}
+            >
+              <h3 className="course-title">{course.title}</h3>
+              
+              {/* Barra de progreso */}
+              <div className="progress-bar">
+                {Array.from({ length: course.totalSteps }, (_, index) => {
+                  const stepNumber = index + 1
+                  const isCompleted = stepNumber <= course.completedSteps
+                  
+                  return (
+                    <div key={stepNumber} className="progress-step-container">
+                      <div className={`progress-step ${isCompleted ? 'completed' : 'pending'}`}>
+                        <span className="step-number">{stepNumber.toString().padStart(2, '0')}</span>
+                      </div>
+                      {index < course.totalSteps - 1 && (
+                        <div className={`progress-line ${isCompleted ? 'completed' : 'pending'}`}></div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              
+              {/* Botón de curso completo */}
+              <button 
+                className="complete-course-btn"
+                onClick={() => handleCompleteCourse(course.id)}
+              >
+                Curso completo ►
+              </button>
+            </div>
+          ))}
+        </div>
+        
+        {/* Botón de acción principal */}
+        <div className="main-action">
+          <button className="main-complete-btn">
+            Curso completo ►
+          </button>
         </div>
       </div>
     </div>

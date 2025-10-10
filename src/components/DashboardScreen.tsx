@@ -17,7 +17,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   return (
     <div className="dashboard-screen">
       {/* Logo EPICGROUP LAB en esquina superior izquierda */}
-      <div className="logo-container-top">
+      <div className="logo-container-top" onClick={() => handleNavigation('/dashboard')}>
         <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
       </div>
       
@@ -29,7 +29,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
           
           <div className="navbar-center">
             <nav className="nav-links">
-              <button onClick={() => handleNavigation('/dashboard')} className="nav-link">Mis cursos</button>
+              <button onClick={() => handleNavigation('/progress')} className="nav-link">Mis cursos</button>
               <button onClick={() => handleNavigation('/quotes')} className="nav-link">Frases del día</button>
               <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
               <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { User } from '@supabase/supabase-js'
 import { auth } from './lib/supabase'
@@ -7,6 +7,7 @@ import DashboardScreen from './components/DashboardScreen'
 import CourseDetailScreen from './components/CourseDetailScreen'
 import ProgressScreen from './components/ProgressScreen'
 import QuotesScreen from './components/QuotesScreen'
+import CourseMapScreen from './components/CourseMapScreen'
 import './App.css'
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
 
   useEffect(() => {
     // Verificar el estado de autenticación al cargar la app
-    const { data: { subscription } } = auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null)
       setLoading(false)
     })
@@ -55,6 +56,10 @@ function App() {
           <Route 
             path="/quotes" 
             element={user ? <QuotesScreen user={user} /> : <Navigate to="/login" replace />} 
+          />
+          <Route 
+            path="/course-map" 
+            element={user ? <CourseMapScreen user={user} /> : <Navigate to="/login" replace />} 
           />
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
