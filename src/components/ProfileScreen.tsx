@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../lib/supabase'
-import { User } from '@supabase/supabase-js'
-import Logo from './Logo'
+import type { User } from '@supabase/supabase-js'
+// import Logo from './Logo' // Commented out due to missing module or type declarations
 import astronautUrl from '../assets/astronauta.png'
 import './ProfileScreen.css'
 
@@ -34,7 +34,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
     <div className="profile-screen">
       <div className="container">
         <div className="profile-content">
-          <Logo size="medium" />
+          {/* <Logo size="medium" /> */}
           
           <div className="profile-section">
             <div className="avatar-container">

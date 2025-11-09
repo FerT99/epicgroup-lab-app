@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
+import { auth } from '../lib/supabase'
 import './DashboardScreen.css'
 
 interface DashboardScreenProps {
@@ -9,9 +10,22 @@ interface DashboardScreenProps {
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
 
   const handleNavigation = (path: string) => {
     navigate(path)
+  }
+
+  const handleLogout = async () => {
+    setLoading(true)
+    try {
+      await auth.signOut()
+      navigate('/login')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -37,6 +51,21 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
           </div>
           
           <div className="navbar-right">
+            <button 
+              className="profile-btn"
+              onClick={() => handleNavigation('/profile')}
+              title="Mi perfil"
+            >
+              👤
+            </button>
+            <button 
+              className="logout-btn"
+              onClick={handleLogout}
+              disabled={loading}
+              title="Cerrar sesión"
+            >
+              {loading ? '⏳' : '🚪'}
+            </button>
             <button className="menu-toggle">☰</button>
           </div>
         </div>

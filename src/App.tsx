@@ -8,6 +8,8 @@ import CourseDetailScreen from './components/CourseDetailScreen'
 import ProgressScreen from './components/ProgressScreen'
 import QuotesScreen from './components/QuotesScreen'
 import CourseMapScreen from './components/CourseMapScreen'
+import ProfileScreen from './components/ProfileScreen'
+import AdminPanel from './components/AdminPanel'
 import './App.css'
 
 function App() {
@@ -60,6 +62,14 @@ function App() {
           <Route 
             path="/course-map" 
             element={user ? <CourseMapScreen user={user} /> : <Navigate to="/login" replace />} 
+          />
+          <Route 
+            path="/profile" 
+            element={user ? <ProfileScreen user={user} /> : <Navigate to="/login" replace />} 
+          />
+          <Route 
+            path="/admin" 
+            element={<AdminPanel />} 
           />
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
