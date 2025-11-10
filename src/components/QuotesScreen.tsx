@@ -7,8 +7,8 @@ import spaceshipImage from '../assets/spaceship.png'
 import foquitoImage from '../assets/foquito.png'
 import fondonaranjaImage from '../assets/fondonaranja.png'
 import manoamarillaImage from '../assets/manoamarilla.png'
-import NavbarProfileControls from './NavbarProfileControls'
 import { auth } from '../lib/supabase'
+import TopNavigation from './TopNavigation'
 
 interface QuotesScreenProps {
   user: User
@@ -45,38 +45,15 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
 
   return (
     <div className="quotes-screen">
-      {/* Logo EPICGROUP LAB en esquina superior izquierda */}
-      <div className="logo-container-top" onClick={() => handleNavigation('/dashboard')}>
-        <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
-      </div>
-      
-      {/* Barra de navegación superior */}
-      <div className="top-navbar">
-        <div className="navbar-content">
-          <div className="navbar-left">
-          </div>
-          
-          <div className="navbar-center">
-            <nav className="nav-links">
-              <button onClick={() => handleNavigation('/my-courses')} className="nav-link">Mis cursos</button>
-              <button onClick={() => handleNavigation('/quotes')} className="nav-link active">Frases del día</button>
-              <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
-              <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>
-            </nav>
-          </div>
-          
-          <div className="navbar-right">
-            <NavbarProfileControls
-              userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
-              onNavigate={handleNavigation}
-              onLogout={handleLogout}
-              logoutLoading={isLoggingOut}
-              notificationCount={42}
-              onOpenNotifications={() => console.log('Abrir notificaciones')}
-            />
-          </div>
-        </div>
-      </div>
+      <TopNavigation
+        activeKey="quotes"
+        userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
+        onNavigate={handleNavigation}
+        onLogout={handleLogout}
+        logoutLoading={isLoggingOut}
+        notificationCount={42}
+        onOpenNotifications={() => console.log('Abrir notificaciones')}
+      />
 
       {/* Barra superior púrpura */}
       <div className="top-purple-bar">

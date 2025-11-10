@@ -3,7 +3,7 @@ import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../lib/supabase'
 import './ProgressScreen.css'
-import NavbarProfileControls from './NavbarProfileControls'
+import TopNavigation from './TopNavigation'
 
 interface ProgressScreenProps {
   user: User
@@ -64,38 +64,15 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
 
   return (
     <div className="progress-screen">
-      {/* Logo EPICGROUP LAB en esquina superior izquierda */}
-      <div className="logo-container-top" onClick={() => handleNavigation('/dashboard')}>
-        <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
-      </div>
-
-      {/* Barra de navegación superior */}
-      <div className="top-navbar">
-        <div className="navbar-content">
-          <div className="navbar-left">
-          </div>
-          
-          <div className="navbar-center">
-            <nav className="nav-links">
-              <button onClick={() => handleNavigation('/my-courses')} className="nav-link">Mis cursos</button>
-              <button onClick={() => handleNavigation('/quotes')} className="nav-link">Frases del día</button>
-              <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
-              <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>
-            </nav>
-          </div>
-          
-          <div className="navbar-right">
-            <NavbarProfileControls
-              userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
-              onNavigate={handleNavigation}
-              onLogout={handleLogout}
-              logoutLoading={isLoggingOut}
-              notificationCount={128}
-              onOpenNotifications={() => console.log('Abrir notificaciones')}
-            />
-          </div>
-        </div>
-      </div>
+      <TopNavigation
+        activeKey="progress"
+        userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
+        onNavigate={handleNavigation}
+        onLogout={handleLogout}
+        logoutLoading={isLoggingOut}
+        notificationCount={128}
+        onOpenNotifications={() => console.log('Abrir notificaciones')}
+      />
 
       {/* Contenido principal */}
       <div className="progress-content">

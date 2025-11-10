@@ -3,7 +3,7 @@ import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../lib/supabase'
 import './DashboardScreen.css'
-import NavbarProfileControls from './NavbarProfileControls'
+import TopNavigation from './TopNavigation'
 
 interface DashboardScreenProps {
   user: User
@@ -30,41 +30,19 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   }
 
   const displayName = user.user_metadata?.full_name || user.email || 'Usuario'
+  const handleOpenNotifications = () => console.log('Abrir notificaciones')
 
   return (
     <div className="dashboard-screen">
-      {/* Logo EPICGROUP LAB en esquina superior izquierda */}
-      <div className="logo-container-top" onClick={() => handleNavigation('/dashboard')}>
-        <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
-      </div>
-      
-      {/* Barra de navegación superior */}
-      <div className="top-navbar">
-        <div className="navbar-content">
-          <div className="navbar-left">
-          </div>
-          
-          <div className="navbar-center">
-            <nav className="nav-links">
-              <button onClick={() => handleNavigation('/my-courses')} className="nav-link">Mis cursos</button>
-              <button onClick={() => handleNavigation('/quotes')} className="nav-link">Frases del día</button>
-              <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
-              <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>
-            </nav>
-          </div>
-          
-          <div className="navbar-right">
-            <NavbarProfileControls
-              userDisplayName={displayName}
-              onNavigate={handleNavigation}
-              onLogout={handleLogout}
-              logoutLoading={loading}
-              notificationCount={167}
-              onOpenNotifications={() => console.log('Abrir notificaciones')}
-            />
-          </div>
-        </div>
-      </div>
+      <TopNavigation
+        activeKey="dashboard"
+        userDisplayName={displayName}
+        onNavigate={handleNavigation}
+        onLogout={handleLogout}
+        logoutLoading={loading}
+        notificationCount={167}
+        onOpenNotifications={handleOpenNotifications}
+      />
       
         <div className="dashboard-content">
           {/* Sección de bienvenida con fondo morado */}

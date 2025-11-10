@@ -2,9 +2,9 @@ import React, { useMemo, useRef, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import './MyCoursesScreen.css'
-import NavbarProfileControls from './NavbarProfileControls'
 import { auth } from '../lib/supabase'
 import coursePlaceholder from '../assets/image26.png'
+import TopNavigation from './TopNavigation'
 
 interface MyCoursesScreenProps {
   user: User
@@ -17,6 +17,7 @@ const MyCoursesScreen: React.FC<MyCoursesScreenProps> = ({ user }) => {
   const navigate = useNavigate()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [logoutLoading, setLogoutLoading] = useState(false)
+  const handleOpenNotifications = () => console.log('Abrir notificaciones')
 
   const courses = useMemo(() => {
     return Array.from({ length: 8 }, (_, index) => ({
@@ -59,41 +60,15 @@ const MyCoursesScreen: React.FC<MyCoursesScreenProps> = ({ user }) => {
 
   return (
     <div className="my-courses-screen">
-      <div className="logo-container-top" onClick={() => handleNavigation('/dashboard')}>
-        <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
-      </div>
-
-      <div className="top-navbar">
-        <div className="navbar-content">
-          <div className="navbar-left"></div>
-          <div className="navbar-center">
-            <nav className="nav-links">
-              <button onClick={() => handleNavigation('/my-courses')} className="nav-link active">
-                Mis cursos
-              </button>
-              <button onClick={() => handleNavigation('/quotes')} className="nav-link">
-                Frases del día
-              </button>
-              <button onClick={() => handleNavigation('#')} className="nav-link">
-                Recordatorio
-              </button>
-              <button onClick={() => handleNavigation('/progress')} className="nav-link">
-                Progreso
-              </button>
-            </nav>
-          </div>
-          <div className="navbar-right">
-            <NavbarProfileControls
-              userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
-              onNavigate={handleNavigation}
-              onLogout={handleLogout}
-              logoutLoading={logoutLoading}
-              notificationCount={42}
-              onOpenNotifications={() => console.log('Abrir notificaciones')}
-            />
-          </div>
-        </div>
-      </div>
+      <TopNavigation
+        activeKey="my-courses"
+        userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
+        onNavigate={handleNavigation}
+        onLogout={handleLogout}
+        logoutLoading={logoutLoading}
+        notificationCount={42}
+        onOpenNotifications={handleOpenNotifications}
+      />
 
       <main className="courses-main" color="white">
         <header className="courses-header" color="white">

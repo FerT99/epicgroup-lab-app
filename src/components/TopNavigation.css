@@ -1,0 +1,130 @@
+.top-navigation {
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.top-navigation__bar {
+  width: 100%;
+  background: rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 35px rgba(16, 0, 43, 0.12);
+}
+
+.top-navigation__content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.top-navigation__logo {
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.top-navigation__logo:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.top-navigation__logo-image {
+  height: 36px;
+  width: auto;
+}
+
+.top-navigation__center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.top-navigation__links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.top-navigation__link {
+  border: none;
+  background: transparent;
+  color: #f8fafc;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  transition: background 0.2s ease, transform 0.2s ease;
+  text-transform: uppercase;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.top-navigation__link:hover:not(.top-navigation__link--disabled) {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.top-navigation__link--active {
+  background: rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.18);
+}
+
+.top-navigation__link--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.top-navigation__right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+@media (max-width: 960px) {
+  .top-navigation__content {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px 20px;
+  }
+
+  .top-navigation__logo {
+    order: -1;
+  }
+
+  .top-navigation__center {
+    order: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .top-navigation__links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .top-navigation__right {
+    order: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .top-navigation__link {
+    font-size: 11px;
+    padding: 8px 14px;
+  }
+}
+
