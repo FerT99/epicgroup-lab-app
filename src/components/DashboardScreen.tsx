@@ -3,6 +3,7 @@ import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../lib/supabase'
 import './DashboardScreen.css'
+import NavbarProfileControls from './NavbarProfileControls'
 
 interface DashboardScreenProps {
   user: User
@@ -28,6 +29,8 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
     }
   }
 
+  const displayName = user.user_metadata?.full_name || user.email || 'Usuario'
+
   return (
     <div className="dashboard-screen">
       {/* Logo EPICGROUP LAB en esquina superior izquierda */}
@@ -43,7 +46,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
           
           <div className="navbar-center">
             <nav className="nav-links">
-              <button onClick={() => handleNavigation('/progress')} className="nav-link">Mis cursos</button>
+              <button onClick={() => handleNavigation('/my-courses')} className="nav-link">Mis cursos</button>
               <button onClick={() => handleNavigation('/quotes')} className="nav-link">Frases del día</button>
               <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
               <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>
@@ -51,22 +54,14 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
           </div>
           
           <div className="navbar-right">
-            <button 
-              className="profile-btn"
-              onClick={() => handleNavigation('/profile')}
-              title="Mi perfil"
-            >
-              👤
-            </button>
-            <button 
-              className="logout-btn"
-              onClick={handleLogout}
-              disabled={loading}
-              title="Cerrar sesión"
-            >
-              {loading ? '⏳' : '🚪'}
-            </button>
-            <button className="menu-toggle">☰</button>
+            <NavbarProfileControls
+              userDisplayName={displayName}
+              onNavigate={handleNavigation}
+              onLogout={handleLogout}
+              logoutLoading={loading}
+              notificationCount={167}
+              onOpenNotifications={() => console.log('Abrir notificaciones')}
+            />
           </div>
         </div>
       </div>

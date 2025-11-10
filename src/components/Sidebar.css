@@ -171,12 +171,53 @@
 .sidebar-footer {
   padding: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
 }
 
-.user-info {
+.sidebar-footer .profile-controls {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.sidebar-footer .notification-button {
+  background: rgba(255, 255, 255, 0.18);
+  color: #0f172a;
+}
+
+.sidebar-footer .notification-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.sidebar-footer .profile-trigger {
+  width: 100%;
+  justify-content: space-between;
+  box-shadow: none;
+  background: rgba(17, 24, 39, 0.88);
+}
+
+.sidebar-footer .user-name {
+  max-width: 120px;
+}
+
+.sidebar-collapsed-user {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #0f172a;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.sidebar-collapsed-user:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .user-avatar {

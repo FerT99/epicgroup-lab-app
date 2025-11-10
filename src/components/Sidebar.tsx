@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './Sidebar.css'
 import astronautaImage from '../assets/astronauta.png'
+import NavbarProfileControls from './NavbarProfileControls'
+import { auth } from '../lib/supabase'
 
 interface SidebarProps {
   isCollapsed?: boolean
@@ -10,6 +12,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
   const navigate = useNavigate()
   const location = useLocation()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleNavigation = (path: string) => {
     navigate(path)
@@ -17,6 +20,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
 
   const isActive = (path: string) => {
     return location.pathname === path
+  }
+
+  const displayName = 'Raquel López'
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await auth.signOut()
+      navigate('/login')
+    } catch (error) {
+      console.error('Error al cerrar sesión desde la barra lateral:', error)
+    } finally {
+      setIsLoggingOut(false)
+    }
   }
 
   return (
@@ -44,8 +61,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
       <nav className="sidebar-nav">
         <ul className="nav-list">
           <li 
-            className={`nav-item ${isActive('/progress') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/progress')}
+            className={`nav-item ${isActive('/my-courses') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/my-courses')}
           >
             <div className="nav-icon">📚</div>
             {!isCollapsed && <span className="nav-text">Mis Cursos</span>}
@@ -72,10 +89,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
       </nav>
       
       <div className="sidebar-footer">
-        <div className="user-info">
-          <div className="user-avatar">👤</div>
-          {!isCollapsed && <span className="user-name">Usuario</span>}
-        </div>
+        {!isCollapsed ? (
+          <NavbarProfileControls
+            userDisplayName={displayName}
+            onNavigate={handleNavigation}
+            onLogout={handleLogout}
+            logoutLoading={isLoggingOut}
+            notificationCount={12}
+            onOpenNotifications={() => console.log('Abrir notificaciones')}
+            settingsPath=""
+          />
+        ) : (
+          <button
+            className="sidebar-collapsed-user"
+            type="button"
+            onClick={() => handleNavigation('/profile')}
+            title="Ver perfil"
+          >
+            RL
+          </button>
+        )}
       </div>
     </div>
   )

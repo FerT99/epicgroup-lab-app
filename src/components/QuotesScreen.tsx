@@ -7,17 +7,32 @@ import spaceshipImage from '../assets/spaceship.png'
 import foquitoImage from '../assets/foquito.png'
 import fondonaranjaImage from '../assets/fondonaranja.png'
 import manoamarillaImage from '../assets/manoamarilla.png'
+import NavbarProfileControls from './NavbarProfileControls'
+import { auth } from '../lib/supabase'
 
 interface QuotesScreenProps {
   user: User
 }
 
-const QuotesScreen: React.FC<QuotesScreenProps> = () => {
+const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
   const navigate = useNavigate()
   const [userQuote, setUserQuote] = useState('')
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleNavigation = (path: string) => {
     navigate(path)
+  }
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await auth.signOut()
+      navigate('/login')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+    } finally {
+      setIsLoggingOut(false)
+    }
   }
 
   const handleSubmitQuote = () => {
@@ -31,7 +46,7 @@ const QuotesScreen: React.FC<QuotesScreenProps> = () => {
   return (
     <div className="quotes-screen">
       {/* Logo EPICGROUP LAB en esquina superior izquierda */}
-      <div className="logo-container-top">
+      <div className="logo-container-top" onClick={() => handleNavigation('/dashboard')}>
         <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
       </div>
       
@@ -43,7 +58,7 @@ const QuotesScreen: React.FC<QuotesScreenProps> = () => {
           
           <div className="navbar-center">
             <nav className="nav-links">
-              <button onClick={() => handleNavigation('/dashboard')} className="nav-link">Mis cursos</button>
+              <button onClick={() => handleNavigation('/my-courses')} className="nav-link">Mis cursos</button>
               <button onClick={() => handleNavigation('/quotes')} className="nav-link active">Frases del día</button>
               <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
               <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>
@@ -51,7 +66,14 @@ const QuotesScreen: React.FC<QuotesScreenProps> = () => {
           </div>
           
           <div className="navbar-right">
-            <button className="menu-toggle">☰</button>
+            <NavbarProfileControls
+              userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
+              onNavigate={handleNavigation}
+              onLogout={handleLogout}
+              logoutLoading={isLoggingOut}
+              notificationCount={42}
+              onOpenNotifications={() => console.log('Abrir notificaciones')}
+            />
           </div>
         </div>
       </div>

@@ -1,0 +1,289 @@
+.my-courses-screen {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('/src/assets/image1.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  padding-bottom: 80px;
+  overflow-x: hidden;
+}
+
+.my-courses-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.my-courses-screen .logo-container-top {
+  position: absolute;
+  top: 24px;
+  left: 32px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 12px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.my-courses-screen .courses-title {
+  color: #ffffff;
+
+}
+
+.my-courses-screen .logo-container-top:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.my-courses-screen .main-logo {
+  height: 36px;
+  width: auto;
+}
+
+.my-courses-screen .top-navbar {
+  width: 100%;
+  padding: 0;
+  background: rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  top: 0;
+  z-index: 1;
+  box-shadow: 0 18px 45px rgba(16, 0, 43, 0.12);
+}
+
+.my-courses-screen .navbar-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.my-courses-screen .navbar-center .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.my-courses-screen .nav-link {
+  border: none;
+  background: transparent;
+  color: #f8fafc;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  transition: background 0.2s ease, transform 0.2s ease;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.my-courses-screen .nav-link:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.my-courses-screen .nav-link.active {
+  background: rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.18);
+}
+
+.my-courses-screen .navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.my-courses-screen .courses-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2%;
+  position: relative;
+  z-index: 1;
+}
+
+.my-courses-screen .courses-title {
+  font-size: 40px;
+  text-align: center;
+  font-weight: 800;
+  color: rgb(230, 230, 230);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 1%;
+}
+
+.my-courses-screen .courses-description {
+  color: #dadada;
+  font-size: 16px;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.1;
+}
+
+.my-courses-screen .courses-carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.my-courses-screen .courses-carousel {
+  display: flex;
+  gap: 32px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 12px;
+  scrollbar-width: none;
+}
+
+.my-courses-screen .courses-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.my-courses-screen .course-card {
+  flex: 0 0 240px;
+  height: 320px;
+  border-radius: 36px;
+  background: linear-gradient(180deg, #dbeafe 0%, #bae6fd 100%);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.my-courses-screen .course-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.my-courses-screen .course-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 32px 60px rgba(15, 23, 42, 0.24);
+}
+
+.my-courses-screen .course-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 10%, rgba(15, 23, 42, 0.85) 90%);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.my-courses-screen .course-card-overlay h2 {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.my-courses-screen .course-card-cta {
+  align-self: flex-start;
+  background: rgba(14, 165, 233, 0.9);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.my-courses-screen .course-card-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.45);
+}
+
+.my-courses-screen .carousel-control {
+  border: none;
+  background: rgba(15, 23, 42, 0.75);
+  color: #ffffff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.35);
+}
+
+.my-courses-screen .carousel-control svg {
+  width: 60px;
+  height: 40px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.my-courses-screen .carousel-control:hover {
+  transform: translateY(-2px);
+  background: rgba(14, 165, 233, 0.85);
+  box-shadow: 0 16px 32px rgba(14, 165, 233, 0.4);
+}
+
+.my-courses-screen .carousel-control.left {
+  margin-left: auto;
+  order: -1;
+}
+
+.my-courses-screen .carousel-control.right {
+  margin-right: auto;
+}
+
+@media (max-width: 1024px) {
+  .my-courses-screen .navbar-content {
+    padding: 16px 24px;
+    gap: 16px;
+  }
+
+}
+
+@media (max-width: 768px) {
+  .my-courses-screen .navbar-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .my-courses-screen .navbar-center {
+    width: 100%;
+  }
+
+  .my-courses-screen .navbar-center .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .my-courses-screen .courses-carousel-wrapper {
+    flex-direction: column;
+  }
+
+  .my-courses-screen .carousel-control {
+    position: initial;
+    order: 0;
+  }
+
+  .my-courses-screen .courses-carousel {
+    width: 100%;
+  }
+}
+

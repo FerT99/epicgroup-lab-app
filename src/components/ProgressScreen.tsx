@@ -1,17 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
+import { auth } from '../lib/supabase'
 import './ProgressScreen.css'
+import NavbarProfileControls from './NavbarProfileControls'
 
 interface ProgressScreenProps {
   user: User
 }
 
-const ProgressScreen: React.FC<ProgressScreenProps> = ({ user: _user }) => {
+const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
   const navigate = useNavigate()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleNavigation = (path: string) => {
     navigate(path)
+  }
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await auth.signOut()
+      navigate('/login')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+    } finally {
+      setIsLoggingOut(false)
+    }
   }
   // Datos hardcodeados para las 4 cards
   const courses = [
@@ -63,7 +77,7 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user: _user }) => {
           
           <div className="navbar-center">
             <nav className="nav-links">
-              <button onClick={() => handleNavigation('/progress')} className="nav-link">Mis cursos</button>
+              <button onClick={() => handleNavigation('/my-courses')} className="nav-link">Mis cursos</button>
               <button onClick={() => handleNavigation('/quotes')} className="nav-link">Frases del día</button>
               <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
               <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>
@@ -71,7 +85,14 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user: _user }) => {
           </div>
           
           <div className="navbar-right">
-            <button className="menu-toggle">☰</button>
+            <NavbarProfileControls
+              userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
+              onNavigate={handleNavigation}
+              onLogout={handleLogout}
+              logoutLoading={isLoggingOut}
+              notificationCount={128}
+              onOpenNotifications={() => console.log('Abrir notificaciones')}
+            />
           </div>
         </div>
       </div>

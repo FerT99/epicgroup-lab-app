@@ -10,6 +10,7 @@ import QuotesScreen from './components/QuotesScreen'
 import CourseMapScreen from './components/CourseMapScreen'
 import ProfileScreen from './components/ProfileScreen'
 import AdminPanel from './components/AdminPanel'
+import MyCoursesScreen from './components/MyCoursesScreen'
 import './App.css'
 
 function App() {
@@ -54,6 +55,10 @@ function App() {
           <Route 
             path="/progress" 
             element={user ? <ProgressScreen user={user} /> : <Navigate to="/login" replace />} 
+          />
+          <Route
+            path="/my-courses"
+            element={user ? <MyCoursesScreen user={user} /> : <Navigate to="/login" replace />}
           />
           <Route 
             path="/quotes" 

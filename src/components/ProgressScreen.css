@@ -7,9 +7,21 @@
 
 .progress-screen {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--primary-purple) 0%, #3a0254 100%);
+  background-image: url('/src/assets/image1.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
+}
+
+.progress-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Logo superior */
@@ -97,23 +109,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 70px;
-}
-
-.menu-toggle {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  display: block;
-}
-
-.menu-toggle:hover {
-  background: rgba(255, 255, 255, 0.2);
+  gap: 16px;
 }
 
 /* Contenido principal */

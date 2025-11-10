@@ -1,27 +1,37 @@
 .quotes-screen {
-  width: 100vw;
-  min-height: 105vh;
+  width: 100%;
+  min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-image: url('/src/assets/image1.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  position: fixed;
-  margin: 0;
-  padding: 0;
+  position: relative;
+  padding-bottom: 80px;
+  overflow-x: hidden;
+  backdrop-filter: blur(4px);
 }
 
 /* Logo EPICGROUP LAB en esquina superior izquierda */
 .logo-container-top {
   position: absolute;
-  top: 2%;
-  left: 10%;
-  width: 20%;
+  top: 24px;
+  left: 32px;
+  width: auto;
   z-index: 200;
   display: flex;
   align-items: center;
   gap: 15px;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 4px 8px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.logo-container-top:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
 }
 
 .main-logo {
@@ -101,23 +111,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 70px;
-}
-
-.menu-toggle {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.menu-toggle:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+  gap: 16px;
 }
 
 /* Barra superior púrpura */
@@ -446,6 +440,12 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .logo-container-top {
+    position: relative;
+    top: 16px;
+    left: 16px;
+  }
+
   .navbar-content {
     padding: 15px 20px;
   }
