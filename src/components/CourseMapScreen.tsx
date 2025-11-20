@@ -1,28 +1,63 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { User } from '@supabase/supabase-js'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './CourseMapScreen.css'
+import { auth } from '../lib/supabase'
+import TopNavigation from './TopNavigation'
 
 interface CourseMapScreenProps {
   user: User
 }
 
-const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user: _user }) => {
+interface CourseMapLocationState {
+  courseId?: number | string
+  courseTitle?: string
+  planetResources?: Record<number, string>
+}
+
+const FALLBACK_PDF =
+  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+
+const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user }) => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const locationState = (location.state as CourseMapLocationState) || {}
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleNavigation = (path: string) => {
     navigate(path)
   }
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await auth.signOut()
+      navigate('/login')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
+  const handleOpenNotifications = () => console.log('Abrir notificaciones')
+
+  const displayName = user.user_metadata?.full_name || user.email || 'Usuario'
+  const activeCourseId = locationState.courseId ?? 'general'
+  const activeCourseTitle = locationState.courseTitle ?? 'Mapa del curso'
+  const planetResources = locationState.planetResources ?? {}
+
   // Datos de los planetas/cursos con las imágenes reales
-  const coursePlanets = [
+  const basePlanets = [
     {
       id: 1,
       number: 1,
       stars: 3,
       completed: true,
       image: '/src/assets/image30.png', // Planeta verde con puntos amarillos
-      position: { top: '75%', left: '82%' }
+      position: { top: '75%', left: '82%' },
+      title: 'Módulo 1 · Introducción',
+      defaultPdfUrl: FALLBACK_PDF
     },
     {
       id: 2,
@@ -30,7 +65,9 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user: _user }) => {
       stars: 1,
       completed: false,
       image: '/src/assets/image36.png', // Planeta azul con textura
-      position: { top: '50%', left: '68%' }
+      position: { top: '50%', left: '68%' },
+      title: 'Módulo 2 · Conceptos clave',
+      defaultPdfUrl: 'https://www.africau.edu/images/default/sample.pdf'
     },
     {
       id: 3,
@@ -38,7 +75,9 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user: _user }) => {
       stars: 2,
       completed: false,
       image: '/src/assets/image37.png', // Planeta fuego/naranja
-      position: { top: '65%', left: '48%' }
+      position: { top: '65%', left: '48%' },
+      title: 'Módulo 3 · Práctica guiada',
+      defaultPdfUrl: 'https://unec.edu.az/application/uploads/2014/12/pdf-sample.pdf'
     },
     {
       id: 4,
@@ -46,7 +85,9 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user: _user }) => {
       stars: 1,
       completed: false,
       image: '/src/assets/image38.png', // Planeta volcánico/rojo
-      position: { top: '40%', left: '42%' }
+      position: { top: '40%', left: '42%' },
+      title: 'Módulo 4 · Evaluación',
+      defaultPdfUrl: 'https://file-examples.com/storage/fe630daaa009f173c5140d0/2017/10/file-sample_150kB.pdf'
     },
     {
       id: 5,
@@ -54,7 +95,9 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user: _user }) => {
       stars: 0,
       completed: false,
       image: '/src/assets/image39.png', // Planeta morado con espiral
-      position: { top: '55%', left: '22%' }
+      position: { top: '55%', left: '22%' },
+      title: 'Módulo 5 · Caso de estudio',
+      defaultPdfUrl: FALLBACK_PDF
     },
     {
       id: 6,
@@ -62,7 +105,9 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user: _user }) => {
       stars: 0,
       completed: false,
       image: '/src/assets/image40.png', // Planeta oscuro/morado
-      position: { top: '35%', left: '12%' }
+      position: { top: '35%', left: '12%' },
+      title: 'Módulo 6 · Proyecto final',
+      defaultPdfUrl: FALLBACK_PDF
     },
     {
       id: 7,
@@ -70,7 +115,9 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user: _user }) => {
       stars: 0,
       completed: false,
       image: '/src/assets/image41.png', // Planeta concha/gris
-      position: { top: '20%', left: '32%' }
+      position: { top: '20%', left: '32%' },
+      title: 'Módulo 7 · Recursos adicionales',
+      defaultPdfUrl: FALLBACK_PDF
     },
     {
       id: 8,
@@ -78,50 +125,51 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user: _user }) => {
       stars: 0,
       completed: false,
       image: '/src/assets/image42.png', // Planeta roca/púrpura
-      position: { top: '15%', left: '12%' }
+      position: { top: '15%', left: '12%' },
+      title: 'Módulo 8 · Créditos',
+      defaultPdfUrl: FALLBACK_PDF
     }
   ]
 
+  const coursePlanets = basePlanets.map((planet) => ({
+    ...planet,
+    pdfUrl: planetResources[planet.id] ?? planet.defaultPdfUrl
+  }))
+
   const handlePlanetClick = (planetId: number) => {
-    console.log(`Planeta ${planetId} clickeado`)
-    // Aquí puedes agregar la lógica para ir al curso específico
+    const planet = coursePlanets.find((item) => item.id === planetId)
+    if (!planet) return
+
+    navigate(`/course/${activeCourseId}/content/${planetId}`, {
+      state: {
+        pdfUrl: planet.pdfUrl,
+        title: planet.title
+      }
+    })
   }
 
   const handleStartCourse = () => {
-    console.log('Iniciando curso')
-    // Aquí puedes agregar la lógica para iniciar el curso
+    handlePlanetClick(coursePlanets[0]?.id ?? 1)
   }
 
   return (
     <div className="course-map-screen">
-      {/* Logo EPICGROUP LAB en esquina superior izquierda */}
-      <div className="logo-container-top" onClick={() => handleNavigation('/dashboard')}>
-        <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
-      </div>
-
-      {/* Barra de navegación superior */}
-      <div className="top-navbar">
-        <div className="navbar-content">
-          <div className="navbar-left">
-          </div>
-          
-          <div className="navbar-center">
-            <nav className="nav-links">
-              <button onClick={() => handleNavigation('/progress')} className="nav-link">Mis cursos</button>
-              <button onClick={() => handleNavigation('/quotes')} className="nav-link">Frases del día</button>
-              <button onClick={() => handleNavigation('#')} className="nav-link">Recordatorio</button>
-              <button onClick={() => handleNavigation('/progress')} className="nav-link">Progreso</button>
-            </nav>
-          </div>
-          
-          <div className="navbar-right">
-            <button className="menu-toggle">☰</button>
-          </div>
-        </div>
-      </div>
+      <TopNavigation
+        activeKey="progress"
+        userDisplayName={displayName}
+        onNavigate={handleNavigation}
+        onLogout={handleLogout}
+        logoutLoading={isLoggingOut}
+        notificationCount={42}
+        onOpenNotifications={handleOpenNotifications}
+      />
 
       {/* Contenido del mapa */}
       <div className="map-container">
+        <div className="course-map-header">
+          <h1>{activeCourseTitle}</h1>
+          <p>Selecciona un planeta para abrir el material del módulo.</p>
+        </div>
         {/* Fondo espacial con estrellas */}
         <div className="space-background">
           <div className="stars"></div>

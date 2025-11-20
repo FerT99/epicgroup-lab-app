@@ -22,10 +22,10 @@ interface TopNavigationProps {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { key: 'my-courses', label: 'Mis cursos', path: '/my-courses' },
+  { key: 'my-courses', label: 'Inicio', path: '/dashboard' },
   { key: 'quotes', label: 'Frases del día', path: '/quotes' },
   { key: 'reminder', label: 'Recordatorio', path: '#', disabled: true },
-  { key: 'progress', label: 'Progreso', path: '/progress' },
+  { key: 'progress', label: 'Mis cursos', path: '/progress' },
 ]
 
 const TopNavigation: React.FC<TopNavigationProps> = ({

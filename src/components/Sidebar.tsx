@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
             onClick={() => handleNavigation('/my-courses')}
           >
             <div className="nav-icon">📚</div>
-            {!isCollapsed && <span className="nav-text">Mis Cursos</span>}
+            {!isCollapsed && <span className="nav-text">Inicio</span>}
           </li>
           <li 
             className={`nav-item ${isActive('/progress') ? 'active' : ''}`}

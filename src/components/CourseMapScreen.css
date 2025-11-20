@@ -131,8 +131,30 @@
 .map-container {
   position: relative;
   width: 100%;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 140px);
+  margin-top: 24px;
   overflow: hidden;
+}
+
+.course-map-header {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  color: #f8fafc;
+  padding: 16px 24px 32px;
+}
+
+.course-map-header h1 {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.course-map-header p {
+  margin-top: 8px;
+  font-size: 15px;
+  opacity: 0.85;
 }
 
 /* Fondo espacial */

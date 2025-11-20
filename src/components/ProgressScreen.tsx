@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { auth } from '../lib/supabase'
 import './ProgressScreen.css'
 import TopNavigation from './TopNavigation'
+import tareasPdf from '../pdfs/AMPLIACIÓNTEMA6.1TAREASALUMNOS.pdf'
 
 interface ProgressScreenProps {
   user: User
@@ -33,33 +34,49 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
       id: 1,
       title: "NEGOCIOS",
       completedSteps: 2,
-      totalSteps: 7
+      totalSteps: 7,
+      resources: {
+        1: tareasPdf
+      }
     },
     {
       id: 2,
       title: "INGLÉS",
       completedSteps: 4,
-      totalSteps: 7
+      totalSteps: 7,
+      resources: {
+        1: 'https://www.africau.edu/images/default/sample.pdf'
+      }
     },
     {
       id: 3,
       title: "UI/UX",
       completedSteps: 1,
-      totalSteps: 7
+      totalSteps: 7,
+      resources: {
+        1: 'https://unec.edu.az/application/uploads/2014/12/pdf-sample.pdf'
+      }
     },
     {
       id: 4,
       title: "MARKETING",
       completedSteps: 3,
-      totalSteps: 7
+      totalSteps: 7,
+      resources: {
+        1: 'https://file-examples.com/storage/fe630daaa009f173c5140d0/2017/10/file-sample_150kB.pdf'
+      }
     }
   ]
 
 
-  const handleCompleteCourse = (courseId: number) => {
-    console.log(`Completando curso ${courseId}`)
-    // Redirigir al mapa del curso
-    navigate('/course-map')
+  const handleOpenCourse = (course: (typeof courses)[number]) => {
+    navigate('/course-map', {
+      state: {
+        courseId: course.id,
+        courseTitle: course.title,
+        planetResources: course.resources ?? undefined
+      }
+    })
   }
 
   return (
@@ -76,7 +93,7 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
 
       {/* Contenido principal */}
       <div className="progress-content">
-        <h1 className="progress-title">Mi Progreso</h1>
+        <h1 className="progress-title">Mis cursos</h1>
         
         {/* Grid de cursos */}
         <div className="courses-grid">
@@ -84,7 +101,7 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
             <div 
               key={course.id} 
               className="course-card"
-              onClick={() => handleCompleteCourse(course.id)}
+              onClick={() => handleOpenCourse(course)}
             >
               <h3 className="course-title">{course.title}</h3>
               
@@ -110,7 +127,7 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
               {/* Botón de curso completo */}
               <button 
                 className="complete-course-btn"
-                onClick={() => handleCompleteCourse(course.id)}
+                onClick={() => handleOpenCourse(course)}
               >
                 Curso completo ►
               </button>

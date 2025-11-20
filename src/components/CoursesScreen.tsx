@@ -48,7 +48,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ user }) => {
           </div>
 
           <div className="tabs-section">
-            <div className="tab active">Mis cursos</div>
+            <div className="tab active">Inicio</div>
             <div className="tab">Frases del día</div>
             <div className="tab">Recordatorios</div>
           </div>
