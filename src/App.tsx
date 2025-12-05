@@ -11,6 +11,7 @@ import CourseMapScreen from './components/CourseMapScreen'
 import ProfileScreen from './components/ProfileScreen'
 import AdminPanel from './components/AdminPanel'
 import CoursePdfViewerScreen from './components/CoursePdfViewerScreen'
+import UploadContentScreen from './components/UploadContentScreen'
 import './App.css'
 
 function App() {
@@ -75,6 +76,10 @@ function App() {
           <Route 
             path="/admin" 
             element={<AdminPanel />} 
+          />
+          <Route 
+            path="/upload-content" 
+            element={user ? <UploadContentScreen user={user} /> : <Navigate to="/login" replace />} 
           />
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>

@@ -10,9 +10,51 @@ interface ProgressScreenProps {
   user: User
 }
 
+// Función helper para detectar si el usuario es profesor
+const isProfessor = (user: User): boolean => {
+  const roleCandidates = [
+    ...(Array.isArray(user.app_metadata?.roles) ? user.app_metadata.roles : []),
+    ...(Array.isArray(user.user_metadata?.roles) ? user.user_metadata.roles : []),
+  ]
+
+  const primaryRole =
+    (typeof user.app_metadata?.role === 'string' && user.app_metadata.role) ||
+    (typeof user.user_metadata?.role === 'string' && user.user_metadata.role) ||
+    undefined
+
+  const normalizedRoles = roleCandidates
+    .filter((role) => role !== null && role !== undefined)
+    .map((role) => String(role).toLowerCase().trim())
+
+  const normalizedPrimaryRole = primaryRole?.toLowerCase().trim()
+
+  const metadataRole = (() => {
+    const roleFromUserMetadata = typeof user.user_metadata?.role === 'string' ? user.user_metadata.role : undefined
+    const roleFromAppMetadata = typeof user.app_metadata?.role === 'string' ? user.app_metadata.role : undefined
+    return (
+      roleFromUserMetadata?.toLowerCase().trim() ||
+      roleFromAppMetadata?.toLowerCase().trim()
+    )
+  })()
+
+  const professorAliases = ['professor', 'teacher', 'profesor', 'docente']
+
+  return (
+    normalizedRoles.some((role) => professorAliases.includes(role)) ||
+    (normalizedPrimaryRole ? professorAliases.includes(normalizedPrimaryRole) : false) ||
+    (metadataRole ? professorAliases.includes(metadataRole) : false) ||
+    user.user_metadata?.is_professor === true
+  )
+}
+
 const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
   const navigate = useNavigate()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  
+  // Detectar si es profesor (hardcodeado por ahora para demostración)
+  // Para pruebas, puedes cambiar ENABLE_PROFESSOR_MODE a true para forzar la vista de profesor
+  const ENABLE_PROFESSOR_MODE = true // Cambiar a false para usar la detección real
+  const userIsProfessor = ENABLE_PROFESSOR_MODE || isProfessor(user) || user.email?.includes('profesor') || user.email?.includes('teacher')
 
   const handleNavigation = (path: string) => {
     navigate(path)
@@ -141,6 +183,21 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
             Curso completo ►
           </button>
         </div>
+        
+        {/* Sección "Mis cursos" para profesores */}
+        {userIsProfessor && (
+          <div className="professor-courses-section">
+            <h2 className="professor-section-title">Mis cursos</h2>
+            <div className="professor-courses-content">
+              <button 
+                className="upload-content-btn"
+                onClick={() => navigate('/upload-content')}
+              >
+                Subir contenido
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

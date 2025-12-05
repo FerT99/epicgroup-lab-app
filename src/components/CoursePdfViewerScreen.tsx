@@ -4,6 +4,8 @@ import { auth } from '../lib/supabase'
 import TopNavigation from './TopNavigation'
 import './CoursePdfViewerScreen.css'
 import type { User } from '@supabase/supabase-js'
+import pencilImage from '../assets/pencil.png'
+import spaceshipImage from '../assets/spaceship.png'
 
 interface CoursePdfViewerScreenProps {
   user: User
@@ -14,19 +16,22 @@ interface LocationState {
   title?: string
 }
 
-const DEFAULT_PDF =
-  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+// Descripciones de los cursos
+const courseDescriptions: Record<string, string> = {
+  'Módulo 8 · Ampliación Tema 8.1': 'Sigue construyendo tu idea de negocio aplicando el conocimiento adquirido. Trabajarás en competencias, análisis DAFO, imagen corporativa, diseño de logo, naming y eslogan. Aprenderás a analizar el perfil de cliente/usuario, situar tu proyecto en un océano azul o rojo, y entender el impacto de la innovación en valor. Además, afianzarás conceptos clave y resolverás dudas para avanzar hacia tu primera ronda de inversión.',
+  'AMPLIACIÓN TEMA 8.1': 'Sigue construyendo tu idea de negocio aplicando el conocimiento adquirido. Trabajarás en competencias, análisis DAFO, imagen corporativa, diseño de logo, naming y eslogan. Aprenderás a analizar el perfil de cliente/usuario, situar tu proyecto en un océano azul o rojo, y entender el impacto de la innovación en valor. Además, afianzarás conceptos clave y resolverás dudas para avanzar hacia tu primera ronda de inversión.',
+  'default': 'Explora este curso y descubre todo lo que necesitas para avanzar en tu aprendizaje. Aprende conceptos clave, desarrolla nuevas habilidades y alcanza tus objetivos educativos.'
+}
 
 const CoursePdfViewerScreen: React.FC<CoursePdfViewerScreenProps> = ({ user }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { courseId, resourceId } = useParams()
+  const { courseId } = useParams()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
-  const { pdfUrl, title } = (location.state as LocationState) || {}
-  const effectivePdfUrl = pdfUrl || DEFAULT_PDF
-  const documentTitle =
-    title || `Recurso ${resourceId ?? ''}`.trim() || 'Contenido del curso'
+  const { title } = (location.state as LocationState) || {}
+  const courseTitle = title || 'Conoce tu agenda'
+  const courseDescription = courseDescriptions[title || ''] || courseDescriptions['default']
 
   const handleNavigation = (path: string) => {
     navigate(path)
@@ -48,8 +53,13 @@ const CoursePdfViewerScreen: React.FC<CoursePdfViewerScreenProps> = ({ user }) =
 
   const displayName = user.user_metadata?.full_name || user.email || 'Usuario'
 
-  const handleOpenInNewTab = () => {
-    window.open(effectivePdfUrl, '_blank', 'noopener,noreferrer')
+  const handleLearnMore = () => {
+    // Navegar al mapa del curso o a otra acción
+    navigate('/course-map', {
+      state: {
+        courseId: courseId
+      }
+    })
   }
 
   return (
@@ -65,61 +75,52 @@ const CoursePdfViewerScreen: React.FC<CoursePdfViewerScreenProps> = ({ user }) =
       />
 
       <main className="course-pdf-viewer__main">
-        <header className="course-pdf-viewer__header">
-          <div className="course-pdf-viewer__breadcrumbs">
-            <button
-              type="button"
-              className="course-pdf-viewer__breadcrumb"
-              onClick={() => navigate('/progress')}
-            >
-              Mis cursos
-            </button>
-            <span className="course-pdf-viewer__breadcrumb-separator">/</span>
-            <button
-              type="button"
-              className="course-pdf-viewer__breadcrumb"
-              onClick={() => navigate('/course-map')}
-            >
-              Mapa del curso {courseId}
-            </button>
-            <span className="course-pdf-viewer__breadcrumb-separator">/</span>
-            <span className="course-pdf-viewer__breadcrumb current">{documentTitle}</span>
-          </div>
-
-          <div className="course-pdf-viewer__actions">
-            <button
-              type="button"
-              className="course-pdf-viewer__action"
-              onClick={() => navigate(-1)}
-            >
-              ← Volver
-            </button>
-            <button
-              type="button"
-              className="course-pdf-viewer__action secondary"
-              onClick={handleOpenInNewTab}
-            >
-              Abrir en nueva pestaña
-            </button>
-          </div>
-        </header>
-
-        <section className="course-pdf-viewer__content">
-          <iframe
-            title={documentTitle}
-            src={effectivePdfUrl}
-            className="course-pdf-viewer__iframe"
-          />
-          {!pdfUrl && (
-            <div className="course-pdf-viewer__hint">
-              <p>
-                Estás viendo un PDF de ejemplo. Para enlazar tu propio contenido, sube el archivo a
-                Supabase Storage y reemplaza la URL correspondiente cuando navegues desde el mapa del
-                curso.
-              </p>
+        <div className="course-detail-content">
+          {/* Sección izquierda - Cuadro de imagen del curso */}
+          <div className="course-detail-left">
+            <div className="course-detail-image-placeholder">
+              <svg
+                width="120"
+                height="120"
+                viewBox="0 0 120 120"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="60" cy="40" r="15" fill="#FFFFFF" opacity="0.9" />
+                <path
+                  d="M30 80 L50 60 L70 60 L90 80 L30 80 Z"
+                  stroke="#FFFFFF"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                  opacity="0.9"
+                />
+              </svg>
+              
+              {/* Cohete en la esquina inferior izquierda */}
+              <div className="course-detail-rocket">
+                <img src={spaceshipImage} alt="Cohete" className="rocket-image" />
+              </div>
             </div>
-          )}
-        </section>
+          </div>
+
+          {/* Sección derecha - Contenido de texto */}
+          <div className="course-detail-text">
+            <h1 className="course-detail-title">{courseTitle}</h1>
+            <p className="course-detail-description">
+              {courseDescription}
+            </p>
+            <button className="course-detail-button" onClick={handleLearnMore}>
+              Saber más
+            </button>
+          </div>
+        </div>
+
+        {/* Lápiz decorativo */}
+        <div className="course-detail-pencil">
+          <img src={pencilImage} alt="Lápiz" className="pencil-image" />
+        </div>
       </main>
     </div>
   )

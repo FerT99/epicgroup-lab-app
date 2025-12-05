@@ -1,0 +1,35 @@
+.upload-content-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #1a1a2e 0%, #8b5cf6 100%);
+}
+
+.upload-content-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.upload-content-container {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  color: #ffffff;
+}
+
+.upload-content-title {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #ffffff;
+}
+
+.upload-content-description {
+  font-size: 18px;
+  opacity: 0.9;
+  color: #ffffff;
+}
+
