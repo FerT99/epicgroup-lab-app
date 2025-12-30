@@ -41,9 +41,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
       {!isCollapsed && (
         <div className="welcome-section">
           <div className="welcome-card">
-                      <div className="welcome-avatar">
-            <img src={astronautaImage} alt="Astronauta" className="astronaut-image" />
-          </div>
+            <div className="welcome-avatar">
+              <img src={astronautaImage} alt="Astronauta" className="astronaut-image" />
+            </div>
             <div className="welcome-content">
               <h3 className="welcome-greeting">¡Hola!</h3>
               <p className="welcome-name">Raquel López</p>
@@ -57,29 +57,29 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
           </div>
         </div>
       )}
-      
+
       <nav className="sidebar-nav">
         <ul className="nav-list">
-          <li 
+          <li
             className={`nav-item ${isActive('/my-courses') ? 'active' : ''}`}
             onClick={() => handleNavigation('/my-courses')}
           >
             <div className="nav-icon">📚</div>
             {!isCollapsed && <span className="nav-text">Inicio</span>}
           </li>
-          <li 
+          <li
             className={`nav-item ${isActive('/progress') ? 'active' : ''}`}
             onClick={() => handleNavigation('/progress')}
           >
             <div className="nav-icon">📊</div>
             {!isCollapsed && <span className="nav-text">Progreso</span>}
           </li>
-          <li 
+          <li
             className={`nav-item ${isActive('/quotes') ? 'active' : ''}`}
             onClick={() => handleNavigation('/quotes')}
           >
             <div className="nav-icon">💬</div>
-            {!isCollapsed && <span className="nav-text">Frases del Día</span>}
+            {!isCollapsed && <span className="nav-text">Agenda</span>}
           </li>
           <li className="nav-item">
             <div className="nav-icon">🔔</div>
@@ -87,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
           </li>
         </ul>
       </nav>
-      
+
       <div className="sidebar-footer">
         {!isCollapsed ? (
           <NavbarProfileControls

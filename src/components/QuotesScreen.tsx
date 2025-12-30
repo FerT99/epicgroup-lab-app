@@ -2,11 +2,6 @@ import React, { useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import './QuotesScreen.css'
-import pencilImage from '../assets/pencil.png'
-import spaceshipImage from '../assets/spaceship.png'
-import foquitoImage from '../assets/foquito.png'
-import fondonaranjaImage from '../assets/fondonaranja.png'
-import manoamarillaImage from '../assets/manoamarilla.png'
 import { auth } from '../lib/supabase'
 import TopNavigation from './TopNavigation'
 
@@ -16,7 +11,6 @@ interface QuotesScreenProps {
 
 const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
   const navigate = useNavigate()
-  const [userQuote, setUserQuote] = useState('')
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleNavigation = (path: string) => {
@@ -35,18 +29,66 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
     }
   }
 
-  const handleSubmitQuote = () => {
-    if (userQuote.trim()) {
-      console.log('Nueva frase enviada:', userQuote)
-      setUserQuote('')
-      // Aquí podrías enviar la frase a la base de datos
+  // Mock Data
+  // Weekly tasks removed as they are now represented in 'columns'
+  // More Mock Data for the 3 columns (repeating logic for visual matching)
+  const columns = [
+    {
+      id: 'col1',
+      tasks: [
+        { day: 12, title: 'Startech Class', time: '09 AM - 10 AM', icon: 'bars' },
+        { day: 12, title: 'English Class', time: '10 AM - 06 PM', icon: 'bars' },
+      ],
+      bottomTasks: [
+        { day: 13, title: 'Review', time: '09 AM - 12 AM', icon: 'bars' },
+        { day: 13, title: 'Class Game', time: '12 AM - 04 PM', icon: 'bars' },
+        { day: 13, title: 'Califications', time: '04 PM - 06 PM', icon: 'bars' },
+      ]
+    },
+    {
+      id: 'col2',
+      tasks: [
+        { day: 12, title: 'Startech Class', time: '09 AM - 10 AM', icon: 'bars' },
+        { day: 12, title: 'English Class', time: '10 AM - 06 PM', icon: 'bars' },
+      ],
+      bottomTasks: [
+        { day: 13, title: 'Review', time: '09 AM - 12 AM', icon: 'bars' },
+        { day: 13, title: 'Class Game', time: '12 AM - 04 PM', icon: 'bars' },
+        { day: 13, title: 'Califications', time: '04 PM - 06 PM', icon: 'bars' },
+      ]
+    },
+    {
+      id: 'col3',
+      tasks: [
+        { day: 12, title: 'Startech Class', time: '09 AM - 10 AM', icon: 'bars' },
+        { day: 12, title: 'English Class', time: '10 AM - 06 PM', icon: 'bars' },
+      ],
+      bottomTasks: [
+        { day: 13, title: 'Review', time: '09 AM - 12 AM', icon: 'bars' },
+        { day: 13, title: 'Class Game', time: '12 AM - 04 PM', icon: 'bars' },
+        { day: 13, title: 'Califications', time: '04 PM - 06 PM', icon: 'bars' },
+      ]
     }
-  }
+  ]
+
+  // Mock Calendar Grid
+  const calendarDays = [
+    ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+    ['1', '2', '3', '4', '5', '6', '7'],
+    ['8', '9', '10', '11', '12', '13', '14'],
+    ['15', '16', '17', '18', '19', '20', '21'],
+    ['22', '23', '24', '25', '26', '27', '28'],
+    ['29', '30', '31', '1', '2', '3', '4']
+  ]
+
+  // Highlighted days for demo
+  const isSelected = (day: string) => ['11', '12', '13', '16', '17', '18', '19', '24', '25'].includes(day)
+  const isToday = (day: string) => day === '3' || day === '4' // Just distinct styling for some range start
 
   return (
-    <div className="quotes-screen">
+    <div className="dashboard-screen">
       <TopNavigation
-        activeKey="quotes"
+        activeKey="quotes" // Keeping 'quotes' active for now as per route
         userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
         onNavigate={handleNavigation}
         onLogout={handleLogout}
@@ -55,85 +97,145 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
         onOpenNotifications={() => console.log('Abrir notificaciones')}
       />
 
-      {/* Barra superior púrpura */}
-      <div className="top-purple-bar">
-        <div className="purple-circle"></div>
-      </div>
-      
-      {/* Header con título */}
-      <div className="quotes-header">
-        <h1 className="main-title">Frases del día</h1>
-        <p className="subtitle">Cada día una idea, una chispa y un recordatorio de que lo simple también puede ser EPIC.</p>
-      </div>
-
-      {/* Sección principal con fondo naranja */}
-      <div className="main-quotes-section">
-        <div className="background-image-container">
-          <img src={fondonaranjaImage} alt="Fondo naranja" className="background-image" />
-        </div>
-        
-        {/* Elementos decorativos izquierda */}
-        <div className="left-decorations">
-          <img src={pencilImage} alt="Lápiz" className="pencil-image" />
-          <img src={spaceshipImage} alt="Cohete" className="spaceship-image" />
-        </div>
-        
-        {/* Elementos decorativos derecha */}
-        <div className="right-decorations">
-          <img src={foquitoImage} alt="Foco" className="foquito-image" />
-          <div className="browser-window">
-            <div className="browser-header">
-              <div className="browser-dots">
-                <span className="dot"></span>
-                <span className="dot"></span>
-                <span className="dot"></span>
-              </div>
-            </div>
-            <div className="browser-content">
-              <div className="content-line"></div>
-              <div className="content-line"></div>
-              <div className="content-line"></div>
+      <div className="dashboard-content">
+        {/* Sidebar Left */}
+        <aside className="dashboard-sidebar">
+          <div className="user-profile-header">
+            <div className="user-avatar-circle"></div>
+            <div className="user-info">
+              <h2>{user.user_metadata?.full_name || 'Raquel López'}</h2>
+              <p>Epic Teacher</p>
             </div>
           </div>
-        </div>
-        
-        {/* Frase principal */}
-        <div className="main-quote">
-          <p>Tu esfuerzo de hoy es el éxito de mañana</p>
-        </div>
-        
-        {/* Carrusel de frases */}
-        <div className="quote-carousel">
-          <button className="carousel-arrow left">‹</button>
-          <div className="carousel-content">
-            <div className="quote-card blue">
-              <p>Cree en ti mismo y todo será posible</p>
-            </div>
-            <div className="quote-card green">
-              <p>La educación es el pasaporte hacia el futuro</p>
-            </div>
-          </div>
-          <button className="carousel-arrow right">›</button>
-        </div>
-      </div>
 
-      {/* Sección de input */}
-      <div className="input-section">
-        <h3 className="input-title">Escribe aquí tu frase:</h3>
-        <p className="input-description">Escribe una frase que te motive, podrías aparecer en esta sección inspirando a los demás</p>
-        <div className="input-container">
-          <input
-            type="text"
-            value={userQuote}
-            onChange={(e) => setUserQuote(e.target.value)}
-            placeholder="Tu frase motivacional..."
-            className="quote-input"
-          />
-          <button className="submit-btn" onClick={handleSubmitQuote}>
-            Enviar
+          <button className="create-task-btn">
+            CREATE NEW TASK
           </button>
-        </div>
-        <img src={manoamarillaImage} alt="Mano amarilla" className="mano-image" />
+
+          <div className="calendar-widget">
+            <div className="calendar-header">
+              <button>‹</button>
+              <span>AUGUST 2020</span>
+              <button>›</button>
+            </div>
+            <div className="calendar-grid">
+              {/* Header Row */}
+              {calendarDays[0].map((d, i) => <div key={`h-${i}`} className="cal-cell header">{d}</div>)}
+              {/* Days */}
+              {calendarDays.slice(1).map((week, wIndex) => (
+                week.map((day, dIndex) => (
+                  <div
+                    key={`${wIndex}-${dIndex}`}
+                    className={`cal-cell day ${isSelected(day) ? 'selected' : ''} ${isToday(day) && wIndex === 0 ? 'range-start' : ''}`}
+                  >
+                    {day}
+                  </div>
+                ))
+              ))}
+            </div>
+          </div>
+
+          <div className="month-tasks">
+            <div className="month-tasks-header">
+              <span>AUGUST TASKS</span>
+              <span>4 Total</span>
+            </div>
+
+            <div className="task-item dark-card">
+              <div className="task-info">
+                <h4>JOB FAIR POSTER</h4>
+                <p>3-4 August</p>
+              </div>
+              <button className="status-btn done">DONE</button>
+            </div>
+
+            <div className="task-item colored-card pink">
+              <div className="task-info">
+                <h4>INFOGRAPHIC</h4>
+                <p>11-13 August</p>
+              </div>
+              <button className="status-btn view">VIEW</button>
+            </div>
+
+            <div className="task-item colored-card purple">
+              <div className="task-info">
+                <h4>MOBILE APP UI</h4>
+                <p>18-19 August</p>
+              </div>
+              <button className="status-btn view">VIEW</button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content Columns */}
+        <main className="dashboard-main">
+          {columns.map((col) => (
+            <div key={col.id} className="task-column">
+              {/* Header Area */}
+              <div className="column-header">
+                <h3>WEEKLY TASK</h3>
+                <p>9 August 2020 - 13 August 2020</p>
+              </div>
+
+              {/* Ongoing Task Card */}
+              <div className="ongoing-card">
+                <div className="ongoing-header">
+                  <span>ONGOING TASK</span>
+                  <div className="avatars">
+                    <div className="avatar small"></div>
+                    <div className="avatar small"></div>
+                  </div>
+                </div>
+                <div className="ongoing-body">
+                  <h4>Meeting with Team</h4>
+                </div>
+              </div>
+
+              {/* Task List Group 1 */}
+              <div className="task-list-group">
+                <span className="month-label">AUGUST</span>
+                {col.tasks.map((task, tIdx) => (
+                  <div key={`t-${tIdx}`} className="schedule-card">
+                    <div className="schedule-date">
+                      <span className="big-date">{task.day}</span>
+                    </div>
+                    <div className="schedule-details">
+                      <h4>{task.title}</h4>
+                      <p>{task.time}</p>
+                    </div>
+                    <div className="schedule-icon">
+                      <div className="icon-circle">
+                        <span className="bar-icon"></span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Task List Group 2 */}
+              <div className="task-list-group">
+                <span className="month-label">AUGUST</span>
+                {col.bottomTasks.map((task, tIdx) => (
+                  <div key={`b-${tIdx}`} className="schedule-card">
+                    <div className="schedule-date">
+                      <span className="big-date">{task.day}</span>
+                    </div>
+                    <div className="schedule-details">
+                      <h4>{task.title}</h4>
+                      <p>{task.time}</p>
+                    </div>
+                    <div className="schedule-icon">
+                      <div className="icon-circle">
+                        <span className="bar-icon"></span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          ))}
+        </main>
       </div>
     </div>
   )

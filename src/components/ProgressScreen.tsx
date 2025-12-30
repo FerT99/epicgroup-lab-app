@@ -43,14 +43,14 @@ const isProfessor = (user: User): boolean => {
     normalizedRoles.some((role) => professorAliases.includes(role)) ||
     (normalizedPrimaryRole ? professorAliases.includes(normalizedPrimaryRole) : false) ||
     (metadataRole ? professorAliases.includes(metadataRole) : false) ||
-    user.user_metadata?.is_professor === true
+    user.user_metadata?.is_professor === false
   )
 }
 
 const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
   const navigate = useNavigate()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-  
+
   // Detectar si es profesor (hardcodeado por ahora para demostración)
   // Para pruebas, puedes cambiar ENABLE_PROFESSOR_MODE a true para forzar la vista de profesor
   const ENABLE_PROFESSOR_MODE = true // Cambiar a false para usar la detección real
@@ -136,23 +136,23 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
       {/* Contenido principal */}
       <div className="progress-content">
         <h1 className="progress-title">Mis cursos</h1>
-        
+
         {/* Grid de cursos */}
         <div className="courses-grid">
           {courses.map((course) => (
-            <div 
-              key={course.id} 
+            <div
+              key={course.id}
               className="course-card"
               onClick={() => handleOpenCourse(course)}
             >
               <h3 className="course-title">{course.title}</h3>
-              
+
               {/* Barra de progreso */}
               <div className="progress-bar">
                 {Array.from({ length: course.totalSteps }, (_, index) => {
                   const stepNumber = index + 1
                   const isCompleted = stepNumber <= course.completedSteps
-                  
+
                   return (
                     <div key={stepNumber} className="progress-step-container">
                       <div className={`progress-step ${isCompleted ? 'completed' : 'pending'}`}>
@@ -165,9 +165,9 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
                   )
                 })}
               </div>
-              
+
               {/* Botón de curso completo */}
-              <button 
+              <button
                 className="complete-course-btn"
                 onClick={() => handleOpenCourse(course)}
               >
@@ -176,20 +176,20 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
             </div>
           ))}
         </div>
-        
+
         {/* Botón de acción principal */}
         <div className="main-action">
           <button className="main-complete-btn">
             Curso completo ►
           </button>
         </div>
-        
+
         {/* Sección "Mis cursos" para profesores */}
         {userIsProfessor && (
           <div className="professor-courses-section">
             <h2 className="professor-section-title">Mis cursos</h2>
             <div className="professor-courses-content">
-              <button 
+              <button
                 className="upload-content-btn"
                 onClick={() => navigate('/upload-content')}
               >

@@ -23,8 +23,8 @@ interface TopNavigationProps {
 
 const NAV_ITEMS: NavItem[] = [
   { key: 'my-courses', label: 'Inicio', path: '/dashboard' },
-  { key: 'quotes', label: 'Frases del día', path: '/quotes' },
-  { key: 'reminder', label: 'Recordatorio', path: '#', disabled: true },
+  { key: 'quotes', label: 'Agenda', path: '/quotes' },
+  { key: 'reminder', label: 'Alumnos', path: '/alumnos' },
   { key: 'progress', label: 'Mis cursos', path: '/progress' },
 ]
 

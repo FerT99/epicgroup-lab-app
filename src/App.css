@@ -48,12 +48,12 @@
 .space-image {
   width: 50%;
   width: 50%;
-   }
+}
 
-   .main-logo {
-    width: 70%;
-    width: 70%;
-   }
+.main-logo {
+  width: 70%;
+  width: 70%;
+}
 
 .btn-secondary:hover {
   background: var(--white);
@@ -156,7 +156,7 @@
   .container {
     padding: 0 16px;
   }
-  
+
   .logo-text {
     font-size: 2rem;
   }
@@ -166,7 +166,7 @@
     font-size: 14px;
     min-height: 44px;
   }
-  
+
   .input {
     padding: 14px 16px;
     font-size: 14px;
@@ -177,12 +177,12 @@
   .logo-text {
     font-size: 1.8rem;
   }
-  
+
   .logo-subtitle {
     font-size: 12px;
     padding: 6px 16px;
   }
-  
+
 }
 
 /* Pantalla de carga */
@@ -207,8 +207,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-screen p {
