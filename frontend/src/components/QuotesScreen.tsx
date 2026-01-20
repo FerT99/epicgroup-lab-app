@@ -31,11 +31,7 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
   }
 
   // TODO: Fetch data from backend
-  const columns: Array<{
-    id: string
-    tasks: Array<{ day: number; title: string; time: string; icon: string }>
-    bottomTasks: Array<{ day: number; title: string; time: string; icon: string }>
-  }> = []
+
 
   // TODO: Generate calendar dynamically from current date
   const calendarDays: string[][] = [
@@ -56,6 +52,15 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
   })
   const [loading, setLoading] = useState(false)
 
+  // Local State for Tasks (Mocking Backend)
+  const [allTasks, setAllTasks] = useState<Array<{
+    id: string
+    title: string
+    date: string
+    time: string
+    description: string
+  }>>([])
+
   const handleCreateTask = () => {
     setTaskForm({
       title: '',
@@ -68,13 +73,53 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
 
   const handleSaveTask = async () => {
     setLoading(true)
-    // TODO: Implement backend save logic
-    console.log('Saving task:', taskForm)
+
+    // Simulate API call
     setTimeout(() => {
+      const newTask = {
+        id: crypto.randomUUID(),
+        ...taskForm
+      }
+      setAllTasks(prev => [...prev, newTask])
       setLoading(false)
       setShowTaskModal(false)
-    }, 1000)
+    }, 600)
   }
+
+  // Helper to Group Tasks by Date to create Columns
+  const getColumns = () => {
+    // Group tasks by Date
+    const tasksByDate: { [key: string]: typeof allTasks } = {}
+    allTasks.forEach(task => {
+      if (!tasksByDate[task.date]) {
+        tasksByDate[task.date] = []
+      }
+      tasksByDate[task.date].push(task)
+    })
+
+    // Sort dates
+    const sortedDates = Object.keys(tasksByDate).sort()
+
+    return sortedDates.map(dateStr => {
+      const dateObj = new Date(dateStr)
+      const dayNum = dateObj.getDate()
+      const dayName = dateObj.toLocaleDateString('es-ES', { weekday: 'long' })
+
+      return {
+        id: dateStr,
+        dateLabel: `${dayName} ${dayNum}`, // New Label for column
+        tasks: tasksByDate[dateStr].map(t => ({
+          day: dayNum,
+          title: t.title,
+          time: t.time,
+          icon: '🟣' // Placeholder
+        })),
+        bottomTasks: [] as Array<{ day: number; title: string; time: string; icon: string }> // Can be used for afternoon tasks if needed
+      }
+    })
+  }
+
+  const columns = getColumns()
 
   const displayName = user.user_metadata?.full_name || user.email || 'Usuario'
   const userRole = getUserRole(user)
@@ -154,22 +199,24 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
               <div key={col.id} className="task-column">
                 {/* Header Area */}
                 <div className="column-header">
-                  <h3>WEEKLY TASK</h3>
-                  <p>{/* TODO: Dynamic date range */}</p>
+                  <h3>{col.dateLabel}</h3>
+                  <p>TASKS</p>
                 </div>
 
-                {/* Ongoing Task Card */}
-                <div className="ongoing-card">
-                  <div className="ongoing-header">
-                    <span>ONGOING TASK</span>
-                    <div className="avatars">
-                      {/* TODO: Dynamic avatars */}
+                {/* Ongoing Task Card - Mock for now */}
+                {col.tasks.length > 0 && (
+                  <div className="ongoing-card">
+                    <div className="ongoing-header">
+                      <span>NEXT TASK</span>
+                      <div className="avatars">
+                        {/* TODO: Dynamic avatars */}
+                      </div>
+                    </div>
+                    <div className="ongoing-body">
+                      <h4>{col.tasks[0].title}</h4>
                     </div>
                   </div>
-                  <div className="ongoing-body">
-                    <h4>{/* TODO: Dynamic task title */}</h4>
-                  </div>
-                </div>
+                )}
 
                 {/* Task List Group 1 */}
                 <div className="task-list-group">

@@ -135,7 +135,10 @@ export const deleteCenter = async (id: string): Promise<void> => {
 export const getGradesByCenter = async (centerId: string): Promise<GradeLevel[]> => {
     try {
         const response = await fetch(`${API_URL}/api/admin/centers/${centerId}/grades`)
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+        if (!response.ok) {
+            const errorBody = await response.text()
+            throw new Error(`HTTP error! status: ${response.status} - ${errorBody}`)
+        }
         return await response.json()
     } catch (error) {
         console.error('Error fetching grades:', error)

@@ -47,11 +47,6 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
     // State for data
     const [centers, setCenters] = useState<EducationalCenter[]>([])
     const [selectedCenter, setSelectedCenter] = useState<EducationalCenter | null>(null)
-    // const [grades, setGrades] = useState<GradeLevel[]>([])
-    // const [selectedGrade, setSelectedGrade] = useState<GradeLevel | null>(null)
-    // const [sections, setSections] = useState<Section[]>([])
-    // const [selectedSection, setSelectedSection] = useState<Section | null>(null)
-    // const [subjects, setSubjects] = useState<Subject[]>([])
 
     // State for loading and errors
     const [loading, setLoading] = useState(false)
@@ -59,10 +54,6 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
 
     // State for modals
     const [showCenterModal, setShowCenterModal] = useState(false)
-    // const [showGradeModal, setShowGradeModal] = useState(false)
-    // const [showSectionModal, setShowSectionModal] = useState(false)
-    // const [showSubjectModal, setShowSubjectModal] = useState(false)
-
     // State for forms
     const [centerForm, setCenterForm] = useState({ name: '', address: '', phone: '', email: '' })
     const [gradeForm, setGradeForm] = useState({ name: '', level: 0 })
@@ -71,47 +62,11 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
 
     // State for editing
     const [editingCenter, setEditingCenter] = useState<EducationalCenter | null>(null)
-    // const [editingGrade, setEditingGrade] = useState<GradeLevel | null>(null)
-    // const [editingSection, setEditingSection] = useState<Section | null>(null)
-    // const [editingSubject, setEditingSubject] = useState<Subject | null>(null)
 
     // Load centers on mount
     useEffect(() => {
         loadCenters()
     }, [])
-
-    // Load grades when center is selected
-    /*
-    useEffect(() => {
-        if (selectedCenter) {
-            loadGrades(selectedCenter.id)
-        } else {
-            setGrades([])
-            setSelectedGrade(null)
-        }
-    }, [selectedCenter])
-
-    // Load sections when grade is selected
-    useEffect(() => {
-        if (selectedGrade) {
-            loadSections(selectedGrade.id)
-        } else {
-            setSections([])
-            setSelectedSection(null)
-        }
-    }, [selectedGrade])
-
-    // Load subjects when section is selected
-    useEffect(() => {
-        if (selectedSection) {
-            loadSubjects(selectedSection.id)
-        } else {
-            setSubjects([])
-        }
-    }, [selectedSection])
-    */
-
-    // ========== LOAD FUNCTIONS ==========
 
     const loadCenters = async () => {
         try {
@@ -215,177 +170,6 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
         }
     }
 
-    /*
-    const handleCreateGrade = () => {
-        if (!selectedCenter) {
-            alert('Selecciona un centro educativo primero')
-            return
-        }
-        setGradeForm({ name: '', level: 0 })
-        setEditingGrade(null)
-        setShowGradeModal(true)
-    }
-
-    const handleEditGrade = (grade: GradeLevel) => {
-        setGradeForm({ name: grade.name, level: grade.level || 0 })
-        setEditingGrade(grade)
-        setShowGradeModal(true)
-    }
-
-    const handleSaveGrade = async () => {
-        if (!selectedCenter) return
-
-        try {
-            setLoading(true)
-            if (editingGrade) {
-                await updateGrade(editingGrade.id, gradeForm)
-            } else {
-                await createGrade({ ...gradeForm, center_id: selectedCenter.id })
-            }
-            await loadGrades(selectedCenter.id)
-            setShowGradeModal(false)
-        } catch (err: any) {
-            setError(err.message || 'Error al guardar grado')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleDeleteGrade = async (id: string) => {
-        if (!confirm('¿Estás seguro de eliminar este grado? Se eliminarán todas las secciones y materias asociadas.')) return
-
-        try {
-            setLoading(true)
-            await deleteGrade(id)
-            if (selectedCenter) {
-                await loadGrades(selectedCenter.id)
-            }
-            if (selectedGrade?.id === id) {
-                setSelectedGrade(null)
-            }
-        } catch (err: any) {
-            setError(err.message || 'Error al eliminar grado')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    // ========== SECTION FUNCTIONS ==========
-
-    const handleCreateSection = () => {
-        if (!selectedGrade) {
-            alert('Selecciona un grado primero')
-            return
-        }
-        setSectionForm({ name: '', max_students: 30 })
-        setEditingSection(null)
-        setShowSectionModal(true)
-    }
-
-    const handleEditSection = (section: Section) => {
-        setSectionForm({ name: section.name, max_students: section.max_students })
-        setEditingSection(section)
-        setShowSectionModal(true)
-    }
-
-    const handleSaveSection = async () => {
-        if (!selectedGrade) return
-
-        try {
-            setLoading(true)
-            if (editingSection) {
-                await updateSection(editingSection.id, sectionForm)
-            } else {
-                await createSection({ ...sectionForm, grade_id: selectedGrade.id })
-            }
-            await loadSections(selectedGrade.id)
-            setShowSectionModal(false)
-        } catch (err: any) {
-            setError(err.message || 'Error al guardar sección')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleDeleteSection = async (id: string) => {
-        if (!confirm('¿Estás seguro de eliminar esta sección? Se eliminarán todas las materias asociadas.')) return
-
-        try {
-            setLoading(true)
-            await deleteSection(id)
-            if (selectedGrade) {
-                await loadSections(selectedGrade.id)
-            }
-            if (selectedSection?.id === id) {
-                setSelectedSection(null)
-            }
-        } catch (err: any) {
-            setError(err.message || 'Error al eliminar sección')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    // ========== SUBJECT FUNCTIONS ==========
-
-    const handleCreateSubject = () => {
-        if (!selectedSection) {
-            alert('Selecciona una sección primero')
-            return
-        }
-        setSubjectForm({ name: '', description: '', hours_per_week: 0 })
-        setEditingSubject(null)
-        setShowSubjectModal(true)
-    }
-
-    const handleEditSubject = (subject: Subject) => {
-        setSubjectForm({
-            name: subject.name,
-            description: subject.description || '',
-            hours_per_week: subject.hours_per_week,
-        })
-        setEditingSubject(subject)
-        setShowSubjectModal(true)
-    }
-
-    const handleSaveSubject = async () => {
-        if (!selectedSection) return
-
-        try {
-            setLoading(true)
-            if (editingSubject) {
-                await updateSubject(editingSubject.id, subjectForm)
-            } else {
-                await createSubject({ ...subjectForm, section_id: selectedSection.id })
-            }
-            await loadSubjects(selectedSection.id)
-            setShowSubjectModal(false)
-        } catch (err: any) {
-            setError(err.message || 'Error al guardar materia')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleDeleteSubject = async (id: string) => {
-        if (!confirm('¿Estás seguro de eliminar esta materia?')) return
-
-        try {
-            setLoading(true)
-            await deleteSubject(id)
-            if (selectedSection) {
-                await loadSubjects(selectedSection.id)
-            }
-        } catch (err: any) {
-            setError(err.message || 'Error al eliminar materia')
-        } finally {
-            setLoading(false)
-        }
-    }
-    */
-
-    // ========== RENDER ==========
-
     return (
         <>
             <TopNavigation
@@ -431,7 +215,7 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
 
                 <div className="hierarchy-footer">
                     <button className="btn-start" onClick={handleCreateCenter}>
-                        Let's get started
+                        Agregar centro
                     </button>
                 </div>
 
