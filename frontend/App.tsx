@@ -13,6 +13,7 @@ import GradesScreen from './src/components/GradesScreen'
 import CourseMapScreen from './src/components/CourseMapScreen'
 import ProfileScreen from './src/components/ProfileScreen'
 import AdminPanel from './src/components/AdminPanel'
+import AssignmentsScreen from './src/components/AssignmentsScreen'
 import HierarchyConfig from './src/components/HierarchyConfig'
 import SchoolDetailScreen from './src/components/SchoolDetailScreen'
 import CoursePdfViewerScreen from './src/components/CoursePdfViewerScreen'
@@ -137,7 +138,11 @@ function App() {
           />
           <Route
             path="/upload-content"
-            element={user ? <UploadContentScreen user={user} /> : <Navigate to="/login" replace />}
+            element={user && user.user_metadata?.role === 'admin' ? <UploadContentScreen user={user} /> : <Navigate to="/dashboard" replace />}
+          />
+          <Route
+            path="/assignments"
+            element={user ? <AssignmentsScreen user={user} /> : <Navigate to="/login" replace />}
           />
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>

@@ -1,10 +1,12 @@
 :root {
-  --profile-bg: #0d061c;
-  --sidebar-bg: #8c52ff;
-  --card-bg: #1e133a;
-  --accent-lime: #c5ff00;
-  --accent-orange: #ff9f43;
-  --accent-purple-light: #9d50bb;
+  --profile-bg: #2C0D4D;
+  --sidebar-bg: #8528E8;
+  --sidebar-bg-light: #902BFC;
+  --card-bg: #36105E;
+  --accent-lime: #ABC80E;
+  --accent-orange: #ED756A;
+  --accent-yellow: #FFD52B;
+  --accent-purple-light: #902BFC;
   --text-primary: #ffffff;
   --text-secondary: #a094bd;
   --sidebar-width: 280px;
@@ -22,9 +24,9 @@
 }
 
 /* Sidebar Styling */
-.sidebar {
+.profile-sidebar {
   width: var(--sidebar-width);
-  background-color: var(--sidebar-bg);
+  background: linear-gradient(180deg, var(--sidebar-bg) 0%, var(--sidebar-bg-light) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -41,12 +43,12 @@
 }
 
 .profile-avatar-wrapper {
-  width: 120px;
-  height: 120px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   overflow: hidden;
   border: 4px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+  background: linear-gradient(135deg, var(--sidebar-bg) 0%, var(--sidebar-bg-light) 100%);
 }
 
 .profile-avatar-wrapper img {
@@ -99,7 +101,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #ffd700;
+  background-color: var(--accent-yellow);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -112,7 +114,7 @@
 }
 
 /* Main Content Area */
-.main-content {
+.profile-main-content {
   flex-grow: 1;
   padding: 60px 80px;
   overflow-y: auto;
@@ -152,10 +154,11 @@
 }
 
 /* Dashboard Layout */
+/* Dashboard Layout */
 .dashboard-grid {
-  display: grid;
-  grid-template-columns: 350px 1fr;
-  gap: 40px;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 40px;
 }
 
 /* Cards Styling */
@@ -316,7 +319,7 @@
 }
 
 .dot.yellow {
-  background-color: #ffd700;
+  background-color: var(--accent-yellow);
 }
 
 .dot.lime {
@@ -341,8 +344,8 @@
 
 .updates-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
 }
 
 .updates-title {
@@ -504,9 +507,9 @@
 /* Float Animation for Character */
 .character-float {
   position: absolute;
-  top: -50px;
-  right: -80px;
-  width: 500px;
+  top: -30px;
+  right: -50px;
+  width: 350px;
   z-index: 0;
   pointer-events: none;
   opacity: 0.85;
@@ -533,26 +536,47 @@
 
 .btn-logout {
   width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
   padding: 12px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  cursor: pointer;
+  color: white;
   font-weight: 600;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .btn-logout:hover {
-  background: rgba(255, 71, 87, 0.2);
-  border-color: #ff4757;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: white;
+}
+
+.btn-back {
+  width: 100%;
+  padding: 12px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-back:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: white;
 }
 
 /* Background Decorations */
 .bg-ornament {
   position: absolute;
   border-radius: 50%;
-  background: #8c52ff;
+  background: var(--sidebar-bg);
   filter: blur(80px);
   opacity: 0.15;
   pointer-events: none;
@@ -579,7 +603,7 @@
   position: absolute;
   width: 500px;
   height: 500px;
-  background: #8c52ff;
+  background: var(--sidebar-bg);
   border-radius: 50%;
   top: -100px;
   right: -100px;
@@ -598,12 +622,12 @@
     flex-direction: column;
   }
 
-  .sidebar {
+  .profile-sidebar {
     width: 100%;
     padding: 30px 20px;
   }
 
-  .main-content {
+  .profile-main-content {
     padding: 30px 20px;
   }
 

@@ -1,0 +1,152 @@
+/* Reuse variables from StudentProgress or clean setup */
+.assignments-screen {
+    min-height: 100vh;
+    background-color: var(--profile-bg, #0d061c);
+    color: white;
+    display: flex;
+    font-family: 'Outfit', sans-serif;
+}
+
+.assignments-content {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.assignments-paper {
+    width: 100%;
+    max-width: 1000px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.assignments-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.assignments-header h1 {
+    font-size: 32px;
+    margin: 0;
+    color: #c5ff00;
+    /* Lime accent */
+}
+
+.assignments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.assignment-card {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 20px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid transparent;
+}
+
+.assignment-card:hover {
+    transform: translateY(-5px);
+    border-color: #c5ff00;
+}
+
+.folder-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.assignment-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.pending-badge {
+    color: #ff9f43;
+    font-weight: bold;
+}
+
+/* Submissions List */
+.submissions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.submissions-header,
+.submission-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    padding: 15px;
+    align-items: center;
+}
+
+.submissions-header {
+    font-weight: bold;
+    color: #a094bd;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.submission-row {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    width: fit-content;
+}
+
+.status-badge.pending {
+    background: rgba(255, 159, 67, 0.2);
+    color: #ff9f43;
+}
+
+.status-badge.done {
+    background: rgba(197, 255, 0, 0.2);
+    color: #c5ff00;
+}
+
+.display-box,
+.edit-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-box input {
+    width: 60px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #c5ff00;
+    color: white;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.back-btn {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.course-badge {
+    background: #8c52ff;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+}

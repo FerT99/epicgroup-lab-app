@@ -1,7 +1,7 @@
 .top-navigation {
   width: 100%;
   position: relative;
-  z-index: 10;
+  z-index: 1000;
 }
 
 .top-navigation__bar {
@@ -127,4 +127,3 @@
     padding: 8px 14px;
   }
 }
-

@@ -1,9 +1,13 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { auth, supabase } from '../lib/supabase'
 import type { User } from '@supabase/supabase-js'
-import astronautUrl from '../assets/astronauta.png'
+import userTeacherUrl from '../assets/user_teacher.png'
+import planetUrl from '../assets/planet_.png'
+import lookPlanetUrl from '../assets/lookplanet.png' // Assuming this is used for 'Información' or decoration
 import './ProfileScreen.css'
+
+import type { StudentData } from '../lib/api' // Import StudentData
 
 interface ProfileScreenProps {
   user: User
@@ -13,8 +17,15 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [uploadFeedback, setUploadFeedback] = useState<{ status: 'success' | 'error'; message: string } | null>(null)
+  const [studentData, setStudentData] = useState<StudentData | null>(null)
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
+
+  const isProfessor =
+    user.user_metadata?.role?.toLowerCase() === 'professor' ||
+    user.app_metadata?.role?.toLowerCase() === 'professor' ||
+    user.user_metadata?.is_professor === true;
 
   const handleLogout = async () => {
     setLoading(true)
@@ -26,6 +37,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleBack = () => {
+    navigate('/')
   }
 
   const handleUploadClick = () => {
@@ -79,10 +94,32 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
     }
   }
 
-  const isProfessor =
-    user.user_metadata?.role?.toLowerCase() === 'professor' ||
-    user.app_metadata?.role?.toLowerCase() === 'professor' ||
-    user.user_metadata?.is_professor === true;
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      if (user && !isProfessor) { // Fetch only if not professor (or maybe fetch for both if useful?)
+        try {
+          // Note: getStudentProgress expects a student ID. 
+          // If the auth user is a student, we use their ID.
+          // However, the API seems to expect a numeric ID usually?? 
+          // Wait, api.ts says `getStudentProgress(studentId: string)`. 
+          // Let's assume user.id (UUID) works if the backend supports it, 
+          // or we might need the numeric ID from the public users table.
+
+          // Actually, in StudentProgressScreen it uses `studentId` from params.
+          // Here we are the logged in user.
+          // Let's try passing user.id.
+          import('../lib/api').then(async ({ getStudentProgress }) => {
+            const data = await getStudentProgress(user.id)
+            setStudentData(data)
+          }).catch(err => console.error("Failed to load api", err));
+
+        } catch (error) {
+          console.error('Error fetching student data:', error)
+        }
+      }
+    }
+    fetchStudentData()
+  }, [user, isProfessor])
 
   return (
     <div className="profile-screen">
@@ -92,12 +129,15 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
       <div className="character-circle"></div>
 
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className="profile-sidebar">
         <div className="sidebar-profile">
           <div className="profile-avatar-wrapper">
-            <img src={user.user_metadata?.avatar_url || astronautUrl} alt="Profile" />
+            <img src={user.user_metadata?.avatar_url || userTeacherUrl} alt="Profile" />
           </div>
-          <h2 className="sidebar-name">{user.user_metadata?.full_name || 'Raquel López'}</h2>
+          <h2 className="sidebar-name">{user.user_metadata?.full_name || user.email || 'Usuario'}</h2>
+          <p className="sidebar-email" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginTop: '5px' }}>
+            {user.email}
+          </p>
         </div>
 
         <nav className="sidebar-menu">
@@ -110,6 +150,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
         </nav>
 
         <div className="logout-container">
+          <button className="btn-back" onClick={handleBack} style={{ marginBottom: '10px' }}>
+            ← Volver
+          </button>
           <button className="btn-logout" onClick={handleLogout} disabled={loading}>
             {loading ? 'Cerrando...' : 'Cerrar Sesión'}
           </button>
@@ -118,11 +161,11 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
 
       {/* Decorative Character (Top Right) */}
       <div className="character-float">
-        <img src={astronautUrl} alt="Character Decoration" style={{ width: '100%', opacity: 0.9 }} />
+        <img src={lookPlanetUrl} alt="Character Decoration" style={{ width: '100%', opacity: 0.9 }} />
       </div>
 
       {/* Main Content */}
-      <main className="main-content">
+      <main className="profile-main-content">
         <header className="header-section">
           <h1 className="academic-title">
             Perfil <span>academico</span>
@@ -131,143 +174,113 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
         </header>
 
         <div className="dashboard-grid">
-          {/* Left Column */}
-          <div className="left-column" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-            {/* Última actividad Card */}
+          {/* Main Column - Centered if no sidebar updates */}
+          <div className="left-column" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+            {/* Combined Card */}
             <div className="card">
-              <span className="section-subtitle">Teacher at Lorem School • 1 hour ago</span>
-              <h3 className="section-title">Última actividad</h3>
+              {/* Section 1: Última actividad */}
+              <div className="section-block">
+                <span className="section-subtitle">
+                  {user.user_metadata?.role === 'professor' ? 'Teacher' : 'Student'}
+                  {user.user_metadata?.school_name ? ` at ${user.user_metadata.school_name}` : ''}
+                </span>
+                <h3 className="section-title">Última actividad</h3>
 
-              <div className="activity-header">
-                <div className="activity-icon">
-                  <span style={{ fontSize: '24px' }}>🌍</span>
+                <div className="activity-header">
+                  <div className="activity-icon">
+                    <img src={planetUrl} alt="Planet" style={{ width: '60%', height: '60%', objectFit: 'contain' }} />
+                  </div>
+                  <div className="activity-label">Progreso <br />en Clases</div>
                 </div>
-                <div className="activity-label">Progreso <br />en Clases</div>
-              </div>
 
-              <div className="progress-list">
-                <div className="progress-item">
-                  <div className="progress-bar purple" style={{ width: '30%' }}>
-                    <span>Spain</span>
-                    <span>30%</span>
-                  </div>
-                </div>
-                <div className="progress-item">
-                  <div className="progress-bar orange" style={{ width: '50%' }}>
-                    <span>Italy</span>
-                    <span>50%</span>
-                  </div>
-                </div>
-                <div className="progress-item">
-                  <div className="progress-bar lime" style={{ width: '20%' }}>
-                    <span>France</span>
-                    <span>20%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Acerca del alumno Card */}
-            <div className="card">
-              <span className="section-subtitle">Teacher at Lorem School</span>
-              <h3 className="section-title">Acerca del alumno</h3>
-
-              <div className="info-header">
-                <div className="info-icon">
-                  <span style={{ fontSize: '20px' }}>🇦🇺</span>
-                </div>
-                <span className="info-text" style={{ fontWeight: '700' }}>Información</span>
-              </div>
-
-              <div className="info-list">
-                <div className="info-item">
-                  <div className="info-item-left">
-                    <div className="dot orange"></div>
-                    <span className="info-text">Centro Educativo</span>
-                  </div>
-                  <span className="chevron-right">»</span>
-                </div>
-                <div className="info-item">
-                  <div className="info-item-left">
-                    <div className="dot purple"></div>
-                    <span className="info-text">Grado</span>
-                  </div>
-                  <span className="chevron-right">»</span>
-                </div>
-                <div className="info-item">
-                  <div className="info-item-left">
-                    <div className="dot yellow"></div>
-                    <span className="info-text">Sección</span>
-                  </div>
-                  <span className="chevron-right">»</span>
-                </div>
-                <div className="info-item">
-                  <div className="info-item-left">
-                    <div className="dot lime"></div>
-                    <span className="info-text">Materia</span>
-                  </div>
-                  <span className="chevron-right">»</span>
+                <div className="progress-list">
+                  {!studentData || studentData.courses.length === 0 ? (
+                    <p style={{ color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>No hay cursos activos.</p>
+                  ) : (
+                    studentData.courses.map(course => (
+                      <div key={course.id} className="progress-item">
+                        <div className={`progress-bar ${course.color || 'purple'}`} style={{ width: `${course.progress}%` }}>
+                          <span>{course.name}</span>
+                          <span>{course.progress}%</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
-              {isProfessor && (
-                <div className="professor-upload-section" style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
-                  <button className="follow-btn" style={{ width: '100%' }} onClick={handleUploadClick}>
-                    {uploading ? 'Subiendo...' : 'Subir Cursos PDF'}
-                  </button>
-                  <input type="file" ref={fileInputRef} hidden accept="application/pdf" multiple onChange={handlePdfUpload} />
-                  {uploadFeedback && <p style={{ fontSize: '12px', marginTop: '10px', color: uploadFeedback.status === 'success' ? '#c5ff00' : '#ff4757' }}>{uploadFeedback.message}</p>}
-                </div>
-              )}
-            </div>
-          </div>
+              {/* Divider */}
+              <div style={{ width: '100%', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)', margin: '10px 0' }}></div>
 
-          {/* Right Column */}
-          <div className="right-column">
-            <div className="updates-section">
-              <div className="updates-header">
-                <h2 className="updates-title">Latest Updates</h2>
-                <div className="mini-avatars">
-                  <div className="mini-avatar"><img src={astronautUrl} alt="u1" /></div>
-                  <div className="mini-avatar" style={{ background: '#4a90e2' }}></div>
-                  <div className="mini-avatar" style={{ background: '#f5a623' }}></div>
-                </div>
-              </div>
+              {/* Section 2: Acerca del... */}
+              <div className="section-block">
+                <span className="section-subtitle">
+                  {user.user_metadata?.role === 'professor' ? 'Teacher' : 'Student'}
+                </span>
+                <h3 className="section-title">Acerca del {isProfessor ? 'profesor' : 'alumno'}</h3>
 
-              <div className="card comments-card">
-                <div className="card-top-header">
-                  <h3 className="section-title">Más comentarios</h3>
-                  <button className="follow-btn">Follow</button>
-                </div>
-                <span className="section-subtitle" style={{ marginTop: '-15px', display: 'block' }}>5620 followers</span>
-
-                <div className="post-content" style={{ marginTop: '20px' }}>
-                  <div className="post-user-avatar" style={{ background: '#3c09b2' }}>
-                    <img src={astronautUrl} alt="Andy Brown" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div className="info-header">
+                  <div className="info-icon">
+                    <img src={lookPlanetUrl} alt="Info" style={{ width: '60%', height: '60%', objectFit: 'contain' }} />
                   </div>
-                  <div className="post-details">
-                    <div className="post-user-name">Andy Brown</div>
-                    <div className="post-meta">Teacher at Ipsum School • 3 hours ago</div>
-                    <p className="post-text">
-                      Sonet putent cum ad, ei eam alia illum sententiae, ex utroque tractatos pro. Vim appeareat similique.
-                    </p>
+                  <span className="info-text" style={{ fontWeight: '700' }}>Información</span>
+                </div>
 
-                    <div className="post-media">
-                      <div className="play-icon">▶</div>
+                <div className="info-list">
+                  <div className="info-item">
+                    <div className="info-item-left">
+                      <div className="dot orange"></div>
+                      <span className="info-text">Centro Educativo: {user.user_metadata?.school_name || 'N/A'}</span>
                     </div>
+                    {/* <span className="chevron-right">»</span> */}
                   </div>
+
+                  {!isProfessor && (
+                    <>
+                      <div className="info-item">
+                        <div className="info-item-left">
+                          <div className="dot purple"></div>
+                          <span className="info-text">Grado: {user.user_metadata?.grade || user.user_metadata?.cohort || 'N/A'}</span>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <div className="info-item-left">
+                          <div className="dot yellow"></div>
+                          <span className="info-text">Sección: {user.user_metadata?.section || 'N/A'}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {isProfessor && (
+                    <div className="info-item">
+                      <div className="info-item-left">
+                        <div className="dot lime"></div>
+                        <span className="info-text">Materia: {user.user_metadata?.subject || 'N/A'}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                <div className="share-input-wrapper">
-                  <div className="post-user-avatar" style={{ width: '30px', height: '30px', borderRadius: '50%' }}>
-                    <img src={user.user_metadata?.avatar_url || astronautUrl} alt="me" />
+                {isProfessor && (
+                  <div className="professor-upload-section" style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
+                    <button className="follow-btn" style={{ width: '100%' }} onClick={handleUploadClick}>
+                      {uploading ? 'Subiendo...' : 'Subir Cursos PDF'}
+                    </button>
+                    <input type="file" ref={fileInputRef} hidden accept="application/pdf" multiple onChange={handlePdfUpload} />
+                    {uploadFeedback && <p style={{ fontSize: '12px', marginTop: '10px', color: uploadFeedback.status === 'success' ? '#c5ff00' : '#ff4757' }}>{uploadFeedback.message}</p>}
                   </div>
-                  <input type="text" className="share-input" placeholder="Share lesson..." />
-                  <span className="paperclip-icon">🖇️</span>
-                </div>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Right Column - Removed Mock Data */}
+          {/* 
+          <div className="right-column">
+             ... Mock Updates Removed ...
+          </div> 
+          */}
         </div>
       </main>
     </div>

@@ -17,7 +17,7 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
 
   // Get user role using utility function
   const userRole = getUserRole(user)
-  const userIsProfessor = userRole === 'professor'
+
 
   const handleNavigation = (path: string) => {
     navigate(path)
@@ -76,7 +76,6 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
           {courses.length === 0 ? (
             <div className="empty-state">
               <p>No hay cursos disponibles</p>
-              <p className="empty-state-subtitle">Los cursos aparecerán aquí cuando se carguen desde el backend</p>
             </div>
           ) : (
             courses.map((course) => (
@@ -125,10 +124,10 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
           </button>
         </div>
 
-        {/* Sección "Mis cursos" para profesores */}
-        {userIsProfessor && (
+        {/* Sección "Mis cursos" para administradores */}
+        {userRole === 'admin' && (
           <div className="professor-courses-section">
-            <h2 className="professor-section-title">Mis cursos</h2>
+            <h2 className="professor-section-title">Gestión de Contenido</h2>
             <div className="professor-courses-content">
               <button
                 className="upload-content-btn"

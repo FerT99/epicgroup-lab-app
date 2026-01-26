@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import './GradesScreen.css'
 import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
+import { getProfessorGradesSummary, type GradeSummary } from '../lib/api'
 import TopNavigation from './TopNavigation'
 
 interface GradesScreenProps {
@@ -31,15 +32,37 @@ const GradesScreen: React.FC<GradesScreenProps> = ({ user }) => {
     }
 
 
-    // TODO: Fetch student grades from backend
-    const studentGrades: Array<{
-        id: number
-        name: string
-        color: string
-        icon: string
-        grade: string
-        gradeText: string
-    }> = []
+    const [studentGrades, setStudentGrades] = useState<GradeSummary[]>([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true)
+                const data = await getProfessorGradesSummary(user.id)
+                setStudentGrades(data)
+            } catch (error) {
+                console.error('Error loading grades:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchData()
+    }, [user.id])
+
+    // Helper to get random icon (since backend doesn't provide it yet)
+    const getIcon = (index: number) => {
+        const icons = ['pencil.png', 'lap.png', 'spaceship.png']
+        return icons[index % icons.length]
+    }
+
+    const getGradeText = (avg: number) => {
+        if (avg >= 90) return '¡Excelente trabajo!'
+        if (avg >= 80) return 'Muy buen desempeño'
+        if (avg >= 70) return 'Buen desempeño'
+        if (avg >= 60) return 'Suficiente'
+        return 'Necesita mejorar'
+    }
 
     const displayName = user.user_metadata?.full_name || user.email || 'Usuario'
     const userRole = getUserRole(user)
@@ -74,27 +97,27 @@ const GradesScreen: React.FC<GradesScreenProps> = ({ user }) => {
                                 <p className="empty-state-subtitle">Las calificaciones aparecerán aquí cuando se carguen desde el backend</p>
                             </div>
                         ) : (
-                            studentGrades.map((student) => (
+                            studentGrades.map((student, index) => (
                                 <div key={student.id} className="grade-row">
                                     {/* Student Card */}
                                     <div className={`grade-student-card ${student.color}`}>
                                         <div className="grade-student-number">{String(student.id).padStart(2, '0')}</div>
                                         <div className="grade-student-info">
                                             <h3>{student.name}</h3>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed.</p>
+                                            <p>{student.email}</p>
                                         </div>
                                     </div>
 
                                     {/* Icon Badge */}
                                     <div className="grade-icon-badge">
-                                        <img src={`/src/assets/${student.icon}`} alt="Badge" />
+                                        <img src={`/src/assets/${getIcon(index)}`} alt="Badge" />
                                     </div>
 
                                     {/* Grade Card */}
                                     <div className="grade-card">
-                                        <h4>CALIFICACIÓN</h4>
-                                        <div className="grade-score">{student.grade}</div>
-                                        <p>{student.gradeText}</p>
+                                        <h4>PROMEDIO</h4>
+                                        <div className="grade-score">{student.average}%</div>
+                                        <p>{getGradeText(student.average)}</p>
                                     </div>
                                 </div>
                             ))

@@ -208,13 +208,35 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                                         <span className="star">★</span>
                                     </div>
                                 </div>
+                                <div className="item-actions">
+                                    <button
+                                        className="btn-icon"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleEditCenter(center)
+                                        }}
+                                        title="Editar"
+                                    >
+                                        ✏️
+                                    </button>
+                                    <button
+                                        className="btn-icon"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleDeleteCenter(center.id)
+                                        }}
+                                        title="Eliminar"
+                                    >
+                                        🗑️
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
                 )}
 
                 <div className="hierarchy-footer">
-                    <button className="btn-start" onClick={handleCreateCenter}>
+                    <button className="btn-add-center" onClick={handleCreateCenter}>
                         Agregar centro
                     </button>
                 </div>

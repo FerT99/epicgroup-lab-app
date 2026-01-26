@@ -129,6 +129,51 @@ export const deleteCenter = async (id: string): Promise<void> => {
 }
 
 // ============================================
+// CENTER PROFESSORS
+// ============================================
+
+export const getCenterProfessors = async (centerId: string): Promise<any[]> => {
+    try {
+        const response = await fetch(`${API_URL}/api/admin/centers/${centerId}/professors`)
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+        return await response.json()
+    } catch (error) {
+        console.error('Error fetching center professors:', error)
+        throw error
+    }
+}
+
+export const assignProfessor = async (centerId: string, userId: string): Promise<any> => {
+    try {
+        const response = await fetch(`${API_URL}/api/admin/centers/${centerId}/professors`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId }),
+        })
+        if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+        }
+        return await response.json()
+    } catch (error) {
+        console.error('Error assigning professor:', error)
+        throw error
+    }
+}
+
+export const unassignProfessor = async (centerId: string, userId: string): Promise<void> => {
+    try {
+        const response = await fetch(`${API_URL}/api/admin/centers/${centerId}/professors/${userId}`, {
+            method: 'DELETE',
+        })
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+    } catch (error) {
+        console.error('Error unassigning professor:', error)
+        throw error
+    }
+}
+
+// ============================================
 // GRADES
 // ============================================
 

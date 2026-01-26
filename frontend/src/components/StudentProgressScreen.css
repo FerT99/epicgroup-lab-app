@@ -640,3 +640,78 @@
         font-size: 32px;
     }
 }
+
+/* Grade Editing Styles */
+.grade-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.grade-actions-container {
+    display: flex;
+    align-items: center;
+}
+
+.grade-edit-mode,
+.grade-display-mode {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+.grade-input {
+    width: 60px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: white;
+    padding: 4px 8px;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.grade-input:focus {
+    outline: none;
+    border-color: var(--accent-lime);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.grade-max-text {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.edit-grade-btn,
+.save-grade-btn,
+.cancel-grade-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-grade-btn:hover,
+.save-grade-btn:hover,
+.cancel-grade-btn:hover {
+    transform: scale(1.2);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.grade-assignment {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    font-style: italic;
+}

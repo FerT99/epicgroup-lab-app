@@ -23,6 +23,8 @@ import {
     type Section,
     type Subject,
 } from '../lib/adminApi'
+import StudentManagement from './StudentManagement'
+import TeacherManagement from './TeacherManagement'
 import './HierarchyConfig.css' // Reusing styles
 
 interface SchoolDetailScreenProps {
@@ -58,6 +60,9 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
     const [showGradeModal, setShowGradeModal] = useState(false)
     const [showSectionModal, setShowSectionModal] = useState(false)
     const [showSubjectModal, setShowSubjectModal] = useState(false)
+    const [showStudentModal, setShowStudentModal] = useState(false)
+    const [showTeacherModal, setShowTeacherModal] = useState(false)
+    const [showAddTypeModal, setShowAddTypeModal] = useState(false) // New selection modal
 
     // State for forms
     const [gradeForm, setGradeForm] = useState({ name: '', level: 0 })
@@ -319,11 +324,19 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                 onLogout={handleLogout}
             />
             <div className="hierarchy-config" style={{ marginTop: '0px' }}>
-                <div className="hierarchy-header" style={{ marginTop: '40px' }}>
-                    <button className="btn-back" onClick={() => navigate('/admin/hierarchy')}>
+                <div className="hierarchy-header" style={{ marginTop: '40px', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', width: '95%' }}>
+                    <button className="btn-back" onClick={() => navigate('/admin/hierarchy')} style={{ justifySelf: 'start' }}>
                         ← Escuelas
                     </button>
                     <h1>{center ? center.name : 'Cargando...'}</h1>
+                    <button
+                        className="btn-add"
+                        style={{ padding: '10px 20px', fontSize: '1rem', justifySelf: 'end' }}
+                        onClick={() => setShowAddTypeModal(true)}
+                        disabled={!center}
+                    >
+                        + Agregar
+                    </button>
                 </div>
 
                 {error && (
@@ -506,6 +519,72 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
             </div>
 
             {/* MODALS */}
+            {/* TYPE SELECTION MODAL */}
+            {showAddTypeModal && (
+                <div className="modal-overlay" onClick={() => setShowAddTypeModal(false)}>
+                    <div className="school-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center' }}>
+                        <div className="modal-header">
+                            <h2>¿Qué deseas agregar?</h2>
+                            <p>Selecciona una opción para administrar.</p>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+                            <button
+                                onClick={() => {
+                                    setShowAddTypeModal(false)
+                                    setShowStudentModal(true)
+                                }}
+                                style={{
+                                    background: 'rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '16px',
+                                    padding: '2rem 1rem',
+                                    color: 'white',
+                                    fontSize: '1.2rem',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: '1rem'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                            >
+                                <span style={{ fontSize: '2.5rem' }}>👨‍🎓</span>
+                                Alumnos
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowAddTypeModal(false)
+                                    setShowTeacherModal(true)
+                                }}
+                                style={{
+                                    background: 'rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '16px',
+                                    padding: '2rem 1rem',
+                                    color: 'white',
+                                    fontSize: '1.2rem',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: '1rem'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                            >
+                                <span style={{ fontSize: '2.5rem' }}>👨‍🏫</span>
+                                Maestros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {
                 showGradeModal && (
                     <div className="modal-overlay" onClick={() => setShowGradeModal(false)}>
@@ -654,6 +733,48 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                                     disabled={!subjectForm.name || loading}
                                 >
                                     {loading ? 'Guardando...' : 'Guardar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {
+                showStudentModal && (
+                    <div className="modal-overlay" onClick={() => setShowStudentModal(false)}>
+                        <div className="school-modal-content" style={{ maxWidth: '800px', width: '90%' }} onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <div className="modal-icon">👨‍🎓</div>
+                                <h2>Gestión de Alumnos</h2>
+                            </div>
+                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                                <StudentManagement centerId={center?.id} centerName={center?.name} />
+                            </div>
+                            <div className="modal-actions" style={{ marginTop: '20px' }}>
+                                <button className="btn-cancel-modern" onClick={() => setShowStudentModal(false)}>
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {
+                showTeacherModal && (
+                    <div className="modal-overlay" onClick={() => setShowTeacherModal(false)}>
+                        <div className="school-modal-content" style={{ maxWidth: '800px', width: '90%' }} onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <div className="modal-icon">👨‍🏫</div>
+                                <h2>Gestión de Maestros</h2>
+                            </div>
+                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                                {centerId && <TeacherManagement centerId={centerId} centerName={center?.name} />}
+                            </div>
+                            <div className="modal-actions" style={{ marginTop: '20px' }}>
+                                <button className="btn-cancel-modern" onClick={() => setShowTeacherModal(false)}>
+                                    Cerrar
                                 </button>
                             </div>
                         </div>

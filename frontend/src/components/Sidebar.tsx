@@ -81,6 +81,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
             <div className="nav-icon">💬</div>
             {!isCollapsed && <span className="nav-text">Agenda</span>}
           </li>
+          <li
+            className={`nav-item ${isActive('/assignments') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/assignments')}
+          >
+            <div className="nav-icon">📝</div>
+            {!isCollapsed && <span className="nav-text">Tareas</span>}
+          </li>
           <li className="nav-item">
             <div className="nav-icon">🔔</div>
             {!isCollapsed && <span className="nav-text">Recordatorios</span>}

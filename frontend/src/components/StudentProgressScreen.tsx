@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { auth } from '../lib/supabase'
 import type { User } from '@supabase/supabase-js'
-import { getStudentProgress, addStudentComment, updateComment, deleteComment, type StudentData } from '../lib/api'
+import { getStudentProgress, addStudentComment, updateComment, deleteComment, updateStudentGrade, type StudentData } from '../lib/api'
 import astronautUrl from '../assets/astronauta.png'
 import './StudentProgressScreen.css'
 
@@ -16,6 +16,8 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ user }) =
     const [newComment, setNewComment] = useState('')
     const [editingCommentId, setEditingCommentId] = useState<number | null>(null)
     const [editingCommentText, setEditingCommentText] = useState('')
+    const [editingGradeId, setEditingGradeId] = useState<number | null>(null)
+    const [editingGradeValue, setEditingGradeValue] = useState<string>('')
     const [studentData, setStudentData] = useState<StudentData | null>(null)
     const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
@@ -141,6 +143,61 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ user }) =
         } catch (err: any) {
             console.error('Error deleting comment:', err)
             alert('Error al eliminar el comentario')
+        }
+    }
+
+    const handleEditGrade = (gradeId: number, currentGrade: number) => {
+        setEditingGradeId(gradeId)
+        setEditingGradeValue(currentGrade.toString())
+    }
+
+    const handleSaveGrade = async (gradeId: number) => {
+        const newGrade = parseFloat(editingGradeValue)
+        if (isNaN(newGrade) || newGrade < 0) {
+            alert('Por favor ingrese una calificación válida')
+            return
+        }
+
+        try {
+            await updateStudentGrade(gradeId, newGrade)
+
+            // Update local state
+            setStudentData(prev => prev ? {
+                ...prev,
+                grades: prev.grades.map(g =>
+                    // Note: We don't have grade ID in the frontend model yet, need to fix that first
+                    // Assuming for now we can't find it easily without ID.
+                    // Wait, let's fix the API types first or rely on index?
+                    // The API returns 'id' for grades but frontend interface 'StudentData' defined in api.ts 
+                    // and here doesn't have it. I need to update the interface first.
+                    // Actually, let's check index.ts again.
+                    // Backend returns: id, course_name, grade...
+                    // Frontend 'grades' mapping in index.ts:
+                    /*
+                    grades: grades?.map(g => ({
+                        courseName: g.course_name,
+                        grade: g.grade,
+                        maxGrade: g.max_grade,
+                        assignmentName: g.assignment_name,
+                        gradedAt: g.graded_at
+                    }))
+                    */
+                    // It MISSES the ID! I need to fix the backend mapping first.
+                    g
+                )
+            } : null)
+
+            // Re-fetch to be safe or fix backend mapping
+            // For now, let's implement the UI and I will fix the backend mapping in next step
+
+            const data = await getStudentProgress(studentId!)
+            setStudentData(data)
+
+            setEditingGradeId(null)
+            setEditingGradeValue('')
+        } catch (err: any) {
+            console.error('Error updating grade:', err)
+            alert('Error al actualizar la calificación')
         }
     }
 
@@ -299,12 +356,55 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ user }) =
                                     {studentData.grades.length === 0 ? (
                                         <p className="empty-message">No hay calificaciones registradas</p>
                                     ) : (
-                                        studentData.grades.map((grade, index) => (
-                                            <div key={index} className="grade-item">
-                                                <span className="grade-course">{grade.courseName}</span>
-                                                <span className="grade-value">
-                                                    {grade.grade}/{grade.maxGrade}
-                                                </span>
+                                        studentData.grades.map((grade) => (
+                                            <div key={grade.id} className="grade-item">
+                                                <div className="grade-info">
+                                                    <span className="grade-course">{grade.courseName}</span>
+                                                    {grade.assignmentName && (
+                                                        <span className="grade-assignment"> - {grade.assignmentName}</span>
+                                                    )}
+                                                </div>
+
+                                                <div className="grade-actions-container">
+                                                    {editingGradeId === grade.id ? (
+                                                        <div className="grade-edit-mode">
+                                                            <input
+                                                                type="number"
+                                                                className="grade-input"
+                                                                value={editingGradeValue}
+                                                                onChange={(e) => setEditingGradeValue(e.target.value)}
+                                                                min="0"
+                                                                max={grade.maxGrade}
+                                                            />
+                                                            <span className="grade-max-text">/ {grade.maxGrade}</span>
+                                                            <button
+                                                                className="save-grade-btn"
+                                                                onClick={() => handleSaveGrade(grade.id)}
+                                                            >
+                                                                💾
+                                                            </button>
+                                                            <button
+                                                                className="cancel-grade-btn"
+                                                                onClick={() => setEditingGradeId(null)}
+                                                            >
+                                                                ❌
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="grade-display-mode">
+                                                            <span className="grade-value">
+                                                                {grade.grade}/{grade.maxGrade}
+                                                            </span>
+                                                            <button
+                                                                className="edit-grade-btn"
+                                                                onClick={() => handleEditGrade(grade.id, grade.grade)}
+                                                                title="Editar calificación"
+                                                            >
+                                                                ✏️
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))
                                     )}

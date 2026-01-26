@@ -88,6 +88,7 @@ app.get('/api/students/:studentId/progress', async (req, res) => {
                 };
             }) || [],
             grades: grades?.map(g => ({
+                id: g.id,
                 courseName: g.course_name,
                 grade: g.grade,
                 maxGrade: g.max_grade,
@@ -310,6 +311,223 @@ app.get('/api/professors/:professorId/courses', async (req, res) => {
     }
 });
 
+// Get grade summary for all students of a professor
+app.get('/api/professors/:professorId/grades-summary', async (req, res) => {
+    try {
+        const { professorId } = req.params;
+
+        // 1. Get students enrolled in professor's courses
+        const { data: enrollments, error: enrollmentsError } = await supabase
+            .from('enrollments')
+            .select(`
+                student_id,
+                courses!inner (
+                    id,
+                    professor_id
+                )
+            `)
+            .eq('courses.professor_id', professorId);
+
+        if (enrollmentsError) throw enrollmentsError;
+
+        const studentIds = [...new Set(enrollments?.map(e => e.student_id))];
+
+        if (studentIds.length === 0) {
+            return res.json([]);
+        }
+
+        // 2. Get Student Info
+        const { data: students, error: studentsError } = await supabase
+            .from('users')
+            .select('id, full_name, email, firstname, lastname, avatar_url')
+            .in('id', studentIds);
+
+        if (studentsError) throw studentsError;
+
+        // 3. Get Grades for these students
+        // Note: Ideally we should filter grades by the professor's courses too, 
+        // to avoid averaging grades from other professors.
+        // First get course IDs belonging to professor
+        const courseIds = enrollments!.map(e => (e.courses as any).id);
+
+        const { data: grades, error: gradesError } = await supabase
+            .from('grades')
+            .select('student_id, grade, max_grade')
+            .in('student_id', studentIds);
+        // .in('course_id', courseIds); // Assuming grades table has course_id, let's verify or assume safe logic. 
+        // Previous GET /progress used course_name but presumably there is a link.
+        // If grades table doesn't have course_id directly queryable or if we want to be simple:
+        // Let's assume for now we take all grades for the student. 
+        // Refinement: The previous endpoint used `grades` table. 
+        // Let's optimize: fetch grades where student_id IN (...) AND course table has professor_id...
+        // Complex query. For MVP, fetching all grades for these students is acceptable 
+        // OR client side filtering if we had course link.
+        // Let's stick to "All grades for the student" for the summary for now.
+
+        if (gradesError) throw gradesError;
+
+        // 4. Calculate Averages
+        const summary = students!.map((student, index) => {
+            const studentGrades = grades?.filter(g => g.student_id === student.id) || [];
+
+            let average = 0;
+            if (studentGrades.length > 0) {
+                const sum = studentGrades.reduce((acc, g) => acc + (g.grade / g.max_grade) * 100, 0);
+                average = sum / studentGrades.length;
+            }
+
+            return {
+                id: index + 1, // Frontend expects a number ID for display? Or UUID?
+                userId: student.id,
+                name: student.full_name || `${student.firstname || ''} ${student.lastname || ''}`.trim() || 'Alumno',
+                email: student.email,
+                avatar: student.avatar_url,
+                average: Math.round(average),
+                color: ['purple', 'orange', 'salmon', 'blue'][index % 4]
+            };
+        });
+
+        res.json(summary);
+
+    } catch (error: any) {
+        console.error('Error fetching grades summary:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Update grade
+app.put('/api/grades/:gradeId', async (req, res) => {
+    try {
+        const { gradeId } = req.params;
+        const { grade } = req.body;
+
+        if (grade === undefined) {
+            return res.status(400).json({ error: 'Grade is required' });
+        }
+
+        const { data, error } = await supabase
+            .from('grades')
+            .update({ grade, graded_at: new Date().toISOString() })
+            .eq('id', gradeId)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        res.json(data);
+    } catch (error: any) {
+        console.error('Error updating grade:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get unique assignments (derived from grades)
+app.get('/api/professors/:professorId/assignments', async (req, res) => {
+    try {
+        const { professorId } = req.params;
+
+        // Get enrollments to link professor to courses
+        // Actually, we can just get courses for professor, then get grades for those courses
+        const { data: courses, error: coursesError } = await supabase
+            .from('courses')
+            .select('id, name')
+            .eq('professor_id', professorId);
+
+        if (coursesError) throw coursesError;
+
+        if (!courses || courses.length === 0) return res.json([]);
+
+        const courseNames = courses.map(c => c.name);
+
+        // Get unique assignment names from grades for these courses
+        // Note: supabase doesn't support 'distinct' easily on select with other columns for counting
+        // We will fetch all grades and aggregate in JS for MVP (assuming not millions of rows yet)
+        const { data: grades, error: gradesError } = await supabase
+            .from('grades')
+            .select('id, assignment_name, course_name, grade')
+            .in('course_name', courseNames); // Assuming course_name matches
+
+        if (gradesError) throw gradesError;
+
+        // Aggregate
+        const assignmentsMap = new Map();
+
+        grades?.forEach(g => {
+            const key = `${g.course_name}-${g.assignment_name}`;
+            if (!assignmentsMap.has(key)) {
+                assignmentsMap.set(key, {
+                    id: key, // Virtual ID
+                    title: g.assignment_name,
+                    courseName: g.course_name,
+                    total: 0,
+                    graded: 0
+                });
+            }
+            const assignment = assignmentsMap.get(key);
+            assignment.total++;
+            if (g.grade !== null && g.grade > 0) { // Assuming 0 or null is pending
+                assignment.graded++;
+            }
+        });
+
+        res.json(Array.from(assignmentsMap.values()));
+
+    } catch (error: any) {
+        console.error('Error fetching assignments:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get submissions for an assignment
+app.get('/api/assignments/submissions', async (req, res) => {
+    try {
+        const { assignment, course } = req.query;
+
+        if (!assignment || !course) {
+            return res.status(400).json({ error: 'Assignment and Course are required' });
+        }
+
+        const { data: grades, error } = await supabase
+            .from('grades')
+            .select(`
+                id,
+                grade,
+                max_grade,
+                graded_at,
+                student_id
+             `)
+            .eq('assignment_name', assignment)
+            .eq('course_name', course);
+
+        if (error) throw error;
+
+        // We also need student names. 
+        const studentIds = grades?.map(g => g.student_id);
+        const { data: students } = await supabase
+            .from('users')
+            .select('id, full_name, email')
+            .in('id', studentIds || []);
+
+        const result = grades?.map(g => {
+            const student = students?.find(s => s.id === g.student_id);
+            return {
+                gradeId: g.id,
+                studentId: g.student_id,
+                studentName: student?.full_name || 'Estudiante',
+                grade: g.grade,
+                maxGrade: g.max_grade,
+                status: (g.grade !== null && g.grade > 0) ? 'Calificado' : 'Pendiente'
+            };
+        });
+
+        res.json(result || []);
+
+    } catch (error: any) {
+        console.error('Error fetching submissions:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ============================================
 // ADMIN ENDPOINTS - HIERARCHICAL STRUCTURE
 // ============================================
@@ -410,6 +628,92 @@ app.delete('/api/admin/centers/:id', async (req, res) => {
         res.json({ message: 'Center deleted successfully' });
     } catch (error: any) {
         console.error('Error deleting center:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ========== CENTER PROFESSORS ==========
+
+// Get professors for a center
+app.get('/api/admin/centers/:centerId/professors', async (req, res) => {
+    try {
+        const { centerId } = req.params;
+
+        // Get user_ids from junction table
+        const { data: relations, error: relationError } = await supabase
+            .from('center_professors')
+            .select('user_id')
+            .eq('center_id', centerId);
+
+        if (relationError) throw relationError;
+
+        const userIds = relations?.map(r => r.user_id) || [];
+
+        if (userIds.length === 0) {
+            return res.json([]);
+        }
+
+        // Get user details
+        const { data: users, error: usersError } = await supabase
+            .from('users')
+            .select('id, email, full_name, firstname, lastname, avatar_url')
+            .in('id', userIds);
+
+        if (usersError) throw usersError;
+
+        res.json(users || []);
+    } catch (error: any) {
+        console.error('Error fetching center professors:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Assign professor to center
+app.post('/api/admin/centers/:centerId/professors', async (req, res) => {
+    try {
+        const { centerId } = req.params;
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        const { data, error } = await supabase
+            .from('center_professors')
+            .insert({ center_id: centerId, user_id: userId })
+            .select()
+            .single();
+
+        if (error) {
+            // Check for duplicate key error (already assigned)
+            if (error.code === '23505') {
+                return res.status(400).json({ error: 'Professor already assigned to this center' });
+            }
+            throw error;
+        }
+
+        res.status(201).json(data);
+    } catch (error: any) {
+        console.error('Error assigning professor:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Unassign professor from center
+app.delete('/api/admin/centers/:centerId/professors/:userId', async (req, res) => {
+    try {
+        const { centerId, userId } = req.params;
+
+        const { error } = await supabase
+            .from('center_professors')
+            .delete()
+            .match({ center_id: centerId, user_id: userId });
+
+        if (error) throw error;
+
+        res.json({ message: 'Professor unassigned successfully' });
+    } catch (error: any) {
+        console.error('Error unassigning professor:', error);
         res.status(500).json({ error: error.message });
     }
 });

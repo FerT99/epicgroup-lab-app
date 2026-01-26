@@ -14,6 +14,7 @@ export interface StudentData {
         color: string
     }>
     grades: Array<{
+        id: number
         courseName: string
         grade: number
         maxGrade: number
@@ -170,6 +171,36 @@ export const deleteComment = async (
 }
 
 /**
+ * Update a student grade
+ */
+export const updateStudentGrade = async (
+    gradeId: number,
+    grade: number
+): Promise<any> => {
+    try {
+        const response = await fetch(`${API_URL}/api/grades/${gradeId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                grade,
+            }),
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error updating grade:', error)
+        throw error
+    }
+}
+
+/**
  * Get current user from Supabase
  */
 export const getCurrentUser = async () => {
@@ -192,6 +223,74 @@ export const getProfessorCourses = async (professorId: string) => {
         return data
     } catch (error) {
         console.error('Error fetching professor courses:', error)
+        throw error
+    }
+}
+
+export interface GradeSummary {
+    id: number
+    userId: string
+    name: string
+    email: string
+    avatar?: string
+    average: number
+    color: string
+}
+
+/**
+ * Get grades summary for professor's students
+ */
+export const getProfessorGradesSummary = async (professorId: string): Promise<GradeSummary[]> => {
+    try {
+        const response = await fetch(`${API_URL}/api/professors/${professorId}/grades-summary`)
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error fetching grades summary:', error)
+        throw error
+    }
+}
+
+export interface Assignment {
+    id: string
+    title: string
+    courseName: string
+    total: number
+    graded: number
+}
+
+export interface Submission {
+    gradeId: number
+    studentId: string
+    studentName: string
+    grade: number
+    maxGrade: number
+    status: string
+}
+
+export const getProfessorAssignments = async (professorId: string): Promise<Assignment[]> => {
+    try {
+        const response = await fetch(`${API_URL}/api/professors/${professorId}/assignments`)
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+        return await response.json()
+    } catch (error) {
+        console.error('Error fetching assignments:', error)
+        throw error
+    }
+}
+
+export const getAssignmentSubmissions = async (assignment: string, course: string): Promise<Submission[]> => {
+    try {
+        const response = await fetch(`${API_URL}/api/assignments/submissions?assignment=${encodeURIComponent(assignment)}&course=${encodeURIComponent(course)}`)
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+        return await response.json()
+    } catch (error) {
+        console.error('Error fetching submissions:', error)
         throw error
     }
 }
