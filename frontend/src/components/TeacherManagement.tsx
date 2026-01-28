@@ -8,7 +8,7 @@ interface TeacherManagementProps {
     centerName?: string
 }
 
-const TeacherManagement: React.FC<TeacherManagementProps> = ({ centerId, centerName }) => {
+const TeacherManagement: React.FC<TeacherManagementProps> = ({ centerId }) => {
     const [assignedTeachers, setAssignedTeachers] = useState<PublicUser[]>([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)

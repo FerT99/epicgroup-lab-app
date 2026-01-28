@@ -39,8 +39,8 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
   ]
 
   // TODO: Fetch selected days from backend
-  const isSelected = (day: string) => false
-  const isToday = (day: string) => false
+  const isSelected = (_day: string) => false
+  const isToday = (_day: string) => false
 
   /* State for Task Modal */
   const [showTaskModal, setShowTaskModal] = useState(false)

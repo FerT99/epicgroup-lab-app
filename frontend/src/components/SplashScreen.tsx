@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Logo from './Logo'
+import epicLogo from '../assets/epic_.png'
 import './SplashScreen.css'
 
 const SplashScreen: React.FC = () => {
@@ -20,7 +20,7 @@ const SplashScreen: React.FC = () => {
   return (
     <div className="splash-screen">
       <div className="splash-content">
-        <Logo size="large" />
+        <img src={epicLogo} alt="Logo" className="splash-logo" style={{ width: '150px', height: 'auto' }} />
         <div className="loading-spinner">
           <div className="spinner-ring"></div>
           <div className="spinner-ring"></div>
@@ -30,7 +30,7 @@ const SplashScreen: React.FC = () => {
           <p>Cargando innovación educativa...</p>
         </div>
       </div>
-      
+
       {/* Elementos decorativos de fondo */}
       <div className="background-shapes">
         <div className="shape shape-1"></div>

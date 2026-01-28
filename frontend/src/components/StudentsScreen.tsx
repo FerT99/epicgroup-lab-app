@@ -23,7 +23,7 @@ const MOCK_STUDENTS: Student[] = [
 
 const StudentsScreen: React.FC<StudentsScreenProps> = ({ user }) => {
     const navigate = useNavigate()
-    const [isLoggingOut, setIsLoggingOut] = useState(false)
+    const [_isLoggingOut, setIsLoggingOut] = useState(false)
     const [students, setStudents] = useState<Student[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)

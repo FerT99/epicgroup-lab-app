@@ -5,15 +5,15 @@ import {
     createCenter,
     updateCenter,
     deleteCenter,
-    getGradesByCenter,
+    // getGradesByCenter,
     createGrade as _createGrade,
     updateGrade as _updateGrade,
     deleteGrade as _deleteGrade,
-    getSectionsByGrade,
+    // getSectionsByGrade,
     createSection as _createSection,
     updateSection as _updateSection,
     deleteSection as _deleteSection,
-    getSubjectsBySection,
+    // getSubjectsBySection,
     createSubject as _createSubject,
     updateSubject as _updateSubject,
     deleteSubject as _deleteSubject,
@@ -81,41 +81,41 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
         }
     }
 
-    const _loadGrades = async (centerId: string) => {
-        try {
-            setLoading(true)
-            await getGradesByCenter(centerId)
-            // setGrades(data)
-        } catch (err: any) {
-            setError(err.message || 'Error al cargar grados')
-        } finally {
-            setLoading(false)
-        }
-    }
+    // const _loadGrades = async (centerId: string) => {
+    //     try {
+    //         setLoading(true)
+    //         await getGradesByCenter(centerId)
+    //         // setGrades(data)
+    //     } catch (err: any) {
+    //         setError(err.message || 'Error al cargar grados')
+    //     } finally {
+    //         setLoading(false)
+    //     }
+    // }
 
-    const _loadSections = async (gradeId: string) => {
-        try {
-            setLoading(true)
-            await getSectionsByGrade(gradeId)
-            // setSections(data)
-        } catch (err: any) {
-            setError(err.message || 'Error al cargar secciones')
-        } finally {
-            setLoading(false)
-        }
-    }
+    // const _loadSections = async (gradeId: string) => {
+    //     try {
+    //         setLoading(true)
+    //         await getSectionsByGrade(gradeId)
+    //         // setSections(data)
+    //     } catch (err: any) {
+    //         setError(err.message || 'Error al cargar secciones')
+    //     } finally {
+    //         setLoading(false)
+    //     }
+    // }
 
-    const _loadSubjects = async (sectionId: string) => {
-        try {
-            setLoading(true)
-            await getSubjectsBySection(sectionId)
-            // setSubjects(data)
-        } catch (err: any) {
-            setError(err.message || 'Error al cargar materias')
-        } finally {
-            setLoading(false)
-        }
-    }
+    // const _loadSubjects = async (sectionId: string) => {
+    //     try {
+    //         setLoading(true)
+    //         await getSubjectsBySection(sectionId)
+    //         // setSubjects(data)
+    //     } catch (err: any) {
+    //         setError(err.message || 'Error al cargar materias')
+    //     } finally {
+    //         setLoading(false)
+    //     }
+    // }
 
     // ========== CENTER FUNCTIONS ==========
 

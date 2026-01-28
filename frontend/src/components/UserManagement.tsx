@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useUsers, useCurrentUser, useUserManagement } from '../hooks/useUsers'
 import './UserManagement.css'
 
 // Componente para mostrar estadísticas de usuarios
 export const UserStats: React.FC = () => {
-  const { users, getUserStats } = useUsers()
+  const { getUserStats } = useUsers()
   const stats = getUserStats()
 
   return (
@@ -15,7 +15,7 @@ export const UserStats: React.FC = () => {
           <h3>Total de Usuarios</h3>
           <p className="stat-number">{stats.total}</p>
         </div>
-        
+
         {Object.entries(stats.byCohort).map(([cohort, count]) => (
           <div key={cohort} className="stat-card">
             <h3>{cohort}</h3>
@@ -29,7 +29,7 @@ export const UserStats: React.FC = () => {
 
 // Componente para mostrar la lista de usuarios
 export const UserList: React.FC = () => {
-  const { users, loading, error, fetchUsersByCohort } = useUsers()
+  const { users, loading, error, fetchUsersByCohort, fetchUsers } = useUsers()
   const [selectedCohort, setSelectedCohort] = useState<string>('all')
 
   const handleCohortFilter = (cohort: string) => {
@@ -47,27 +47,27 @@ export const UserList: React.FC = () => {
   return (
     <div className="user-list">
       <h2>👥 Lista de Usuarios</h2>
-      
+
       <div className="filter-buttons">
-        <button 
+        <button
           className={selectedCohort === 'all' ? 'active' : ''}
           onClick={() => handleCohortFilter('all')}
         >
           Todos ({users.length})
         </button>
-        <button 
+        <button
           className={selectedCohort === 'IPDC1' ? 'active' : ''}
           onClick={() => handleCohortFilter('IPDC1')}
         >
           IPDC1
         </button>
-        <button 
+        <button
           className={selectedCohort === 'IPDC3' ? 'active' : ''}
           onClick={() => handleCohortFilter('IPDC3')}
         >
           IPDC3
         </button>
-        <button 
+        <button
           className={selectedCohort === 'IPDC5' ? 'active' : ''}
           onClick={() => handleCohortFilter('IPDC5')}
         >
@@ -144,7 +144,7 @@ export const CurrentUserProfile: React.FC = () => {
   return (
     <div className="user-profile">
       <h2>👤 Mi Perfil</h2>
-      
+
       <div className="profile-card">
         {isEditing ? (
           <div className="edit-form">
@@ -153,15 +153,15 @@ export const CurrentUserProfile: React.FC = () => {
               <input
                 type="text"
                 value={formData.full_name}
-                onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                onChange={(e) => setFormData((prev: any) => ({ ...prev, full_name: e.target.value }))}
               />
             </div>
-            
+
             <div className="form-group">
               <label>Cohorte:</label>
               <select
                 value={formData.cohort}
-                onChange={(e) => setFormData(prev => ({ ...prev, cohort: e.target.value }))}
+                onChange={(e) => setFormData((prev: any) => ({ ...prev, cohort: e.target.value }))}
               >
                 <option value="">Seleccionar cohorte</option>
                 <option value="IPDC1">IPDC1</option>
@@ -169,16 +169,16 @@ export const CurrentUserProfile: React.FC = () => {
                 <option value="IPDC5">IPDC5</option>
               </select>
             </div>
-            
+
             <div className="form-group">
               <label>URL del Avatar:</label>
               <input
                 type="url"
                 value={formData.avatar_url}
-                onChange={(e) => setFormData(prev => ({ ...prev, avatar_url: e.target.value }))}
+                onChange={(e) => setFormData((prev: any) => ({ ...prev, avatar_url: e.target.value }))}
               />
             </div>
-            
+
             <div className="form-actions">
               <button onClick={handleSave} className="save-btn">Guardar</button>
               <button onClick={() => setIsEditing(false)} className="cancel-btn">Cancelar</button>
@@ -193,7 +193,7 @@ export const CurrentUserProfile: React.FC = () => {
               <strong>Email:</strong> {currentUser.email}
             </div>
             <div className="profile-field">
-              <strong>Cohorte:</strong> 
+              <strong>Cohorte:</strong>
               <span className={`cohort-badge ${currentUser.cohort?.toLowerCase()}`}>
                 {currentUser.cohort || 'Sin cohorte'}
               </span>
@@ -201,7 +201,7 @@ export const CurrentUserProfile: React.FC = () => {
             <div className="profile-field">
               <strong>Miembro desde:</strong> {new Date(currentUser.created_at).toLocaleDateString()}
             </div>
-            
+
             <button onClick={() => setIsEditing(true)} className="edit-btn">
               ✏️ Editar Perfil
             </button>
@@ -217,7 +217,7 @@ export const UserManagement: React.FC = () => {
   return (
     <div className="user-management">
       <h1>🔧 Gestión de Usuarios</h1>
-      
+
       <div className="management-sections">
         <UserStats />
         <CurrentUserProfile />
