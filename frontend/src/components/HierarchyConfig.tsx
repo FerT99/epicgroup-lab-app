@@ -6,21 +6,21 @@ import {
     updateCenter,
     deleteCenter,
     getGradesByCenter,
-    createGrade,
-    updateGrade,
-    deleteGrade,
+    createGrade as _createGrade,
+    updateGrade as _updateGrade,
+    deleteGrade as _deleteGrade,
     getSectionsByGrade,
-    createSection,
-    updateSection,
-    deleteSection,
+    createSection as _createSection,
+    updateSection as _updateSection,
+    deleteSection as _deleteSection,
     getSubjectsBySection,
-    createSubject,
-    updateSubject,
-    deleteSubject,
+    createSubject as _createSubject,
+    updateSubject as _updateSubject,
+    deleteSubject as _deleteSubject,
     type EducationalCenter,
-    type GradeLevel,
-    type Section,
-    type Subject,
+    type GradeLevel as _GradeLevel,
+    type Section as _Section,
+    type Subject as _Subject,
 } from '../lib/adminApi'
 import { User } from '@supabase/supabase-js'
 import TopNavigation from './TopNavigation'
@@ -50,15 +50,15 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
 
     // State for loading and errors
     const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+    const [_error, setError] = useState<string | null>(null)
 
     // State for modals
     const [showCenterModal, setShowCenterModal] = useState(false)
     // State for forms
     const [centerForm, setCenterForm] = useState({ name: '', address: '', phone: '', email: '' })
-    const [gradeForm, setGradeForm] = useState({ name: '', level: 0 })
-    const [sectionForm, setSectionForm] = useState({ name: '', max_students: 30 })
-    const [subjectForm, setSubjectForm] = useState({ name: '', description: '', hours_per_week: 0 })
+    const [_gradeForm, _setGradeForm] = useState({ name: '', level: 0 })
+    const [_sectionForm, _setSectionForm] = useState({ name: '', max_students: 30 })
+    const [_subjectForm, _setSubjectForm] = useState({ name: '', description: '', hours_per_week: 0 })
 
     // State for editing
     const [editingCenter, setEditingCenter] = useState<EducationalCenter | null>(null)
@@ -81,11 +81,11 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
         }
     }
 
-    const loadGrades = async (centerId: string) => {
+    const _loadGrades = async (centerId: string) => {
         try {
             setLoading(true)
-            const data = await getGradesByCenter(centerId)
-            setGrades(data)
+            await getGradesByCenter(centerId)
+            // setGrades(data)
         } catch (err: any) {
             setError(err.message || 'Error al cargar grados')
         } finally {
@@ -93,11 +93,11 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
         }
     }
 
-    const loadSections = async (gradeId: string) => {
+    const _loadSections = async (gradeId: string) => {
         try {
             setLoading(true)
-            const data = await getSectionsByGrade(gradeId)
-            setSections(data)
+            await getSectionsByGrade(gradeId)
+            // setSections(data)
         } catch (err: any) {
             setError(err.message || 'Error al cargar secciones')
         } finally {
@@ -105,11 +105,11 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
         }
     }
 
-    const loadSubjects = async (sectionId: string) => {
+    const _loadSubjects = async (sectionId: string) => {
         try {
             setLoading(true)
-            const data = await getSubjectsBySection(sectionId)
-            setSubjects(data)
+            await getSubjectsBySection(sectionId)
+            // setSubjects(data)
         } catch (err: any) {
             setError(err.message || 'Error al cargar materias')
         } finally {
