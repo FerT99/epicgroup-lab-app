@@ -6,6 +6,9 @@ import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
 import { getProfessorGradesSummary, type GradeSummary } from '../lib/api'
 import TopNavigation from './TopNavigation'
+import pencilIcon from '../assets/pencil.png'
+import lapIcon from '../assets/lap.png'
+import spaceshipIcon from '../assets/spaceship.png'
 
 interface GradesScreenProps {
     user: User
@@ -52,7 +55,7 @@ const GradesScreen: React.FC<GradesScreenProps> = ({ user }) => {
 
     // Helper to get random icon (since backend doesn't provide it yet)
     const getIcon = (index: number) => {
-        const icons = ['pencil.png', 'lap.png', 'spaceship.png']
+        const icons = [pencilIcon, lapIcon, spaceshipIcon]
         return icons[index % icons.length]
     }
 
@@ -110,7 +113,7 @@ const GradesScreen: React.FC<GradesScreenProps> = ({ user }) => {
 
                                     {/* Icon Badge */}
                                     <div className="grade-icon-badge">
-                                        <img src={`/src/assets/${getIcon(index)}`} alt="Badge" />
+                                        <img src={getIcon(index)} alt="Badge" />
                                     </div>
 
                                     {/* Grade Card */}
@@ -127,15 +130,15 @@ const GradesScreen: React.FC<GradesScreenProps> = ({ user }) => {
 
                 {/* Decorative Elements */}
                 <div className="grades-sticker-spaceship">
-                    <img src="/src/assets/spaceship.png" alt="Spaceship" />
+                    <img src={spaceshipIcon} alt="Spaceship" />
                 </div>
 
                 <div className="grades-sticker-laptop">
-                    <img src="/src/assets/lap.png" alt="Laptop" />
+                    <img src={lapIcon} alt="Laptop" />
                 </div>
 
                 <div className="grades-sticker-pencil">
-                    <img src="/src/assets/pencil.png" alt="Pencil" />
+                    <img src={pencilIcon} alt="Pencil" />
                 </div>
 
                 {/* Decorative circles */}

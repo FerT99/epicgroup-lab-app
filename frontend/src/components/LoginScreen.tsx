@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../lib/supabase';
 import './LoginScreen.css';
+import epicLogo from '../assets/epic2.png';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -10,7 +11,7 @@ const LoginScreen: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const { data, error } = await auth.signIn(email, password);
 
@@ -42,7 +43,7 @@ const LoginScreen: React.FC = () => {
           <div className="star star-4"></div>
           <div className="star star-5"></div>
         </div>
-        
+
         {/* Planetas decorativos */}
         <div className="planets">
           <div className="planet planet-1"></div>
@@ -52,7 +53,7 @@ const LoginScreen: React.FC = () => {
 
       {/* Logo EPICGROUP LAB */}
       <div className="logo-container">
-        <img src="/src/assets/epic2.png" alt="EPICGROUP LAB" className="main-logo" />
+        <img src={epicLogo} alt="EPICGROUP LAB" className="main-logo" />
         <div className="logo-text">
 
         </div>
@@ -66,7 +67,7 @@ const LoginScreen: React.FC = () => {
             <h2>Bienvenido</h2>
             <p>Inicia sesión en tu cuenta</p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="login-form">
             <div className="input-group">
               <label htmlFor="email">Correo electrónico</label>
@@ -79,7 +80,7 @@ const LoginScreen: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div className="input-group">
               <label htmlFor="password">Contraseña</label>
               <input
@@ -91,7 +92,7 @@ const LoginScreen: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div className="form-options">
               <label className="remember-me">
                 <input type="checkbox" />
@@ -99,7 +100,7 @@ const LoginScreen: React.FC = () => {
               </label>
               <a href="#" className="forgot-password">¿Olvidaste tu contraseña?</a>
             </div>
-            
+
             <button type="submit" className="login-button" disabled={isLoading}>
               {isLoading ? (
                 <div className="loading-spinner"></div>
@@ -108,7 +109,7 @@ const LoginScreen: React.FC = () => {
               )}
             </button>
           </form>
-          
+
           <div className="form-footer">
             <p>¿No tienes cuenta? <a href="#" className="signup-link">Regístrate aquí</a></p>
           </div>
