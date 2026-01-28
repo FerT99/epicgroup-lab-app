@@ -18,7 +18,7 @@ import HierarchyConfig from './src/components/HierarchyConfig'
 import SchoolDetailScreen from './src/components/SchoolDetailScreen'
 import CoursePdfViewerScreen from './src/components/CoursePdfViewerScreen'
 import UploadContentScreen from './src/components/UploadContentScreen'
-import LandingPage from './src/components/LandingPage'
+// import LandingPage from './src/components/LandingPage'
 import './App.css'
 
 function App() {
@@ -145,7 +145,8 @@ function App() {
             path="/assignments"
             element={user ? <AssignmentsScreen user={user} /> : <Navigate to="/login" replace />}
           />
-          <Route path="/" element={<LandingPage />} />
+          {/* <Route path="/" element={<LandingPage />} /> */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </Router>

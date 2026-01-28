@@ -1,25 +1,23 @@
 :root {
     --bg-cream: #FDF1E6;
     --primary-pink: #F472B6;
-    --backdrop-pink: #FFC0CB;
-    /* New variable */
     --accent-red: #EA4C6F;
-    /* Matching the path/bubble color */
-    --text-dark: #333;
     --bubble-red: #EA4C6F;
     --bubble-pink: #FF8BA7;
+    --text-dark: #333;
 }
 
 body {
     background-color: var(--bg-cream);
-    /* Ensure global bg matches */
+    margin: 0;
+    padding: 0;
 }
 
 .landing-container {
     font-family: 'Outfit', sans-serif;
     background-color: var(--bg-cream);
     min-height: 100vh;
-    padding: 2rem;
+    padding: 1rem;
     color: var(--text-dark);
     position: relative;
     overflow-x: hidden;
@@ -28,60 +26,105 @@ body {
     align-items: center;
 }
 
+/* TOP LOGIN BTN */
+.top-login-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: transparent;
+    color: var(--accent-red);
+    border: 2px solid var(--accent-red);
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.top-login-btn:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+/* HEADER */
 .landing-header {
     text-align: center;
+    margin-top: 1rem;
     margin-bottom: 2rem;
     z-index: 10;
+    position: relative;
 }
 
-.logo-container img {
-    max-width: 350px;
-    /* Slightly larger logo */
-    height: auto;
+.main-tagline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.main-tagline h1 {
-    font-size: 2.8rem;
+.epic-title {
+    font-size: 3.5rem;
     margin: 0;
-    color: #000;
+    color: black;
     font-weight: 900;
-    font-family: 'Outfit', sans-serif;
-    /* Ensure bold font */
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1;
+    position: relative;
+    display: inline-block;
+}
+
+.epic-star-icon {
+    position: absolute;
+    top: -10px;
+    left: -30px;
+    font-size: 2rem;
+    color: black;
+}
+
+.lab-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: -10px;
+}
+
+.lab-title {
+    font-size: 3.5rem;
+    margin: 0;
+    color: black;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
 }
 
 .subtitle {
-    background-color: #000;
-    color: #fff;
-    padding: 0.3rem 1.2rem;
-    border-radius: 20px;
+    background-color: black;
+    color: white;
+    padding: 0.4rem 1.5rem;
+    border-radius: 30px;
     font-size: 1rem;
-    text-transform: lowercase;
-    display: inline-block;
-    margin-top: -10px;
-    position: relative;
     font-weight: 300;
 }
 
 .description {
     margin-top: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.1rem;
-    max-width: 700px;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
+    line-height: 1.4;
 }
 
-/* Path Container */
+
+/* PATH CONTAINER */
 .path-container {
     position: relative;
     width: 100%;
     max-width: 1000px;
-    /* Fixed width for consistent SVG positioning */
-    height: 1200px;
-    /* Fixed height for consistent SVG positioning */
+    height: 1400px;
+    /* Tall enough for snake */
     margin: 0 auto;
 }
 
@@ -98,321 +141,353 @@ body {
 .road-svg {
     width: 100%;
     height: 100%;
-    /* Matches container */
     overflow: visible;
 }
 
-.road-path-backdrop {
-    opacity: 0.6;
-}
-
-.road-path-disordered {
-    opacity: 1;
-    stroke: #ffccd5;
-    /* Pastel pink, solid */
-    filter: none;
-    z-index: -1;
-}
-
-/* START Node */
+/* START NODE */
 .start-node {
     position: absolute;
     top: 380px;
-    left: 0px;
-    z-index: 5;
+    left: 20px;
     transform: rotate(-10deg);
+    z-index: 5;
 }
 
-.start-badge {
-    background-color: #FF9EAA;
-    /* Sticker pink */
+.start-ticket {
+    background: #FF9EAA;
     color: white;
-    font-family: 'Handwritten', cursive;
-    /* Fallback if not avail */
+    font-family: cursive;
     font-weight: 900;
     font-size: 2rem;
     padding: 0.5rem 1.5rem;
     border: 3px solid white;
+    border-radius: 8px;
     box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
 }
 
-/* Content Points Styling */
+/* GENERIC CONTENT POINT */
 .content-point {
     position: absolute;
     z-index: 10;
-    max-width: 250px;
-}
-
-.point-label {
+    max-width: 220px;
     text-align: center;
-    margin-bottom: 5px;
 }
 
 .point-label h2 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     color: white;
-    /* Text on path might need to be white if over path */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    margin: 0;
     font-weight: 900;
     text-transform: uppercase;
-    margin: 0;
-    line-height: 1;
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
 }
 
 .point-label small {
-    font-family: 'Handwritten', cursive;
+    font-family: cursive;
     color: white;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     display: block;
-    margin-top: 5px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    margin-bottom: 5px;
 }
 
-/* Bubbles */
 .bubble {
     background: white;
-    padding: 1.5rem;
-    border-radius: 40px;
-    color: white;
-    font-weight: 500;
-    font-size: 0.95rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     position: relative;
-    text-align: center;
 }
 
 .red-bubble {
-    background-color: var(--bubble-red);
-}
-
-.pink-bubble {
-    background-color: var(--bubble-pink);
-}
-
-.bubble h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
-    font-weight: 800;
-}
-
-.bubble ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    text-align: left;
-    display: inline-block;
-}
-
-.bubble li::before {
-    content: "• ";
-    margin-right: 5px;
-}
-
-/* Specific Positions matching SVG path 
-   Approx coords in 1000x1200 space:
-   M 50 450 (Start)
-   P1 (Up Right): ~250, 200
-   P2 (Far Right): ~800, 250
-   P3 (Down Right): ~850, 700
-   P4 (Bottom Center): ~500, 1050
-   P5 (Bottom Left): ~150, 800
-   Meta (Center): ~500, 500
-*/
-
-.point-1 {
-    top: 50px;
-    left: 20%;
-}
-
-.point-1 .point-label h2,
-.point-1 .point-label small {
-    color: var(--accent-red);
-    text-shadow: none;
-}
-
-/* P1 is floating above path in big space? Or on path? In image, looks like it's ON the path curve... let's keep text white on path sections, or red if floating. 
-Actually P1 in image: Text "PUNTO 1" is white on the red path. Bubble is connecting to it.
-My SVG P1 is at top left.
-*/
-.point-1 .point-label h2,
-.point-1 .point-label small {
+    background-color: var(--accent-red);
     color: white;
 }
 
+.transparent-bubble {
+    background: transparent;
+    color: white;
+    /* assuming it sits on pink path */
+    font-weight: 700;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.list-left {
+    text-align: left;
+}
+
+.bubble h3 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    text-decoration: underline;
+}
+
+.bubble ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.bubble ul li {
+    margin-bottom: 2px;
+}
+
+/* ICONS */
+.computer-icon-img,
+.lightbulb-icon,
+.globe-icon,
+.flower-icon,
+.teacher-icon {
+    font-size: 3rem;
+    margin-bottom: 5px;
+    filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.1));
+}
+
+
+/* POSITIONS (Tuned to the new SVG path) */
+/* 
+   Path Approx: 
+   Start: left ~0, top ~450
+   P1: top ~150, left ~300
+   P2: top ~250, right ~100
+   P3: top ~650, right ~50
+   P4: top ~850, center-right/center
+   P5: top ~900, left ~200
+   Meta: top ~1200, center ~500
+*/
+
+.point-1 {
+    top: 100px;
+    left: 20%;
+}
 
 .point-2 {
-    top: 200px;
+    top: 180px;
     right: 5%;
+    max-width: 200px;
 }
 
 .point-3 {
-    top: 580px;
-    right: 5%;
-}
-
-.point-3 .point-label {
-    /* Adjust label position relative to bubble if needed */
+    top: 600px;
+    /* Adjusted down */
+    right: 2%;
 }
 
 .point-4 {
-    top: 900px;
-    /* Low */
-    left: 35%;
-    /* Center-ish */
+    top: 1000px;
+    /* Lower curve */
+    right: 15%;
+}
+
+.point-5 {
+    top: 730px;
+    /* Middle left loop */
+    left: 2%;
+}
+
+/* META */
+.meta-container {
+    position: absolute;
+    top: 500px;
+    /* Center of the spiral */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Center it exactly */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 20;
+}
+
+/* Wait, the "META" on the reference is in the MIDDLE of the structure? 
+   Actually looking at the snake, it spirals INWARD.
+   Start -> ... -> Center.
+   Let's re-check the SVG path I wrote.
+   My SVG path: M -50 450 ... Ends at S 850 1100, 850 900.
+   Actually my SVG path seems to weave up and down.
+   Let's adjust CSS based on "Visual Guess" of where the path goes.
+*/
+
+/* Re-adjusting positions based on the SVG data:
+   Path starts left (450y). Goes UP to (150y). 
+   Point 1 is at ~150y. Correct.
+   Path goes RIGHT (850x, 250y).
+   Point 2 is at ~200y, Right. Correct.
+   Path goes DOWN (950x, 650y).
+   Point 3 is at ~600y, Right. Correct.
+   Path curves LEFT/DOWN (600x, 850y) then LEFT (150x, 900y).
+   Point 5 (Teacher) is at Left (900y). 
+   Point 4 (Flower/Temarios) - wait, sequence is 3 -> 4 -> 5?
+   Ref image: P3 (Mid Right) -> P4 (Bottom Center/Right) -> P5 (Mid/Bottom Left).
+   My code P4 is at Top 1000px? That's below P5 (Top 730px).
+   Let's swap them visualy or adjust based on flow.
+   Flow: P3 -> P4 -> P5 -> Meta.
+   P3 (Right) -> Path goes down/left to P4.
+   P4 should be Bottom Right/Center.
+   Path goes left to P5.
+   P5 should be Bottom Left.
+   Path goes to Meta.
+*/
+
+/* Corrected Logic for CSS positions */
+.point-3 {
+    top: 550px;
+    right: 5%;
+}
+
+.point-4 {
+    top: 850px;
+    right: 30%;
+    /* Towards center */
 }
 
 .point-5 {
     top: 750px;
-    left: 5%;
+    left: 8%;
 }
 
-/* CTA / Meta */
-.cta-container {
+.meta-container {
     position: absolute;
     top: 450px;
-    left: 50%;
-    transform: translate(-50%, 0);
-    z-index: 20;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    /* Floating in roughly center area? No, Meta is END. */
+    left: 45%;
+    /* In the reference image, META is a big star in the CENTER/TOP-CENTER. */
 }
 
-.agenda-badge {
-    background: var(--accent-red);
-    color: white;
-    padding: 0.8rem 2rem;
-    font-family: cursive;
-    font-size: 1.5rem;
-    transform: rotate(-5deg);
-    margin-bottom: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    white-space: nowrap;
-}
-
-.meta-star {
-    width: 180px;
-    height: 150px;
-    background: #F06292;
-    /* Lighter pink star */
+.meta-burst {
+    width: 150px;
+    height: 120px;
+    background: #F48FB1;
     clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     color: white;
     font-weight: 900;
-    font-size: 2.5rem;
-    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+    font-size: 2rem;
+    transform: rotate(10deg);
 }
 
-/* Decorations */
-.top-login-btn {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    background: black;
+.agenda-btn {
+    background: var(--accent-red);
     color: white;
-    border: none;
     padding: 0.8rem 1.5rem;
-    border-radius: 30px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 100;
+    border-radius: 10px;
+    font-family: cursive;
+    font-size: 1.2rem;
+    transform: rotate(-5deg);
+    margin-top: -20px;
+    white-space: nowrap;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
 }
 
+
+/* DECORATIONS */
 .floating-decorations {
     pointer-events: none;
     position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
 }
 
-.heart {
+.dec-heart {
     position: absolute;
-    top: 80px;
+    top: 50px;
     left: 5%;
-    font-size: 5rem;
-    color: #FF5A5A;
-    transform: rotate(-15deg);
-    opacity: 0.9;
+    font-size: 4rem;
+    color: var(--accent-red);
+    transform: rotate(-20deg);
 }
 
-.dove {
+.dec-dove {
     position: absolute;
-    top: 150px;
-    right: 2%;
-    font-size: 5rem;
-    opacity: 0.8;
+    top: 100px;
+    right: 5%;
+    font-size: 4rem;
 }
 
-.star-dec {
+.dec-star {
     position: absolute;
-    color: #EA4C6F;
-    font-size: 3rem;
+    color: var(--accent-red);
+    font-size: 2rem;
 }
 
-.star-1 {
-    top: 600px;
-    right: 2%;
+.ds-1 {
+    top: 500px;
+    right: 15%;
 }
 
-.star-2 {
-    bottom: 100px;
-    left: 10%;
+.ds-2 {
+    bottom: 200px;
+    left: 15%;
 }
 
+.ds-3 {
+    bottom: 400px;
+    right: 25%;
+}
 
-/* RESPONSIVE */
+/* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
     .path-container {
         height: auto;
-        padding-top: 50px;
-    }
-
-    .start-node {
-        position: static;
-        margin-bottom: 2rem;
-        transform: rotate(0deg);
-        display: flex;
-        justify-content: center;
-    }
-
-    .content-point {
-        position: static;
-        max-width: 100%;
-        margin-bottom: 2rem;
+        padding-top: 2rem;
         display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 2rem;
+    }
+
+    .start-node,
+    .content-point,
+    .meta-container,
+    .top-login-btn {
+        position: static;
+        transform: none;
+        max-width: 100%;
+        margin-bottom: 1.5rem;
+    }
+
+    .start-ticket {
+        transform: rotate(0deg);
+    }
+
+    .meta-burst {
+        transform: rotate(0deg);
     }
 
     .point-label h2,
     .point-label small {
         color: var(--accent-red);
-        /* On mobile, no path bg, so use color */
         text-shadow: none;
     }
 
-    .cta-container {
-        position: static;
-        transform: none;
-        margin-top: 2rem;
+    .transparent-bubble {
+        color: black;
     }
 
-    /* Add a vertical line connecting them on mobile */
-    .path-container::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        width: 4px;
-        background: #FFDEE9;
-        z-index: -1;
-        transform: translateX(-50%);
+    .top-login-btn {
+        position: static;
+        margin-bottom: 2rem;
+        border-color: black;
+        color: black;
+    }
+
+    .content-point {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .list-left {
+        text-align: left;
+    }
+
+    .floating-decorations {
+        display: none;
     }
 }
