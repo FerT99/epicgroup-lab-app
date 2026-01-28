@@ -280,26 +280,26 @@
   .navbar-content {
     padding: 16px 20px;
   }
-  
+
   .nav-links {
     gap: 20px;
   }
-  
+
   .nav-link {
     font-size: 14px;
     padding: 6px 12px;
   }
-  
+
   .courses-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .progress-title {
     font-size: 36px;
     margin-bottom: 40px;
   }
-  
+
   .course-card {
     padding: 20px;
   }
@@ -311,43 +311,45 @@
     flex-wrap: wrap;
     gap: 16px;
   }
-  
+
   .navbar-left {
     flex: none;
   }
-  
+
   .navbar-center {
-    display: none; /* Ocultar enlaces en móvil */
+    display: none;
+    /* Ocultar enlaces en móvil */
   }
-  
+
   .navbar-right {
     flex: none;
   }
-  
+
   .menu-toggle {
-    display: block; /* Mostrar menú hamburguesa en móvil */
+    display: block;
+    /* Mostrar menú hamburguesa en móvil */
   }
-  
+
   .logo-container-top {
     top: 15px;
     left: 15px;
   }
-  
+
   .main-logo {
     width: 40px;
     height: 40px;
   }
-  
+
   .courses-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .progress-title {
     font-size: 36px;
     margin-bottom: 40px;
   }
-  
+
   .course-card {
     padding: 20px;
   }
@@ -357,21 +359,21 @@
   .progress-content {
     padding: 20px 15px;
   }
-  
+
   .progress-title {
     font-size: 28px;
   }
-  
+
   .course-title {
     font-size: 20px;
   }
-  
+
   .progress-step {
     width: 35px;
     height: 35px;
     font-size: 12px;
   }
-  
+
   .progress-line {
     flex: 0 0 15px;
     margin-left: 8px;
@@ -425,4 +427,801 @@
 
 .upload-content-btn:active {
   transform: translateY(0);
+}
+
+/* --- Styles adapted from CourseMapScreen.css for Detail View --- */
+
+/* Contenedor del mapa en detalle */
+.detail-map-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  /* Fixed height for the map view in detail */
+  margin-top: 24px;
+  overflow: hidden;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, var(--space-blue, #1a0b2e) 0%, var(--space-purple, #3a0254) 100%);
+}
+
+.map-header-overlay {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  z-index: 20;
+  text-align: center;
+  pointer-events: none;
+}
+
+.map-header-overlay h2 {
+  color: white;
+  font-size: 28px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+}
+
+.map-header-overlay p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 5px 0 0;
+}
+
+/* Reuse Space Background */
+.space-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, var(--white), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 90px 40px, var(--white), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(2px 2px at 160px 30px, var(--white), transparent);
+  background-repeat: repeat;
+  background-size: 200px 100px;
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+.nebula {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse at top, rgba(74, 144, 226, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
+  animation: nebulaFloat 8s ease-in-out infinite alternate;
+}
+
+/* Reuse Alien Terrain */
+.alien-terrain {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+  background: linear-gradient(to top,
+      var(--space-purple, #3a0254) 0%,
+      #2d1b3d 30%,
+      #1a0b2e 100%);
+  clip-path: polygon(0% 100%,
+      10% 85%,
+      25% 90%,
+      40% 75%,
+      55% 80%,
+      70% 70%,
+      85% 75%,
+      100% 65%,
+      100% 100%);
+  z-index: 2;
+}
+
+/* Reuse Connection Lines */
+.connection-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.main-path {
+  stroke-dasharray: 4, 4;
+  animation: pathGlow 3s ease-in-out infinite alternate;
+}
+
+/* Reuse Planet Container */
+.planet-container {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.planet-container:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.planet-frame {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.planet-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4)) brightness(0.9);
+}
+
+.planet-container.completed .planet-image {
+  filter: drop-shadow(0 0 15px rgba(255, 192, 0, 0.6)) brightness(1.1);
+  animation: completedGlow 2s ease-in-out infinite alternate;
+}
+
+.planet-container.locked .planet-image {
+  filter: grayscale(0.2) brightness(0.8) drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+}
+
+.planet-number {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-yellow);
+  color: var(--white);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  z-index: 15;
+}
+
+/* Reuse Rocket */
+.rocket-container {
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  transform: translateY(-50%);
+  z-index: 20;
+}
+
+.rocket {
+  position: relative;
+  width: 60px;
+  height: 90px;
+  transform: rotate(15deg);
+}
+
+.rocket-nose {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 22px solid var(--accent-yellow);
+}
+
+.rocket-body {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 45px;
+  background: #8b5cf6;
+  /* Rocket purple */
+  border-radius: 15px 15px 8px 8px;
+}
+
+.rocket-window {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 15px;
+  background: #00bfff;
+  /* Rocket blue */
+  border-radius: 50%;
+  box-shadow: inset 0 0 8px rgba(0, 191, 255, 0.5);
+}
+
+.rocket-fins {
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 15px solid #C0C0C0;
+}
+
+.rocket-engine {
+  position: absolute;
+  top: 67px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 15px;
+  background: #8b5cf6;
+  border-radius: 10px 10px 0 0;
+}
+
+.engine-glow {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 12px;
+  background: #00bfff;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(0, 191, 255, 0.8);
+  animation: engineGlow 1s ease-in-out infinite alternate;
+}
+
+/* Animations reused */
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes nebulaFloat {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+}
+
+@keyframes pathGlow {
+  0% {
+    stroke-opacity: 0.6;
+  }
+
+  100% {
+    stroke-opacity: 1;
+  }
+}
+
+@keyframes completedGlow {
+  0% {
+    filter: drop-shadow(0 0 15px rgba(255, 192, 0, 0.6)) brightness(1.1);
+  }
+
+  100% {
+    filter: drop-shadow(0 0 25px rgba(255, 192, 0, 0.8)) brightness(1.2);
+  }
+}
+
+@keyframes engineGlow {
+  0% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+/* --- Detail View Layout --- */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.detail-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  color: var(--accent-yellow);
+  background: rgba(255, 192, 0, 0.1);
+  font-weight: bold;
+}
+
+/* Students List in Detail View */
+.students-list-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.students-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.student-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+
+
+/* --- Full Screen Detail View Styles --- */
+
+.full-screen-detail-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--space-blue, #1a0b2e) 0%, var(--space-purple, #3a0254) 100%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-header-full {
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  z-index: 1001;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.detail-title-full {
+  margin: 0;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.back-btn-full {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-btn-full:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-2px);
+}
+
+.detail-tabs-full {
+  display: flex;
+  gap: 15px;
+}
+
+.tab-btn-full {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.3s;
+}
+
+.tab-btn-full:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.tab-btn-full.active {
+  background: var(--accent-yellow);
+  color: var(--primary-purple);
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(255, 192, 0, 0.3);
+}
+
+.full-map-container {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Ensure map elements scale correctly in full screen */
+.full-map-container .planet-frame {
+  width: 140px;
+  height: 140px;
+}
+
+.full-map-container .planet-image {
+  width: 110px;
+  height: 110px;
+}
+
+.full-map-container .planet-number {
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  top: -15px;
+}
+
+/* Full Screen Students View */
+.full-students-container {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.students-grid-full {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.student-card-full {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: transform 0.2s;
+}
+
+.student-card-full:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.student-avatar-full {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #e0d5f3 0%, #d1c4e9 100%);
+  color: var(--primary-purple);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.student-info-full {
+  flex: 1;
+}
+
+.student-progress-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+}
+
+
+.student-avatar {
+  width: 40px;
+  height: 40px;
+  background: #e0d5f3;
+  color: var(--primary-purple);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.student-info {
+  flex: 1;
+}
+
+.student-name {
+  font-weight: 600;
+  color: var(--white);
+}
+
+.student-progress {
+  font-size: 12px;
+  color: #666;
+}
+
+.progress-bar-mini {
+  width: 100px;
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill-mini {
+  height: 100%;
+  background: var(--accent-yellow);
+  border-radius: 3px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: var(--white);
+  width: 90%;
+  max-width: 500px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 20px 25px;
+  background: var(--primary-purple);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--white);
+}
+
+.modal-student-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.student-avatar-modal {
+  width: 50px;
+  height: 50px;
+  background: var(--white);
+  color: var(--primary-purple);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.modal-student-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.modal-student-progress {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.modal-close-btn:hover {
+  opacity: 1;
+}
+
+.modal-body {
+  padding: 25px;
+  background: #f8f9fa;
+}
+
+.notes-title {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.notes-list {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 15px;
+  min-height: 150px;
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.no-notes {
+  color: #999;
+  text-align: center;
+  margin-top: 50px;
+  font-style: italic;
+}
+
+.note-item {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-yellow);
+}
+
+.note-text {
+  margin: 0 0 8px 0;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.note-date {
+  display: block;
+  font-size: 11px;
+  color: #999;
+  text-align: right;
+}
+
+.add-note-form {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.note-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  resize: none;
+  height: 80px;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.note-input:focus {
+  outline: none;
+  border-color: var(--primary-purple);
+}
+
+.add-note-btn {
+  align-self: flex-end;
+  background: var(--primary-purple);
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-note-btn:hover:not(:disabled) {
+  background: #5d0c8b;
+  transform: translateY(-2px);
+}
+
+.add-note-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

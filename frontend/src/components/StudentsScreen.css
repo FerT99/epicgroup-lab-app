@@ -153,6 +153,26 @@
     /* Salmon/Reddish */
 }
 
+.student-card.blue {
+    background-color: #60a5fa;
+}
+
+.student-card.green {
+    background-color: #4ade80;
+}
+
+.student-card.purple {
+    background-color: #c084fc;
+}
+
+.student-card.pink {
+    background-color: #f472b6;
+}
+
+.student-card.yellow {
+    background-color: #fbbf24;
+}
+
 .student-number {
     font-size: 1.5rem;
     font-weight: bold;

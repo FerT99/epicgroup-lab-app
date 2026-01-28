@@ -1,0 +1,418 @@
+:root {
+    --bg-cream: #FDF1E6;
+    --primary-pink: #F472B6;
+    --backdrop-pink: #FFC0CB;
+    /* New variable */
+    --accent-red: #EA4C6F;
+    /* Matching the path/bubble color */
+    --text-dark: #333;
+    --bubble-red: #EA4C6F;
+    --bubble-pink: #FF8BA7;
+}
+
+body {
+    background-color: var(--bg-cream);
+    /* Ensure global bg matches */
+}
+
+.landing-container {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-cream);
+    min-height: 100vh;
+    padding: 2rem;
+    color: var(--text-dark);
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.landing-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    z-index: 10;
+}
+
+.logo-container img {
+    max-width: 350px;
+    /* Slightly larger logo */
+    height: auto;
+}
+
+.main-tagline h1 {
+    font-size: 2.8rem;
+    margin: 0;
+    color: #000;
+    font-weight: 900;
+    font-family: 'Outfit', sans-serif;
+    /* Ensure bold font */
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    background-color: #000;
+    color: #fff;
+    padding: 0.3rem 1.2rem;
+    border-radius: 20px;
+    font-size: 1rem;
+    text-transform: lowercase;
+    display: inline-block;
+    margin-top: -10px;
+    position: relative;
+    font-weight: 300;
+}
+
+.description {
+    margin-top: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+/* Path Container */
+.path-container {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    /* Fixed width for consistent SVG positioning */
+    height: 1200px;
+    /* Fixed height for consistent SVG positioning */
+    margin: 0 auto;
+}
+
+.svg-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.road-svg {
+    width: 100%;
+    height: 100%;
+    /* Matches container */
+    overflow: visible;
+}
+
+.road-path-backdrop {
+    opacity: 0.6;
+}
+
+.road-path-disordered {
+    opacity: 1;
+    stroke: #ffccd5;
+    /* Pastel pink, solid */
+    filter: none;
+    z-index: -1;
+}
+
+/* START Node */
+.start-node {
+    position: absolute;
+    top: 380px;
+    left: 0px;
+    z-index: 5;
+    transform: rotate(-10deg);
+}
+
+.start-badge {
+    background-color: #FF9EAA;
+    /* Sticker pink */
+    color: white;
+    font-family: 'Handwritten', cursive;
+    /* Fallback if not avail */
+    font-weight: 900;
+    font-size: 2rem;
+    padding: 0.5rem 1.5rem;
+    border: 3px solid white;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+/* Content Points Styling */
+.content-point {
+    position: absolute;
+    z-index: 10;
+    max-width: 250px;
+}
+
+.point-label {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.point-label h2 {
+    font-size: 1.5rem;
+    color: white;
+    /* Text on path might need to be white if over path */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1;
+}
+
+.point-label small {
+    font-family: 'Handwritten', cursive;
+    color: white;
+    font-size: 1.2rem;
+    display: block;
+    margin-top: 5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Bubbles */
+.bubble {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 40px;
+    color: white;
+    font-weight: 500;
+    font-size: 0.95rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    text-align: center;
+}
+
+.red-bubble {
+    background-color: var(--bubble-red);
+}
+
+.pink-bubble {
+    background-color: var(--bubble-pink);
+}
+
+.bubble h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.bubble ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    display: inline-block;
+}
+
+.bubble li::before {
+    content: "• ";
+    margin-right: 5px;
+}
+
+/* Specific Positions matching SVG path 
+   Approx coords in 1000x1200 space:
+   M 50 450 (Start)
+   P1 (Up Right): ~250, 200
+   P2 (Far Right): ~800, 250
+   P3 (Down Right): ~850, 700
+   P4 (Bottom Center): ~500, 1050
+   P5 (Bottom Left): ~150, 800
+   Meta (Center): ~500, 500
+*/
+
+.point-1 {
+    top: 50px;
+    left: 20%;
+}
+
+.point-1 .point-label h2,
+.point-1 .point-label small {
+    color: var(--accent-red);
+    text-shadow: none;
+}
+
+/* P1 is floating above path in big space? Or on path? In image, looks like it's ON the path curve... let's keep text white on path sections, or red if floating. 
+Actually P1 in image: Text "PUNTO 1" is white on the red path. Bubble is connecting to it.
+My SVG P1 is at top left.
+*/
+.point-1 .point-label h2,
+.point-1 .point-label small {
+    color: white;
+}
+
+
+.point-2 {
+    top: 200px;
+    right: 5%;
+}
+
+.point-3 {
+    top: 580px;
+    right: 5%;
+}
+
+.point-3 .point-label {
+    /* Adjust label position relative to bubble if needed */
+}
+
+.point-4 {
+    top: 900px;
+    /* Low */
+    left: 35%;
+    /* Center-ish */
+}
+
+.point-5 {
+    top: 750px;
+    left: 5%;
+}
+
+/* CTA / Meta */
+.cta-container {
+    position: absolute;
+    top: 450px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.agenda-badge {
+    background: var(--accent-red);
+    color: white;
+    padding: 0.8rem 2rem;
+    font-family: cursive;
+    font-size: 1.5rem;
+    transform: rotate(-5deg);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
+.meta-star {
+    width: 180px;
+    height: 150px;
+    background: #F06292;
+    /* Lighter pink star */
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 900;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Decorations */
+.top-login-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: black;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.floating-decorations {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.heart {
+    position: absolute;
+    top: 80px;
+    left: 5%;
+    font-size: 5rem;
+    color: #FF5A5A;
+    transform: rotate(-15deg);
+    opacity: 0.9;
+}
+
+.dove {
+    position: absolute;
+    top: 150px;
+    right: 2%;
+    font-size: 5rem;
+    opacity: 0.8;
+}
+
+.star-dec {
+    position: absolute;
+    color: #EA4C6F;
+    font-size: 3rem;
+}
+
+.star-1 {
+    top: 600px;
+    right: 2%;
+}
+
+.star-2 {
+    bottom: 100px;
+    left: 10%;
+}
+
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .path-container {
+        height: auto;
+        padding-top: 50px;
+    }
+
+    .start-node {
+        position: static;
+        margin-bottom: 2rem;
+        transform: rotate(0deg);
+        display: flex;
+        justify-content: center;
+    }
+
+    .content-point {
+        position: static;
+        max-width: 100%;
+        margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .point-label h2,
+    .point-label small {
+        color: var(--accent-red);
+        /* On mobile, no path bg, so use color */
+        text-shadow: none;
+    }
+
+    .cta-container {
+        position: static;
+        transform: none;
+        margin-top: 2rem;
+    }
+
+    /* Add a vertical line connecting them on mobile */
+    .path-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 4px;
+        background: #FFDEE9;
+        z-index: -1;
+        transform: translateX(-50%);
+    }
+}

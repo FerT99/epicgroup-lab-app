@@ -11,6 +11,16 @@ interface StudentsScreenProps {
     user: User
 }
 
+
+const MOCK_STUDENTS: Student[] = [
+    { id: 1, userId: 'mock-1', name: 'Ana García', email: 'ana@example.com', description: 'Excelente participación en clase, siempre atenta y colaborativa with her peers.', color: 'blue' },
+    { id: 2, userId: 'mock-2', name: 'Carlos Ruiz', email: 'carlos@example.com', description: 'Necesita mejorar en la entrega de tareas a tiempo, pero muestra gran potencial.', color: 'salmon' },
+    { id: 3, userId: 'mock-3', name: 'María López', email: 'maria@example.com', description: 'Muy creativa en proyectos artísticos, destaca por su originalidad.', color: 'green' },
+    { id: 4, userId: 'mock-4', name: 'Juan Pérez', email: 'juan@example.com', description: 'Constante y dedicado, ha mostrado una mejora significativa este semestre.', color: 'purple' },
+    { id: 5, userId: 'mock-5', name: 'Sofía Díaz', email: 'sofia@example.com', description: 'Liderazgo nato en trabajos en equipo, organiza muy bien a sus compañeros.', color: 'yellow' },
+    { id: 6, userId: 'mock-6', name: 'Luis Torres', email: 'luis@example.com', description: 'Actitud positiva frente a los retos, siempre busca aprender más.', color: 'pink' },
+]
+
 const StudentsScreen: React.FC<StudentsScreenProps> = ({ user }) => {
     const navigate = useNavigate()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -24,11 +34,21 @@ const StudentsScreen: React.FC<StudentsScreenProps> = ({ user }) => {
             try {
                 setLoading(true)
                 setError(null)
+                // Intentamos cargar los alumnos reales
                 const data = await getStudentsByProfessor(user.id)
-                setStudents(data)
+
+                // Si hay datos, los usamos. Si no, usamos los datos mock para visualización.
+                if (data && data.length > 0) {
+                    setStudents(data)
+                } else {
+                    console.log('No students found, using mock data')
+                    setStudents(MOCK_STUDENTS)
+                }
             } catch (err: any) {
                 console.error('Error fetching students:', err)
-                setError(err.message || 'Error al cargar los alumnos')
+                // En caso de error, también mostramos los mocks para que el usuario pueda ver el diseño
+                console.log('Error fetching, using mock data fallback')
+                setStudents(MOCK_STUDENTS)
             } finally {
                 setLoading(false)
             }
