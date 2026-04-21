@@ -16,8 +16,10 @@ import AdminPanel from './src/components/AdminPanel'
 import AssignmentsScreen from './src/components/AssignmentsScreen'
 import HierarchyConfig from './src/components/HierarchyConfig'
 import SchoolDetailScreen from './src/components/SchoolDetailScreen'
+import CourseFormScreen from './src/components/CourseFormScreen'
 import CoursePdfViewerScreen from './src/components/CoursePdfViewerScreen'
 import UploadContentScreen from './src/components/UploadContentScreen'
+import CourseContentScreen from './src/components/CourseContentScreen'
 // import LandingPage from './src/components/LandingPage'
 import './App.css'
 
@@ -26,47 +28,20 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Verificar el estado de autenticación al cargar la app
-    const { data: { subscription } } = auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null)
+    // Restaurar la autenticación real de Supabase
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
       setLoading(false)
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
     })
 
     return () => subscription.unsubscribe()
   }, [])
-
-  // Efecto separado para hidratar el rol si falta
-  useEffect(() => {
-    const hydrateUserRole = async () => {
-      if (user && user.email && !user.user_metadata?.role) {
-        try {
-          const { data: profile } = await supabase
-            .from('users')
-            .select('role')
-            .eq('email', user.email)
-            .single()
-
-          if (profile?.role) {
-            console.log('Rol hidratado:', profile.role)
-            setUser(currentUser => {
-              if (!currentUser) return null
-              return {
-                ...currentUser,
-                user_metadata: {
-                  ...currentUser.user_metadata,
-                  role: profile.role
-                }
-              }
-            })
-          }
-        } catch (error) {
-          console.error('Error hidratando rol:', error)
-        }
-      }
-    }
-
-    hydrateUserRole()
-  }, [user?.email]) // Se ejecuta cuando cambia el usuario
 
   if (loading) {
     return (
@@ -136,6 +111,18 @@ function App() {
           <Route
             path="/admin/school/:centerId"
             element={user ? <SchoolDetailScreen user={user} /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="/admin/school/:centerId/grade/:gradeId/course/new"
+            element={user ? <CourseFormScreen user={user} /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="/admin/school/:centerId/grade/:gradeId/course/:courseId/edit"
+            element={user ? <CourseFormScreen user={user} /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="/admin/school/:centerId/grade/:gradeId/course/:courseId/content"
+            element={user ? <CourseContentScreen user={user} /> : <Navigate to="/login" replace />}
           />
           <Route
             path="/upload-content"

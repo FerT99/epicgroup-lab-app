@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
 import { useUserManagement } from '../hooks/useUsers'
-import './AdminPanel.css' // Reusing styles for now
+import './HierarchyConfig.css'
 
 interface UserData {
     email: string
@@ -226,6 +225,17 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName }) => 
     const [localUsers, setLocalUsers] = useState<any[]>([])
     const [isDeleting, setIsDeleting] = useState<string | null>(null)
 
+    // State for tabs and CSV
+    const [activeTab, setActiveTab] = useState<'manual' | 'csv'>('manual')
+    const [csvFile, setCsvFile] = useState<File | null>(null)
+    const [parsing, setParsing] = useState(false)
+    const [createForm, setCreateForm] = useState({
+        fullName: '',
+        email: '',
+        password: 'ingles2025' // Default password
+    })
+    const [creating, setCreating] = useState(false)
+
     // Fetch users when cohort changes
     useEffect(() => {
         const loadUsers = async () => {
@@ -256,10 +266,128 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName }) => 
         }
     }
 
+    const handleCreateStudent = async () => {
+        try {
+            setCreating(true)
+
+            // Call Backend API
+            const response = await fetch('http://localhost:3001/api/admin/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: createForm.email,
+                    password: createForm.password,
+                    fullName: createForm.fullName,
+                    role: 'student'
+                })
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) throw new Error(data.error || 'Error creando alumno')
+
+            setCreateForm({ fullName: '', email: '', password: 'ingles2025' })
+            setLocalUsers(prev => [...prev, { ...data.user, cohort: 'Nuevo' }])
+            if (selectedCohort === 'all') fetchUsers()
+
+            alert('Alumno creado exitosamente')
+
+        } catch (err: any) {
+            alert(err.message || 'Error al crear alumno')
+        } finally {
+            setCreating(false)
+        }
+    }
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file) return
+
+        setCsvFile(file)
+        setParsing(true)
+
+        const reader = new FileReader()
+        reader.onload = async (e) => {
+            const text = e.target?.result as string
+            if (!text) return
+
+            const lines = text.split(/\r\n|\n/)
+            const parsedUsers: UserData[] = []
+
+            let startIndex = 0
+            if (lines[0].toLowerCase().includes('email')) startIndex = 1
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i].trim()
+                if (!line) continue
+
+                const parts = line.split(',')
+                if (parts.length >= 3) {
+                    parsedUsers.push({
+                        email: parts[0].trim(),
+                        password: parts[1]?.trim() || 'ingles2025',
+                        full_name: parts[2].trim(),
+                        cohort: parts[3]?.trim() || 'Imported'
+                    })
+                }
+            }
+
+            if (confirm(`Se encontraron ${parsedUsers.length} usuarios en el CSV. ¿Deseas insertarlos ahora?`)) {
+                await importCustomUsers(parsedUsers)
+            }
+            setParsing(false)
+            setCsvFile(null)
+            if (event.target) event.target.value = ''
+        }
+        reader.readAsText(file)
+    }
+
+    const importCustomUsers = async (users: UserData[]) => {
+        setLoading(true)
+        setResults(null)
+        setFailedUsers([])
+
+        const results: Results = {
+            success: 0, errors: 0, errorDetails: [], processed: []
+        }
+
+        for (const user of users) {
+            try {
+                const response = await fetch('http://localhost:3001/api/admin/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: user.email,
+                        password: user.password,
+                        fullName: user.full_name,
+                        role: 'student'
+                    })
+                })
+
+                if (!response.ok) {
+                    const data = await response.json()
+                    throw new Error(data.error || 'Failed')
+                }
+                results.success++
+                results.processed.push({ email: user.email, status: 'success', message: 'OK' })
+            } catch (error: any) {
+                console.error(`Error ${user.email}:`, error)
+                results.errors++
+                results.errorDetails.push({ email: user.email, error: error.message })
+                setFailedUsers(prev => [...prev, user])
+            }
+            await new Promise(r => setTimeout(r, 100))
+        }
+
+        setResults(results)
+        setLoading(false)
+        if (selectedCohort === 'all') fetchUsers()
+    }
+
     const insertUsers = async (cohort: string) => {
         setLoading(true)
         setResults(null)
-        setFailedUsers([]) // Clear previous failures
+        setFailedUsers([])
 
         const usersToInsert = cohort === 'all'
             ? usersData
@@ -274,71 +402,8 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName }) => 
 
         console.log(`Iniciando inserción de ${usersToInsert.length} usuarios...`)
 
-        for (const user of usersToInsert) {
-            try {
-                const { error } = await supabase.auth.signUp({
-                    email: user.email,
-                    password: user.password,
-                    options: {
-                        data: {
-                            full_name: user.full_name,
-                            cohort: user.cohort,
-                            username: user.email, // Usar email como username
-                            password: user.password,
-                            firstname: user.full_name.split(' ')[0] || '',
-                            lastname: user.full_name.split(' ').slice(1).join(' ') || '',
-                            cohort1: user.cohort
-                        }
-                    }
-                })
-
-                if (error) {
-                    console.error(`❌ Error con ${user.email}:`, error.message)
-                    results.errors++
-                    results.errorDetails.push({
-                        email: user.email,
-                        error: error.message
-                    })
-                    results.processed.push({
-                        email: user.email,
-                        status: 'error',
-                        message: error.message
-                    })
-                    setFailedUsers(prev => [...prev, user])
-                } else {
-                    console.log(`✅ ${user.email} - ${user.full_name}`)
-                    results.success++
-                    results.processed.push({
-                        email: user.email,
-                        status: 'success',
-                        message: 'Usuario creado exitosamente'
-                    })
-                }
-
-                // Pausa para evitar rate limiting
-                await new Promise(resolve => setTimeout(resolve, 200))
-
-            } catch (error: any) {
-                console.error(`❌ Error inesperado con ${user.email}:`, error)
-                results.errors++
-                results.errorDetails.push({
-                    email: user.email,
-                    error: error.message
-                })
-                results.processed.push({
-                    email: user.email,
-                    status: 'error',
-                    message: error.message
-                })
-                setFailedUsers(prev => [...prev, user])
-            }
-        }
-
-        setResults(results)
-        setLoading(false)
-        // Refresh user list after insertion
-        if (selectedCohort === 'all') fetchUsers()
-        else fetchUsersByCohort(selectedCohort)
+        // Start import directly using our new method validation
+        await importCustomUsers(usersToInsert)
     }
 
     // Función para insertar solo usuarios que fallaron anteriormente
@@ -347,157 +412,113 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName }) => 
             alert('No hay usuarios fallidos para reintentar. Primero ejecuta una inserción.')
             return
         }
-
-        setLoading(true)
-        setResults(null)
-        const usersToRetry = [...failedUsers]
-        setFailedUsers([]) // Clear failures to track new ones
-
-        const results: Results = {
-            success: 0,
-            errors: 0,
-            errorDetails: [],
-            processed: []
-        }
-
-        console.log(`Reintentando inserción de ${usersToRetry.length} usuarios que fallaron...`)
-
-        for (const user of usersToRetry) {
-            try {
-                const { error } = await supabase.auth.signUp({
-                    email: user.email,
-                    password: user.password,
-                    options: {
-                        data: {
-                            full_name: user.full_name,
-                            cohort: user.cohort,
-                            username: user.email, // Usar email como username
-                            password: user.password,
-                            firstname: user.full_name.split(' ')[0] || '',
-                            lastname: user.full_name.split(' ').slice(1).join(' ') || '',
-                            cohort1: user.cohort
-                        }
-                    }
-                })
-
-                if (error) {
-                    // ... errors handling
-                    console.error(`❌ Error con ${user.email}:`, error.message)
-                    results.errors++
-                    results.errorDetails.push({
-                        email: user.email,
-                        error: error.message
-                    })
-                    results.processed.push({
-                        email: user.email,
-                        status: 'error',
-                        message: error.message
-                    })
-                    setFailedUsers(prev => [...prev, user])
-                } else {
-                    console.log(`✅ ${user.email} - ${user.full_name}`)
-                    results.success++
-                    results.processed.push({
-                        email: user.email,
-                        status: 'success',
-                        message: 'Usuario creado exitosamente'
-                    })
-                }
-
-                // Pausa más larga para evitar rate limiting
-                await new Promise(resolve => setTimeout(resolve, 1000))
-
-            } catch (error: any) {
-                // ... error handling
-                console.error(`❌ Error inesperado con ${user.email}:`, error)
-                results.errors++
-                results.errorDetails.push({
-                    email: user.email,
-                    error: error.message
-                })
-                results.processed.push({
-                    email: user.email,
-                    status: 'error',
-                    message: error.message
-                })
-                setFailedUsers(prev => [...prev, user])
-            }
-        }
-
-        setResults(results)
-        setLoading(false)
-        // Refresh user list
-        if (selectedCohort === 'all') fetchUsers()
-        else fetchUsersByCohort(selectedCohort)
-        return results
+        await importCustomUsers(failedUsers)
     }
 
     return (
-        <div className="admin-section" style={{ marginTop: '2rem' }}>
-            <h2>👥 Gestión de Alumnos - {centerName || 'General'}</h2>
-
-            <div className="cohort-selector">
-                <label>
-                    <input
-                        type="radio"
-                        name="cohort-mgt"
-                        value="all"
-                        checked={selectedCohort === 'all'}
-                        onChange={(e) => setSelectedCohort(e.target.value)}
-                    />
-                    Todos
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="cohort-mgt"
-                        value="IPDC1"
-                        checked={selectedCohort === 'IPDC1'}
-                        onChange={(e) => setSelectedCohort(e.target.value)}
-                    />
-                    IPDC1
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="cohort-mgt"
-                        value="IPDC3"
-                        checked={selectedCohort === 'IPDC3'}
-                        onChange={(e) => setSelectedCohort(e.target.value)}
-                    />
-                    IPDC3
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="cohort-mgt"
-                        value="IPDC5"
-                        checked={selectedCohort === 'IPDC5'}
-                        onChange={(e) => setSelectedCohort(e.target.value)}
-                    />
-                    IPDC5
-                </label>
-            </div>
-
-            <div className="button-group" style={{ marginBottom: '20px' }}>
+        <div className="hierarchy-config-modal-panel" style={{ marginTop: 0, background: '#1e1e2e', color: '#ffffff' }}>
+            {/* Tabs */}
+            <div className="admin-tabs">
                 <button
-                    className="insert-btn"
-                    onClick={() => insertUsers(selectedCohort)}
-                    disabled={loading}
+                    className={`tab-button ${activeTab === 'manual' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('manual')}
                 >
-                    {loading ? '⏳ Procesando...' : '📥 Importar Alumnos desde CSV'}
+                    👤 Crear Manualmente
                 </button>
-
-                {failedUsers.length > 0 && (
-                    <button
-                        className="insert-btn retry"
-                        onClick={insertFailedUsers}
-                        disabled={loading}
-                    >
-                        {loading ? '⏳ Reintentando...' : `🔄 Reintentar Fallidos (${failedUsers.length})`}
-                    </button>
-                )}
+                <button
+                    className={`tab-button ${activeTab === 'csv' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('csv')}
+                >
+                    📂 Importar desde CSV
+                </button>
             </div>
+
+            {/* Manual Creation Tab */}
+            {activeTab === 'manual' && (
+                <div className="form-grid">
+                    <h4 style={{ color: '#fff', margin: 0 }}>Registrar Nuevo Alumno</h4>
+                    <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr auto', alignItems: 'end' }}>
+                        <div className="form-group">
+                            <label>Nombre Completo *</label>
+                            <input
+                                type="text"
+                                value={createForm.fullName}
+                                onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
+                                placeholder="Ej: Juanito Pérez"
+                                className="modern-input"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Correo Electrónico *</label>
+                            <input
+                                type="email"
+                                value={createForm.email}
+                                onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                                placeholder="juanito@escuela.com"
+                                className="modern-input"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Contraseña *</label>
+                            <input
+                                type="text"
+                                value={createForm.password}
+                                onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                                placeholder="Contraseña"
+                                className="modern-input"
+                            />
+                        </div>
+                        <button
+                            className="btn-save-modern"
+                            onClick={handleCreateStudent}
+                            disabled={!createForm.fullName || !createForm.email || !createForm.password || creating}
+                            style={{ height: '46px', marginTop: 'auto' }}
+                        >
+                            {creating ? 'Creando...' : 'Crear Alumno'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* CSV Import Tab */}
+            {activeTab === 'csv' && (
+                <div className="csv-upload-section">
+                    <h4>Subir Archivo CSV</h4>
+                    <div className="csv-helper-text">
+                        Formato requerido: <code>email, password, full_name, [cohort]</code>
+                    </div>
+
+                    <input
+                        type="file"
+                        accept=".csv"
+                        onChange={handleFileUpload}
+                        className="modern-input"
+                        style={{ maxWidth: '400px', margin: '0 auto' }}
+                        disabled={parsing || loading}
+                    />
+
+                    <div style={{ margin: '2rem 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
+
+                    <h5 style={{ color: 'rgba(255,255,255,0.6)' }}>O usar datos de prueba (Legacy):</h5>
+                    <div className="cohort-selector" style={{ justifyContent: 'center', flexDirection: 'row', flexWrap: 'wrap' }}>
+                        <label><input type="radio" value="all" checked={selectedCohort === 'all'} onChange={(e) => setSelectedCohort(e.target.value)} /> Todos</label>
+                        <label><input type="radio" value="IPDC1" checked={selectedCohort === 'IPDC1'} onChange={(e) => setSelectedCohort(e.target.value)} /> IPDC1</label>
+                        <label><input type="radio" value="IPDC3" checked={selectedCohort === 'IPDC3'} onChange={(e) => setSelectedCohort(e.target.value)} /> IPDC3</label>
+                        <label><input type="radio" value="IPDC5" checked={selectedCohort === 'IPDC5'} onChange={(e) => setSelectedCohort(e.target.value)} /> IPDC5</label>
+                    </div>
+
+                    <div className="button-group" style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                        <button className="insert-btn" onClick={() => insertUsers(selectedCohort)} disabled={loading}>
+                            {loading ? '⏳ Procesando...' : '📥 Importar Datos Prueba'}
+                        </button>
+                        {failedUsers.length > 0 && (
+                            <button className="insert-btn retry" onClick={insertFailedUsers} disabled={loading}>
+                                {loading ? '⏳ Reintentando...' : `🔄 Reintentar Fallidos (${failedUsers.length})`}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Results Section */}
             {results && (
@@ -513,11 +534,10 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName }) => 
                             <span className="result-label">Errores</span>
                         </div>
                     </div>
-                    {/* Detailed errors if needed */}
                     {results.errorDetails.length > 0 && (
                         <div className="errors-details">
                             <h4>❌ Errores Detallados:</h4>
-                            <div className="error-list" style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                            <div className="error-list">
                                 {results.errorDetails.map((error, index) => (
                                     <div key={index} className="error-item">
                                         <strong>{error.email}</strong>: {error.error}
@@ -531,39 +551,33 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName }) => 
 
             {/* User List & Delete */}
             <div className="user-list-section">
-                <h3>📋 Lista de Alumnos Registrados ({localUsers.length})</h3>
-                <div className="users-table-container" style={{ maxHeight: '500px', overflowY: 'auto' }}>
-                    <table className="users-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '2rem 0 1rem' }}>
+                    📋 Lista de Alumnos Registrados ({localUsers.length})
+                </h3>
+                <div className="users-table-container">
+                    <table className="users-table">
                         <thead>
-                            <tr style={{ background: '#f5f7fa', textAlign: 'left' }}>
-                                <th style={{ padding: '10px' }}>Nombre</th>
-                                <th style={{ padding: '10px' }}>Email</th>
-                                <th style={{ padding: '10px' }}>Cohorte</th>
-                                <th style={{ padding: '10px' }}>Acciones</th>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Cohorte</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {localUsers.map((user) => (
-                                <tr key={user.id} style={{ borderBottom: '1px solid #eee' }}>
-                                    <td style={{ padding: '10px' }}>{user.full_name || 'N/A'}</td>
-                                    <td style={{ padding: '10px' }}>{user.email}</td>
-                                    <td style={{ padding: '10px' }}>
+                                <tr key={user.id}>
+                                    <td>{user.full_name || 'N/A'}</td>
+                                    <td>{user.email}</td>
+                                    <td>
                                         <span className={`cohort-badge ${user.cohort?.toLowerCase()}`}>
                                             {user.cohort || '-'}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '10px' }}>
+                                    <td>
                                         <button
                                             onClick={() => handleDeleteUser(user.id, user.email)}
-                                            className="delete-btn"
-                                            style={{
-                                                background: '#ff4d4f',
-                                                color: 'white',
-                                                border: 'none',
-                                                padding: '5px 10px',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer'
-                                            }}
+                                            className="action-btn delete"
                                             disabled={isDeleting === user.id}
                                         >
                                             {isDeleting === user.id ? '...' : 'Eliminar'}
@@ -573,7 +587,7 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName }) => 
                             ))}
                             {localUsers.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: '#888' }}>
+                                    <td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
                                         No se encontraron alumnos para este criterio.
                                     </td>
                                 </tr>

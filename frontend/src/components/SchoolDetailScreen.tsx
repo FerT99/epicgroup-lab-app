@@ -14,17 +14,13 @@ import {
     createSection,
     updateSection,
     deleteSection,
-    getSubjectsBySection,
-    createSubject,
-    updateSubject,
-    deleteSubject,
     type EducationalCenter,
     type GradeLevel,
     type Section,
-    type Subject,
 } from '../lib/adminApi'
 import StudentManagement from './StudentManagement'
 import TeacherManagement from './TeacherManagement'
+import ContentManagement from './ContentManagement'
 import './HierarchyConfig.css' // Reusing styles
 
 interface SchoolDetailScreenProps {
@@ -50,7 +46,6 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
     const [selectedGrade, setSelectedGrade] = useState<GradeLevel | null>(null)
     const [sections, setSections] = useState<Section[]>([])
     const [selectedSection, setSelectedSection] = useState<Section | null>(null)
-    const [subjects, setSubjects] = useState<Subject[]>([])
 
     // State for loading and errors
     const [loading, setLoading] = useState(false)
@@ -59,20 +54,28 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
     // State for modals
     const [showGradeModal, setShowGradeModal] = useState(false)
     const [showSectionModal, setShowSectionModal] = useState(false)
-    const [showSubjectModal, setShowSubjectModal] = useState(false)
     const [showStudentModal, setShowStudentModal] = useState(false)
     const [showTeacherModal, setShowTeacherModal] = useState(false)
+    const [showContentModal, setShowContentModal] = useState(false)
     const [showAddTypeModal, setShowAddTypeModal] = useState(false) // New selection modal
+    const [showCourseTypeModal, setShowCourseTypeModal] = useState(false) // New selection modal for courses inside grade
 
     // State for forms
     const [gradeForm, setGradeForm] = useState({ name: '', level: 0 })
-    const [sectionForm, setSectionForm] = useState({ name: '', max_students: 30 })
-    const [subjectForm, setSubjectForm] = useState({ name: '', description: '', hours_per_week: 0 })
+    const [sectionForm, setSectionForm] = useState({
+        name: '',
+        max_students: 30,
+        short_name: '',
+        description: '',
+        start_date: '',
+        end_date: '',
+        course_id: '',
+        visibility: 'active'
+    })
 
     // State for editing
     const [editingGrade, setEditingGrade] = useState<GradeLevel | null>(null)
     const [editingSection, setEditingSection] = useState<Section | null>(null)
-    const [editingSubject, setEditingSubject] = useState<Subject | null>(null)
 
     // Load center and grades on mount
     useEffect(() => {
@@ -92,14 +95,7 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
         }
     }, [selectedGrade])
 
-    // Load subjects when section is selected
-    useEffect(() => {
-        if (selectedSection) {
-            loadSubjects(selectedSection.id)
-        } else {
-            setSubjects([])
-        }
-    }, [selectedSection])
+
 
     // ========== LOAD FUNCTIONS ==========
 
@@ -139,17 +135,7 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
         }
     }
 
-    const loadSubjects = async (sectionId: string) => {
-        try {
-            setLoading(true)
-            const data = await getSubjectsBySection(sectionId)
-            setSubjects(data)
-        } catch (err: any) {
-            setError(err.message || 'Error al cargar materias')
-        } finally {
-            setLoading(false)
-        }
-    }
+
 
     // ========== GRADE FUNCTIONS ==========
 
@@ -210,15 +196,26 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
             alert('Selecciona un grado primero')
             return
         }
-        setSectionForm({ name: '', max_students: 30 })
+        setSectionForm({
+            name: '',
+            max_students: 30,
+            short_name: '',
+            description: '',
+            start_date: '',
+            end_date: '',
+            course_id: '',
+            visibility: 'active'
+        })
         setEditingSection(null)
         setShowSectionModal(true)
     }
 
-    const handleEditSection = (section: Section) => {
-        setSectionForm({ name: section.name, max_students: section.max_students })
-        setEditingSection(section)
-        setShowSectionModal(true)
+
+    const openCourseDetail = (section: Section) => {
+        // Navigate to course content view (Moodle-like)
+        if (selectedGrade && centerId) {
+            navigate(`/admin/school/${centerId}/grade/${selectedGrade.id}/course/${section.id}/content`)
+        }
     }
 
     const handleSaveSection = async () => {
@@ -227,9 +224,9 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
         try {
             setLoading(true)
             if (editingSection) {
-                await updateSection(editingSection.id, sectionForm)
+                await updateSection(editingSection.id, { ...sectionForm, visibility: sectionForm.visibility as Section['visibility'] })
             } else {
-                await createSection({ ...sectionForm, grade_id: selectedGrade.id })
+                await createSection({ ...sectionForm, grade_id: selectedGrade.id, visibility: sectionForm.visibility as Section['visibility'] })
             }
             await loadSections(selectedGrade.id)
             setShowSectionModal(false)
@@ -258,61 +255,8 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
         }
     }
 
-    // ========== SUBJECT FUNCTIONS ==========
 
-    const handleCreateSubject = () => {
-        if (!selectedSection) {
-            alert('Selecciona una sección primero')
-            return
-        }
-        setSubjectForm({ name: '', description: '', hours_per_week: 0 })
-        setEditingSubject(null)
-        setShowSubjectModal(true)
-    }
 
-    const handleEditSubject = (subject: Subject) => {
-        setSubjectForm({
-            name: subject.name,
-            description: subject.description || '',
-            hours_per_week: subject.hours_per_week,
-        })
-        setEditingSubject(subject)
-        setShowSubjectModal(true)
-    }
-
-    const handleSaveSubject = async () => {
-        if (!selectedSection) return
-
-        try {
-            setLoading(true)
-            if (editingSubject) {
-                await updateSubject(editingSubject.id, subjectForm)
-            } else {
-                await createSubject({ ...subjectForm, section_id: selectedSection.id })
-            }
-            await loadSubjects(selectedSection.id)
-            setShowSubjectModal(false)
-        } catch (err: any) {
-            setError(err.message || 'Error al guardar materia')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleDeleteSubject = async (id: string) => {
-        if (!confirm('¿Estás seguro de eliminar esta materia?')) return
-        if (!selectedSection) return
-
-        try {
-            setLoading(true)
-            await deleteSubject(id)
-            await loadSubjects(selectedSection.id)
-        } catch (err: any) {
-            setError(err.message || 'Error al eliminar materia')
-        } finally {
-            setLoading(false)
-        }
-    }
 
     return (
         <>
@@ -323,315 +267,167 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                 onNavigate={handleNavigate}
                 onLogout={handleLogout}
             />
-            <div className="hierarchy-config" style={{ marginTop: '0px' }}>
-                <div className="hierarchy-header" style={{ marginTop: '40px', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', width: '95%' }}>
-                    <button className="btn-back" onClick={() => navigate('/admin/hierarchy')} style={{ justifySelf: 'start' }}>
-                        ← Escuelas
-                    </button>
-                    <h1>{center ? center.name : 'Cargando...'}</h1>
-                    <button
-                        className="btn-add"
-                        style={{ padding: '10px 20px', fontSize: '1rem', justifySelf: 'end' }}
-                        onClick={() => setShowAddTypeModal(true)}
-                        disabled={!center}
-                    >
-                        + Agregar
-                    </button>
+            <div className="hierarchy-config" style={{ marginTop: '0px', padding: '2rem 4rem' }}>
+                {/* MAIN HEADER */}
+                <div className="modern-header-row">
+                    <div className="header-action-left" style={{ width: '150px' }}>
+                        {!selectedGrade && (
+                            <button
+                                className="btn-back"
+                                onClick={() => navigate('/admin/hierarchy')}
+                            >
+                                ← Volver
+                            </button>
+                        )}
+                    </div>
+
+                    <h1 className="center-title" style={{ margin: 0, fontSize: '2.5rem' }}>{center ? center.name : 'Cargando...'}</h1>
+
+                    <div className="header-action-right" style={{ width: '150px', justifyContent: 'flex-end' }}>
+                        <button
+                            className="btn-add"
+                            onClick={() => setShowAddTypeModal(true)}
+                            disabled={!center}
+                        >
+                            + Agregar
+                        </button>
+                    </div>
                 </div>
 
                 {error && (
-                    <div className="error-banner">
+                    <div className="error-banner" style={{ maxWidth: '800px', margin: '0 auto 2rem auto' }}>
                         <span>❌ {error}</span>
                         <button onClick={() => setError(null)}>✕</button>
                     </div>
                 )}
 
-                <div className="hierarchy-grid">
-                    {/* COLUMN 1: GRADES */}
-                    <div className="hierarchy-column">
-                        <div className="column-header">
-                            <h2>📚 Grados</h2>
-                            <button
-                                className="btn-add"
-                                onClick={handleCreateGrade}
-                                disabled={!center}
-                            >
-                                + Agregar
-                            </button>
-                        </div>
 
-                        <div className="items-list">
-                            {loading && grades.length === 0 ? (
-                                <p className="loading-text">Cargando...</p>
-                            ) : grades.length === 0 ? (
-                                <p className="empty-text">No hay grados registrados</p>
-                            ) : (
-                                grades.map((grade) => (
-                                    <div
-                                        key={grade.id}
-                                        className={`item-card ${selectedGrade?.id === grade.id ? 'selected' : ''}`}
-                                        onClick={() => setSelectedGrade(grade)}
-                                    >
-                                        <div className="item-info">
-                                            <h3>{grade.name}</h3>
-                                            {grade.level !== undefined && (
-                                                <p className="item-detail">Nivel {grade.level}</p>
-                                            )}
+                <div className="hierarchy-container" style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+                    {/* CONDITIONAL RENDER: GRADES LIST or GRADE DETAILS (COURSES) */}
+                    {!selectedGrade ? (
+                        /* VIEW 1: GRADES GRID */
+                        <>
+                            <h2 className="section-title">Mis Grados</h2>
+
+                            <div className="grade-card-grid">
+                                {loading && grades.length === 0 ? (
+                                    <p className="loading-text" style={{ gridColumn: '1 / -1' }}>Cargando grados...</p>
+                                ) : grades.length === 0 ? (
+                                    <p className="empty-text" style={{ gridColumn: '1 / -1' }}>No hay grados registrados. ¡Agrega uno nuevo!</p>
+                                ) : (
+                                    grades.map((grade) => (
+                                        <div
+                                            key={grade.id}
+                                            className="grade-card"
+                                            onClick={() => setSelectedGrade(grade)}
+                                        >
+                                            <div className="grade-icon">
+                                                📁
+                                            </div>
+                                            <div className="grade-info">
+                                                <h3>{grade.name}</h3>
+                                                <p>Primaria secundaria o preparatoria {grade.level}</p>
+                                            </div>
+                                            <div className="grade-actions">
+                                                <button
+                                                    className="btn-icon"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleEditGrade(grade)
+                                                    }}
+                                                    title="Editar"
+                                                >
+                                                    ✏️
+                                                </button>
+                                                <button
+                                                    className="btn-icon"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleDeleteGrade(grade.id)
+                                                    }}
+                                                    title="Eliminar"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="item-actions">
-                                            <button
-                                                className="btn-icon"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    handleEditGrade(grade)
-                                                }}
-                                                title="Editar"
-                                            >
-                                                ✏️
-                                            </button>
-                                            <button
-                                                className="btn-icon"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    handleDeleteGrade(grade.id)
-                                                }}
-                                                title="Eliminar"
-                                            >
-                                                🗑️
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-
-                    {/* COLUMN 2: SECTIONS */}
-                    <div className="hierarchy-column">
-                        <div className="column-header">
-                            <h2>👥 Secciones</h2>
-                            <button
-                                className="btn-add"
-                                onClick={handleCreateSection}
-                                disabled={!selectedGrade}
-                            >
-                                + Agregar
-                            </button>
-                        </div>
-
-                        <div className="items-list">
-                            {!selectedGrade ? (
-                                <p className="empty-text">Selecciona un grado primero</p>
-                            ) : loading && sections.length === 0 ? (
-                                <p className="loading-text">Cargando...</p>
-                            ) : sections.length === 0 ? (
-                                <p className="empty-text">No hay secciones registradas</p>
-                            ) : (
-                                sections.map((section) => (
-                                    <div
-                                        key={section.id}
-                                        className={`item-card ${selectedSection?.id === section.id ? 'selected' : ''}`}
-                                        onClick={() => setSelectedSection(section)}
-                                    >
-                                        <div className="item-info">
-                                            <h3>Sección {section.name}</h3>
-                                            <p className="item-detail">Máx. {section.max_students} alumnos</p>
-                                        </div>
-                                        <div className="item-actions">
-                                            <button
-                                                className="btn-icon"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    handleEditSection(section)
-                                                }}
-                                                title="Editar"
-                                            >
-                                                ✏️
-                                            </button>
-                                            <button
-                                                className="btn-icon"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    handleDeleteSection(section.id)
-                                                }}
-                                                title="Eliminar"
-                                            >
-                                                🗑️
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-
-                    {/* COLUMN 3: SUBJECTS */}
-                    <div className="hierarchy-column">
-                        <div className="column-header">
-                            <h2>📖 Materias</h2>
-                            <button
-                                className="btn-add"
-                                onClick={handleCreateSubject}
-                                disabled={!selectedSection}
-                            >
-                                + Agregar
-                            </button>
-                        </div>
-
-                        <div className="items-list">
-                            {!selectedSection ? (
-                                <p className="empty-text">Selecciona una sección primero</p>
-                            ) : loading && subjects.length === 0 ? (
-                                <p className="loading-text">Cargando...</p>
-                            ) : subjects.length === 0 ? (
-                                <p className="empty-text">No hay materias registradas</p>
-                            ) : (
-                                subjects.map((subject) => (
-                                    <div key={subject.id} className="item-card">
-                                        <div className="item-info">
-                                            <h3>{subject.name}</h3>
-                                            {subject.hours_per_week > 0 && (
-                                                <p className="item-detail">{subject.hours_per_week} hrs/semana</p>
-                                            )}
-                                        </div>
-                                        <div className="item-actions">
-                                            <button
-                                                className="btn-icon"
-                                                onClick={() => handleEditSubject(subject)}
-                                                title="Editar"
-                                            >
-                                                ✏️
-                                            </button>
-                                            <button
-                                                className="btn-icon"
-                                                onClick={() => handleDeleteSubject(subject.id)}
-                                                title="Eliminar"
-                                            >
-                                                🗑️
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* MODALS */}
-            {/* TYPE SELECTION MODAL */}
-            {showAddTypeModal && (
-                <div className="modal-overlay" onClick={() => setShowAddTypeModal(false)}>
-                    <div className="school-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center' }}>
-                        <div className="modal-header">
-                            <h2>¿Qué deseas agregar?</h2>
-                            <p>Selecciona una opción para administrar.</p>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
-                            <button
-                                onClick={() => {
-                                    setShowAddTypeModal(false)
-                                    setShowStudentModal(true)
-                                }}
-                                style={{
-                                    background: 'rgba(255,255,255,0.05)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: '16px',
-                                    padding: '2rem 1rem',
-                                    color: 'white',
-                                    fontSize: '1.2rem',
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    gap: '1rem'
-                                }}
-                                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                            >
-                                <span style={{ fontSize: '2.5rem' }}>👨‍🎓</span>
-                                Alumnos
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowAddTypeModal(false)
-                                    setShowTeacherModal(true)
-                                }}
-                                style={{
-                                    background: 'rgba(255,255,255,0.05)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: '16px',
-                                    padding: '2rem 1rem',
-                                    color: 'white',
-                                    fontSize: '1.2rem',
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    gap: '1rem'
-                                }}
-                                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                            >
-                                <span style={{ fontSize: '2.5rem' }}>👨‍🏫</span>
-                                Maestros
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {
-                showGradeModal && (
-                    <div className="modal-overlay" onClick={() => setShowGradeModal(false)}>
-                        <div className="school-modal-content" onClick={(e) => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <div className="modal-icon">📚</div>
-                                <h2>{editingGrade ? 'Editar Grado' : 'Nuevo Grado'}</h2>
+                                    ))
+                                )}
                             </div>
-                            <div className="form-grid">
-                                <div className="form-group">
-                                    <label>Nombre *</label>
-                                    <input
-                                        type="text"
-                                        value={gradeForm.name}
-                                        onChange={(e) => setGradeForm({ ...gradeForm, name: e.target.value })}
-                                        placeholder="Ej: 1ro Primaria"
-                                        className="modern-input"
-                                        autoFocus
-                                    />
+                        </>
+                    ) : (
+                        /* VIEW 2: SECTIONS (COURSES) GRID FOR SELECTED GRADE */
+                        <>
+                            <div className="modern-header-row" style={{ marginBottom: '2rem' }}>
+                                <div className="header-action-left" style={{ width: '150px' }}>
+                                    <button
+                                        className="btn-back"
+                                        onClick={() => setSelectedGrade(null)}
+                                    >
+                                        ← Volver
+                                    </button>
                                 </div>
-                                <div className="form-group">
-                                    <label>Nivel</label>
-                                    <input
-                                        type="number"
-                                        value={gradeForm.level}
-                                        onChange={(e) => setGradeForm({ ...gradeForm, level: parseInt(e.target.value) })}
-                                        placeholder="Ej: 1"
-                                        className="modern-input"
-                                    />
+                                <h2 className="section-title" style={{ margin: 0, flex: 1, padding: '0 1rem' }}>
+                                    {selectedGrade.name} - Cursos
+                                </h2>
+                                <div className="header-action-right" style={{ width: '150px' }}>
+                                    {/* Actions moved to main Add button */}
                                 </div>
                             </div>
-                            <div className="modal-actions">
-                                <button className="btn-cancel-modern" onClick={() => setShowGradeModal(false)}>
-                                    Cancelar
-                                </button>
-                                <button
-                                    className="btn-save-modern"
-                                    onClick={handleSaveGrade}
-                                    disabled={!gradeForm.name || loading}
-                                >
-                                    {loading ? 'Guardando...' : 'Guardar'}
-                                </button>
+
+                            <div className="grade-card-grid">
+                                {loading && sections.length === 0 ? (
+                                    <p className="loading-text" style={{ gridColumn: '1 / -1' }}>Cargando cursos...</p>
+                                ) : sections.length === 0 ? (
+                                    <p className="empty-text" style={{ gridColumn: '1 / -1' }}>No hay cursos registrados en este grado.</p>
+                                ) : (
+                                    sections.map((section) => (
+                                        <div
+                                            key={section.id}
+                                            className="grade-card"
+                                            style={{ borderColor: '#d946ef' }} // Pink border for courses to distinguish
+                                            onClick={() => openCourseDetail(section)}
+                                        >
+                                            <div className="grade-icon" style={{ background: '#fce7f3', color: '#db2777' }}>
+                                                📚
+                                            </div>
+                                            <div className="grade-info">
+                                                <h3>{section.name}</h3>
+                                                <p>{section.short_name || 'Sin código'}</p>
+                                                <p style={{ fontSize: '0.8rem', opacity: 0.8 }}>Max. {section.max_students} estudiantes</p>
+                                            </div>
+                                            <div className="grade-actions">
+                                                <button
+                                                    className="btn-icon"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        openCourseDetail(section)
+                                                    }}
+                                                    title="Ver Detalle"
+                                                >
+                                                    👁️
+                                                </button>
+                                                <button
+                                                    className="btn-icon"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleDeleteSection(section.id)
+                                                    }}
+                                                    title="Eliminar"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
                             </div>
-                        </div>
-                    </div>
-                )
-            }
+                        </>
+                    )}
+                </div>
+            </div >
+
+
 
             {
                 showSectionModal && (
@@ -682,55 +478,171 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
             }
 
             {
-                showSubjectModal && (
-                    <div className="modal-overlay" onClick={() => setShowSubjectModal(false)}>
+                showContentModal && (
+                    <div className="modal-overlay" onClick={() => setShowContentModal(false)}>
+                        <div
+                            className="school-modal-content"
+                            style={{
+                                maxWidth: '900px',
+                                width: '90%',
+                                background: '#1e1e2e',
+                                color: '#ffffff',
+                                borderRadius: '24px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                                padding: '0'
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="modal-header" style={{
+                                background: 'rgba(255,255,255,0.03)',
+                                padding: '2rem',
+                                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '24px 24px 0 0',
+                                marginBottom: 0
+                            }}>
+                                <div className="modal-icon" style={{ fontSize: '3rem', marginBottom: '1rem' }}>📚</div>
+                                <h2 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 'bold' }}>Gestión de Contenido</h2>
+                                {!selectedGrade && (
+                                    <p style={{ color: '#ef4444', marginTop: '0.5rem' }}>
+                                        Por favor, selecciona un grado primero
+                                    </p>
+                                )}
+                            </div>
+                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto', padding: '2rem' }}>
+                                <ContentManagement gradeId={selectedGrade?.id} gradeName={selectedGrade?.name} />
+                            </div>
+                            <div className="modal-actions" style={{ padding: '0 2rem 2rem 2rem', marginTop: '0' }}>
+                                <button
+                                    className="btn-cancel-modern"
+                                    onClick={() => setShowContentModal(false)}
+                                    style={{ padding: '1rem', fontSize: '1rem' }}
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* MODALS */}
+            {/* TYPE SELECTION MODAL */}
+            {
+                showAddTypeModal && (
+                    <div className="modal-overlay" onClick={() => setShowAddTypeModal(false)}>
+                        <div
+                            className="school-modal-content type-selection-content"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="modal-header">
+                                <h2>¿Qué deseas agregar?</h2>
+                            </div>
+                            <div className="type-selection-grid">
+                                {!selectedGrade && (
+                                    <button
+                                        className="selection-card"
+                                        onClick={() => {
+                                            setShowAddTypeModal(false)
+                                            handleCreateGrade()
+                                        }}
+                                    >
+                                        <span className="selection-icon">📚</span>
+                                        <div>
+                                            <div className="selection-title">Grado</div>
+                                            <div className="selection-desc">Crear nuevo grado</div>
+                                        </div>
+                                    </button>
+                                )}
+                                <button
+                                    className="selection-card"
+                                    onClick={() => {
+                                        setShowAddTypeModal(false)
+                                        setShowStudentModal(true)
+                                    }}
+                                >
+                                    <span className="selection-icon">👨‍🎓</span>
+                                    <div>
+                                        <div className="selection-title">Alumnos</div>
+                                        <div className="selection-desc">Gestionar estudiantes</div>
+                                    </div>
+                                </button>
+                                <button
+                                    className="selection-card"
+                                    onClick={() => {
+                                        setShowAddTypeModal(false)
+                                        setShowTeacherModal(true)
+                                    }}
+                                >
+                                    <span className="selection-icon">👨‍🏫</span>
+                                    <div>
+                                        <div className="selection-title">Maestros</div>
+                                        <div className="selection-desc">Gestionar docentes</div>
+                                    </div>
+                                </button>
+
+                                {selectedGrade && (
+                                    <button
+                                        className="selection-card"
+                                        onClick={() => {
+                                            setShowAddTypeModal(false)
+                                            if (selectedGrade && centerId) {
+                                                navigate(`/admin/school/${centerId}/grade/${selectedGrade.id}/course/new`)
+                                            }
+                                        }}
+                                    >
+                                        <span className="selection-icon">📚</span>
+                                        <div>
+                                            <div className="selection-title">Curso</div>
+                                            <div className="selection-desc">Agregar nuevo curso</div>
+                                        </div>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {
+                showGradeModal && (
+                    <div className="modal-overlay" onClick={() => setShowGradeModal(false)}>
                         <div className="school-modal-content" onClick={(e) => e.stopPropagation()}>
                             <div className="modal-header">
-                                <div className="modal-icon">📖</div>
-                                <h2>{editingSubject ? 'Editar Materia' : 'Nueva Materia'}</h2>
+                                <div className="modal-icon">📚</div>
+                                <h2>{editingGrade ? 'Editar Grado' : 'Nuevo Grado'}</h2>
                             </div>
                             <div className="form-grid">
                                 <div className="form-group">
-                                    <label>Nombre *</label>
+                                    <label>Primaria, secundaria, preparatoria o universidad*</label>
                                     <input
                                         type="text"
-                                        value={subjectForm.name}
-                                        onChange={(e) => setSubjectForm({ ...subjectForm, name: e.target.value })}
-                                        placeholder="Ej: Matemáticas"
+                                        value={gradeForm.name}
+                                        onChange={(e) => setGradeForm({ ...gradeForm, name: e.target.value })}
+                                        placeholder="Ej: 1ro Primaria"
                                         className="modern-input"
                                         autoFocus
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Descripción</label>
-                                    <textarea
-                                        value={subjectForm.description}
-                                        onChange={(e) => setSubjectForm({ ...subjectForm, description: e.target.value })}
-                                        placeholder="Descripción opcional"
-                                        rows={3}
-                                        className="modern-input"
-                                        style={{ resize: 'vertical' }}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Horas por Semana</label>
+                                    <label>Grado</label>
                                     <input
                                         type="number"
-                                        value={subjectForm.hours_per_week}
-                                        onChange={(e) => setSubjectForm({ ...subjectForm, hours_per_week: parseInt(e.target.value) })}
-                                        placeholder="Ej: 5"
+                                        value={gradeForm.level}
+                                        onChange={(e) => setGradeForm({ ...gradeForm, level: parseInt(e.target.value) })}
+                                        placeholder="Ej: 1"
                                         className="modern-input"
                                     />
                                 </div>
                             </div>
                             <div className="modal-actions">
-                                <button className="btn-cancel-modern" onClick={() => setShowSubjectModal(false)}>
+                                <button className="btn-cancel-modern" onClick={() => setShowGradeModal(false)}>
                                     Cancelar
                                 </button>
                                 <button
                                     className="btn-save-modern"
-                                    onClick={handleSaveSubject}
-                                    disabled={!subjectForm.name || loading}
+                                    onClick={handleSaveGrade}
+                                    disabled={!gradeForm.name || loading}
                                 >
                                     {loading ? 'Guardando...' : 'Guardar'}
                                 </button>
@@ -743,16 +655,39 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
             {
                 showStudentModal && (
                     <div className="modal-overlay" onClick={() => setShowStudentModal(false)}>
-                        <div className="school-modal-content" style={{ maxWidth: '800px', width: '90%' }} onClick={(e) => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <div className="modal-icon">👨‍🎓</div>
-                                <h2>Gestión de Alumnos</h2>
+                        <div
+                            className="school-modal-content"
+                            style={{
+                                maxWidth: '700px',
+                                width: '90%',
+                                background: '#1e1e2e', // Explicit dark background
+                                color: '#ffffff',      // Explicit white text
+                                borderRadius: '24px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                                padding: '0' // Remove padding here, let header/body handle it
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="modal-header" style={{
+                                background: 'rgba(255,255,255,0.03)',
+                                padding: '2rem',
+                                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '24px 24px 0 0',
+                                marginBottom: 0
+                            }}>
+                                <div className="modal-icon" style={{ fontSize: '3rem', marginBottom: '1rem' }}>👨‍🎓</div>
+                                <h2 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 'bold' }}>Gestión de Alumnos</h2>
                             </div>
-                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto', padding: '2rem' }}>
                                 <StudentManagement centerId={center?.id} centerName={center?.name} />
                             </div>
-                            <div className="modal-actions" style={{ marginTop: '20px' }}>
-                                <button className="btn-cancel-modern" onClick={() => setShowStudentModal(false)}>
+                            <div className="modal-actions" style={{ padding: '0 2rem 2rem 2rem', marginTop: '0' }}>
+                                <button
+                                    className="btn-cancel-modern"
+                                    onClick={() => setShowStudentModal(false)}
+                                    style={{ padding: '1rem', fontSize: '1rem' }}
+                                >
                                     Cerrar
                                 </button>
                             </div>
@@ -764,17 +699,75 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
             {
                 showTeacherModal && (
                     <div className="modal-overlay" onClick={() => setShowTeacherModal(false)}>
-                        <div className="school-modal-content" style={{ maxWidth: '800px', width: '90%' }} onClick={(e) => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <div className="modal-icon">👨‍🏫</div>
-                                <h2>Gestión de Maestros</h2>
+                        <div
+                            className="school-modal-content"
+                            style={{
+                                maxWidth: '900px',
+                                width: '90%',
+                                background: '#1e1e2e', // Explicit dark background
+                                color: '#ffffff',      // Explicit white text
+                                borderRadius: '24px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                                padding: '0'
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="modal-header" style={{
+                                background: 'rgba(255,255,255,0.03)',
+                                padding: '2rem',
+                                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '24px 24px 0 0',
+                                marginBottom: 0
+                            }}>
+                                <div className="modal-icon" style={{ fontSize: '3rem', marginBottom: '1rem' }}>👨‍🏫</div>
+                                <h2 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 'bold' }}>Gestión de Maestros</h2>
                             </div>
-                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto', padding: '2rem' }}>
                                 {centerId && <TeacherManagement centerId={centerId} centerName={center?.name} />}
                             </div>
-                            <div className="modal-actions" style={{ marginTop: '20px' }}>
-                                <button className="btn-cancel-modern" onClick={() => setShowTeacherModal(false)}>
+                            <div className="modal-actions" style={{ padding: '0 2rem 2rem 2rem', marginTop: '0' }}>
+                                <button
+                                    className="btn-cancel-modern"
+                                    onClick={() => setShowTeacherModal(false)}
+                                    style={{ padding: '1rem', fontSize: '1rem' }}
+                                >
                                     Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* NEW: TYPE SELECTION MODAL FOR COURSES (INSIDE GRADE) */}
+            {
+                showCourseTypeModal && (
+                    <div className="modal-overlay" onClick={() => setShowCourseTypeModal(false)}>
+                        <div
+                            className="school-modal-content type-selection-content"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="modal-header">
+                                <h2>¿Qué deseas agregar al grado?</h2>
+                                <p>Selecciona una opción para continuar</p>
+                            </div>
+                            <div className="type-selection-grid" style={{ gridTemplateColumns: 'repeat(1, 1fr)', maxWidth: '400px', margin: '0 auto' }}>
+                                <button
+                                    className="selection-card"
+                                    onClick={() => {
+                                        setShowCourseTypeModal(false)
+                                        setSelectedSection(null)
+                                        if (selectedGrade && centerId) {
+                                            navigate(`/admin/school/${centerId}/grade/${selectedGrade.id}/course/new`)
+                                        }
+                                    }}
+                                >
+                                    <span className="selection-icon">📚</span>
+                                    <div>
+                                        <div className="selection-title">Nuevo Curso</div>
+                                        <div className="selection-desc">Crear un nuevo curso desde cero</div>
+                                    </div>
                                 </button>
                             </div>
                         </div>
@@ -786,3 +779,4 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
 }
 
 export default SchoolDetailScreen
+

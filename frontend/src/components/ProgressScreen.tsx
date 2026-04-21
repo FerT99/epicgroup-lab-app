@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../lib/supabase'
@@ -9,20 +9,19 @@ import image36 from '../assets/image36.png'
 import image37 from '../assets/image37.png'
 import image38 from '../assets/image38.png'
 import image39 from '../assets/image39.png'
-import image40 from '../assets/image40.png'
-import image41 from '../assets/image41.png'
-import image42 from '../assets/image42.png'
-import image43 from '../assets/image43.png'
 import TopNavigation from './TopNavigation'
 
 // --- Interfaces ---
 interface Course {
-  id: number
+  id: number | string // Allow string IDs from backend
   title: string
   description: string
   completedSteps: number
   totalSteps: number
   image?: string
+  gradeId?: string
+  centerId?: string
+  centerName?: string
 }
 
 interface Planet {
@@ -48,31 +47,7 @@ interface Note {
   date: string
 }
 
-// --- Mock Data ---
-const MOCK_COURSES: Course[] = [
-  {
-    id: 1,
-    title: 'Astronomía Básica',
-    description: 'Explora los fundamentos del universo',
-    completedSteps: 2,
-    totalSteps: 5,
-  },
-  {
-    id: 2,
-    title: 'Biología Marina',
-    description: 'Descubre los secretos del océano',
-    completedSteps: 0,
-    totalSteps: 4,
-  },
-  {
-    id: 3,
-    title: 'Física Cuántica',
-    description: 'Entiende lo más pequeño del universo',
-    completedSteps: 4,
-    totalSteps: 6,
-  },
-]
-
+// --- Mock Data (kept for fallback or students) ---
 const MOCK_PLANETS: Record<number, Planet[]> = {
   1: [
     { id: 101, number: 1, stars: 3, completed: true, image: image30, position: { top: '80%', left: '20%' }, title: 'Introducción' },
@@ -80,39 +55,11 @@ const MOCK_PLANETS: Record<number, Planet[]> = {
     { id: 103, number: 3, stars: 0, completed: false, image: image37, position: { top: '35%', left: '30%' }, title: 'Estrellas' },
     { id: 104, number: 4, stars: 0, completed: false, image: image38, position: { top: '20%', left: '70%' }, title: 'Galaxias' },
     { id: 105, number: 5, stars: 0, completed: false, image: image39, position: { top: '10%', left: '40%' }, title: 'Agujeros Negros' },
-  ],
-  2: [
-    { id: 201, number: 1, stars: 0, completed: false, image: image40, position: { top: '75%', left: '25%' }, title: 'Océanos' },
-    { id: 202, number: 2, stars: 0, completed: false, image: image41, position: { top: '50%', left: '60%' }, title: 'Vida Marina' },
-    { id: 203, number: 3, stars: 0, completed: false, image: image42, position: { top: '25%', left: '40%' }, title: 'Conservación' },
-    { id: 204, number: 4, stars: 0, completed: false, image: image43, position: { top: '10%', left: '75%' }, title: 'Futuro' },
-  ],
-  3: [
-    { id: 301, number: 1, stars: 3, completed: true, image: image30, position: { top: '80%', left: '20%' }, title: 'Átomos' },
-    { id: 302, number: 2, stars: 3, completed: true, image: image36, position: { top: '65%', left: '50%' }, title: 'Partículas' },
-    { id: 303, number: 3, stars: 2, completed: true, image: image37, position: { top: '45%', left: '30%' }, title: 'Ondas' },
-    { id: 304, number: 4, stars: 1, completed: true, image: image38, position: { top: '30%', left: '70%' }, title: 'Superposición' },
-    { id: 305, number: 5, stars: 0, completed: false, image: image39, position: { top: '15%', left: '45%' }, title: 'Entrelazamiento' },
-    { id: 306, number: 6, stars: 0, completed: false, image: image40, position: { top: '5%', left: '80%' }, title: 'Computación' },
   ]
 }
 
-const MOCK_STUDENTS: Record<number, Student[]> = {
-  1: [
-    { id: 's1', name: 'Ana Garcia', progress: 40, avatar: 'AG' },
-    { id: 's2', name: 'Carlos Lopez', progress: 80, avatar: 'CL' },
-    { id: 's3', name: 'Beatriz Mendez', progress: 20, avatar: 'BM' },
-  ],
-  2: [
-    { id: 's4', name: 'Daniela Ruiz', progress: 0, avatar: 'DR' },
-    { id: 's5', name: 'Eduardo Silva', progress: 10, avatar: 'ES' },
-  ],
-  3: [
-    { id: 's6', name: 'Fernando Torres', progress: 95, avatar: 'FT' },
-    { id: 's7', name: 'Gabriela Paz', progress: 60, avatar: 'GP' },
-    { id: 's8', name: 'Hugo Boss', progress: 100, avatar: 'HB' },
-    { id: 's9', name: 'Irene Adler', progress: 50, avatar: 'IA' },
-  ]
+const MOCK_STUDENTS: Record<string, Student[]> = {
+  // Using string keys for consistency with Course ID
 }
 
 interface ProgressScreenProps {
@@ -128,7 +75,66 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
   const [studentNotes, setStudentNotes] = useState<Record<string, Note[]>>({})
   const [newNote, setNewNote] = useState('')
 
+  // Real Data State
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
   const userRole = getUserRole(user)
+
+  // Fetch Courses for Professor
+  useEffect(() => {
+    const fetchProfessorCourses = async () => {
+      if (userRole !== 'professor' && userRole !== 'admin') return // For now only handle professor logic here
+
+      setLoading(true)
+      try {
+        // 1. Get assigned centers
+        const centersRes = await fetch(`http://localhost:3001/api/professors/${user.id}/centers`)
+        if (!centersRes.ok) throw new Error('Error fetching centers')
+        const centers = await centersRes.json()
+
+        let allCourses: Course[] = []
+
+        // 2. Get hierarchy for each center
+        for (const center of centers) {
+          const hierarchyRes = await fetch(`http://localhost:3001/api/admin/centers/${center.id}/hierarchy`)
+          if (!hierarchyRes.ok) continue
+
+          const hierarchy = await hierarchyRes.json()
+          const grades = hierarchy.grades || []
+
+          // Flatten sections to courses
+          grades.forEach((grade: any) => {
+            const sections = grade.sections || []
+            sections.forEach((section: any) => {
+              allCourses.push({
+                id: section.id,
+                title: `${section.name} - ${grade.name}`, // "Section Name - Grade Name"
+                description: `${center.name} • ${section.short_name || 'Sin código'}`,
+                completedSteps: 0, // Logic to be implemented
+                totalSteps: 5, // Default for now
+                gradeId: grade.id,
+                centerId: center.id,
+                centerName: center.name
+              })
+            })
+          })
+        }
+
+        setCourses(allCourses)
+      } catch (err: any) {
+        console.error('Error loading courses:', err)
+        setError('No se pudieron cargar los cursos asignados')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (user && (userRole === 'professor' || userRole === 'admin')) {
+      fetchProfessorCourses()
+    }
+  }, [user, userRole])
 
   const handleNavigation = (path: string) => {
     navigate(path)
@@ -157,12 +163,14 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
 
   const getActivePlanets = () => {
     if (!selectedCourse) return []
-    return MOCK_PLANETS[selectedCourse.id] || []
+    // TODO: Fetch real content/planets for the course/grade
+    return MOCK_PLANETS[1] || [] // Fallback to demo planets
   }
 
   const getActiveStudents = () => {
     if (!selectedCourse) return []
-    return MOCK_STUDENTS[selectedCourse.id] || []
+    // TODO: Fetch real students enrolled in this section
+    return MOCK_STUDENTS[selectedCourse.id.toString()] || []
   }
 
   const handleAddNote = () => {
@@ -197,39 +205,55 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
       {!selectedCourse ? (
         <div className="progress-content">
           <h1 className="progress-title">Mis cursos</h1>
+
+          {loading && <p style={{ color: 'white', opacity: 0.7 }}>Cargando cursos...</p>}
+          {error && <p style={{ color: '#ef4444', marginBottom: '1rem' }}>{error}</p>}
+
           <div className="courses-grid">
-            {MOCK_COURSES.map((course) => (
-              <div
-                key={course.id}
-                className="course-card"
-                onClick={() => handleOpenCourse(course)}
-              >
-                <h3 className="course-title">{course.title}</h3>
-                <p style={{ color: '#666', marginBottom: '15px' }}>{course.description}</p>
-
-                {/* Progress Bar */}
-                <div className="progress-bar">
-                  {Array.from({ length: course.totalSteps }, (_, index) => {
-                    const stepNumber = index + 1
-                    const isCompleted = stepNumber <= course.completedSteps
-                    return (
-                      <div key={stepNumber} className="progress-step-container">
-                        <div className={`progress-step ${isCompleted ? 'completed' : 'pending'}`}>
-                          <span className="step-number">{stepNumber.toString().padStart(2, '0')}</span>
-                        </div>
-                        {index < course.totalSteps - 1 && (
-                          <div className={`progress-line ${isCompleted ? 'completed' : 'pending'}`}></div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-
-                <button className="complete-course-btn">
-                  Ver Curso ►
-                </button>
+            {!loading && courses.length === 0 ? (
+              <div className="empty-state-courses" style={{
+                gridColumn: '1 / -1',
+                textAlign: 'center',
+                padding: '40px',
+                color: 'white'
+              }}>
+                <p style={{ fontSize: '18px', fontWeight: 500, marginBottom: '8px' }}>¡Todavía no tienes cursos!</p>
+                <p style={{ fontSize: '14px', opacity: 0.8 }}>Pronto verás tus cursos asignados aquí.</p>
               </div>
-            ))}
+            ) : (
+              courses.map((course) => (
+                <div
+                  key={course.id}
+                  className="course-card"
+                  onClick={() => handleOpenCourse(course)}
+                >
+                  <h3 className="course-title">{course.title}</h3>
+                  <p style={{ color: '#666', marginBottom: '15px' }}>{course.description}</p>
+
+                  {/* Progress Bar - Visual Placeholder until real progress logic */}
+                  <div className="progress-bar">
+                    {Array.from({ length: course.totalSteps }, (_, index) => {
+                      const stepNumber = index + 1
+                      const isCompleted = stepNumber <= course.completedSteps
+                      return (
+                        <div key={stepNumber} className="progress-step-container">
+                          <div className={`progress-step ${isCompleted ? 'completed' : 'pending'}`}>
+                            <span className="step-number">{stepNumber.toString().padStart(2, '0')}</span>
+                          </div>
+                          {index < course.totalSteps - 1 && (
+                            <div className={`progress-line ${isCompleted ? 'completed' : 'pending'}`}></div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  <button className="complete-course-btn">
+                    Ver Curso ►
+                  </button>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Admin/Professor Section */}

@@ -54,9 +54,9 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ user }) => {
 
           <div className="courses-grid">
             {/* TODO: Fetch courses from backend and map them here */}
-            <div className="empty-state">
-              <p>No hay cursos disponibles</p>
-              <p className="empty-state-subtitle">Los cursos aparecerán aquí cuando se carguen desde el backend</p>
+            <div className="empty-state" style={{ textAlign: 'center', color: 'white', marginTop: '40px' }}>
+              <p style={{ fontSize: '18px', fontWeight: 500, marginBottom: '8px' }}>No hay cursos disponibles</p>
+              <p style={{ fontSize: '14px', opacity: 0.8 }}>Los cursos aparecerán aquí cuando se carguen desde el backend</p>
             </div>
           </div>
         </div>

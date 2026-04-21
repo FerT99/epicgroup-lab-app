@@ -9,6 +9,8 @@ import './ProfileScreen.css'
 
 import type { StudentData } from '../lib/api' // Import StudentData
 
+import { getUserRole } from '../utils/getUserRole' // Ensure this import exists or add it
+
 interface ProfileScreenProps {
   user: User
 }
@@ -22,10 +24,23 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
 
-  const isProfessor =
-    user.user_metadata?.role?.toLowerCase() === 'professor' ||
-    user.app_metadata?.role?.toLowerCase() === 'professor' ||
-    user.user_metadata?.is_professor === true;
+  const userRole = getUserRole(user)
+  const isProfessor = userRole === 'professor' || userRole === 'admin' // Admin usually sees professor view in this context? Or just strict professor? 
+  // Base code had: 
+  // const isProfessor =
+  //   user.user_metadata?.role?.toLowerCase() === 'professor' ||
+  //   user.app_metadata?.role?.toLowerCase() === 'professor' ||
+  //   user.user_metadata?.is_professor === true;
+  // Let's stick to strict 'professor' for isProfessor boolean unless admin implies it.
+  // Actually, usually admin has super access. Let's keep it simple:
+  // const isProfessor = getUserRole(user) === 'professor'
+
+  const getRoleDisplay = () => {
+    const role = getUserRole(user)
+    if (role === 'admin') return 'Admin'
+    if (role === 'professor') return 'Profesor'
+    return 'Alumno'
+  }
 
   const handleLogout = async () => {
     setLoading(true)
@@ -181,8 +196,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
               {/* Section 1: Última actividad */}
               <div className="section-block">
                 <span className="section-subtitle">
-                  {user.user_metadata?.role === 'professor' ? 'Teacher' : 'Student'}
-                  {user.user_metadata?.school_name ? ` at ${user.user_metadata.school_name}` : ''}
+                  {getRoleDisplay()}
+                  {user.user_metadata?.school_name ? ` en ${user.user_metadata.school_name}` : ''}
                 </span>
                 <h3 className="section-title">Última actividad</h3>
 
@@ -215,9 +230,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
               {/* Section 2: Acerca del... */}
               <div className="section-block">
                 <span className="section-subtitle">
-                  {user.user_metadata?.role === 'professor' ? 'Teacher' : 'Student'}
+                  {getRoleDisplay()}
                 </span>
-                <h3 className="section-title">Acerca del {isProfessor ? 'profesor' : 'alumno'}</h3>
+                <h3 className="section-title">Acerca del {getRoleDisplay().toLowerCase()}</h3>
 
                 <div className="info-header">
                   <div className="info-icon">
@@ -262,7 +277,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
                   )}
                 </div>
 
-                {isProfessor && (
+                {userRole === 'admin' && (
                   <div className="professor-upload-section" style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
                     <button className="follow-btn" style={{ width: '100%' }} onClick={handleUploadClick}>
                       {uploading ? 'Subiendo...' : 'Subir Cursos PDF'}

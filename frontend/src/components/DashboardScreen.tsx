@@ -61,7 +61,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
                 <span className="medal-icon">🏅</span>
                 <p className="progress-text" color="white">Haz click para checar a tus alumnos y cursos pendientes. ¡Accede a tu agenda!</p>
               </div>
-              <button className="level-up-btn">Ver los cursos</button>
+              <button className="level-up-btn" onClick={() => navigate('/progress')}>Ver los cursos</button>
             </div>
           </div>
 

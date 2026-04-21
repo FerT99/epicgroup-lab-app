@@ -1,0 +1,3 @@
+src/components/StudentManagement.tsx(217,62): error TS6133: 'centerName' is declared but its value is never read.
+src/components/StudentManagement.tsx(230,12): error TS6133: 'csvFile' is declared but its value is never read.
+src/components/StudentManagement.tsx(396,15): error TS6133: 'results' is declared but its value is never read.

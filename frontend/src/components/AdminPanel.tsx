@@ -463,6 +463,46 @@ const AdminPanel: React.FC = () => {
     return results
   }
 
+  // State for single user creation
+  const [activeTab, setActiveTab] = useState<'bulk' | 'single'>('single')
+  const [newUser, setNewUser] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+    role: 'student' as 'admin' | 'professor' | 'student'
+  })
+  const [creationStatus, setCreationStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null)
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setCreationStatus(null)
+
+    try {
+      const response = await fetch('http://localhost:3001/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newUser)
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error creating user')
+      }
+
+      setCreationStatus({ type: 'success', message: `Usuario creado exitosamente: ${newUser.email}` })
+      setNewUser({ email: '', password: '', fullName: '', role: 'student' }) // Reset form
+    } catch (error: any) {
+      console.error('Error creating user:', error)
+      setCreationStatus({ type: 'error', message: error.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="admin-panel">
       <div className="admin-container">
@@ -486,139 +526,257 @@ const AdminPanel: React.FC = () => {
           </button>
         </div>
 
-        <div className="admin-section">
-          <h2>📊 Inserción de Usuarios</h2>
-          <p>Selecciona qué usuarios insertar en Supabase:</p>
-
-          <div className="cohort-selector">
-            <label>
-              <input
-                type="radio"
-                name="cohort"
-                value="all"
-                checked={selectedCohort === 'all'}
-                onChange={(e) => setSelectedCohort(e.target.value)}
-              />
-              Todos los usuarios ({usersData.length})
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="cohort"
-                value="IPDC1"
-                checked={selectedCohort === 'IPDC1'}
-                onChange={(e) => setSelectedCohort(e.target.value)}
-              />
-              Solo IPDC1 ({usersData.filter(u => u.cohort === 'IPDC1').length})
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="cohort"
-                value="IPDC3"
-                checked={selectedCohort === 'IPDC3'}
-                onChange={(e) => setSelectedCohort(e.target.value)}
-              />
-              Solo IPDC3 ({usersData.filter(u => u.cohort === 'IPDC3').length})
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="cohort"
-                value="IPDC5"
-                checked={selectedCohort === 'IPDC5'}
-                onChange={(e) => setSelectedCohort(e.target.value)}
-              />
-              Solo IPDC5 ({usersData.filter(u => u.cohort === 'IPDC5').length})
-            </label>
-          </div>
-
-          <div className="button-group">
-            <button
-              className="insert-btn"
-              onClick={() => insertUsers(selectedCohort)}
-              disabled={loading}
-            >
-              {loading ? '⏳ Insertando usuarios...' : '🚀 Insertar Usuarios'}
-            </button>
-
-            <button
-              className="insert-btn slower"
-              onClick={() => insertUsersWithLongerPauses(selectedCohort)}
-              disabled={loading}
-            >
-              {loading ? '⏳ Insertando usuarios...' : '🐌 Insertar con Pausas Largas'}
-            </button>
-
-            {failedUsers.length > 0 && (
-              <button
-                className="insert-btn retry"
-                onClick={insertFailedUsers}
-                disabled={loading}
-              >
-                {loading ? '⏳ Reintentando...' : `🔄 Reintentar Fallidos (${failedUsers.length})`}
-              </button>
-            )}
-          </div>
+        {/* Tabs */}
+        <div className="admin-tabs" style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => setActiveTab('single')}
+            style={{
+              padding: '10px 20px',
+              cursor: 'pointer',
+              background: activeTab === 'single' ? '#4CAF50' : '#ddd',
+              color: activeTab === 'single' ? 'white' : '#333',
+              border: 'none',
+              borderRadius: '5px',
+              fontWeight: 'bold'
+            }}
+          >
+            👤 Crear Usuario Individual
+          </button>
+          <button
+            onClick={() => setActiveTab('bulk')}
+            style={{
+              padding: '10px 20px',
+              cursor: 'pointer',
+              background: activeTab === 'bulk' ? '#2196F3' : '#ddd',
+              color: activeTab === 'bulk' ? 'white' : '#333',
+              border: 'none',
+              borderRadius: '5px',
+              fontWeight: 'bold'
+            }}
+          >
+            📚 Carga Masiva (CSV)
+          </button>
         </div>
 
-        {results && (
-          <div className="results-section">
-            <h2>📈 Resultados</h2>
-            <div className="results-summary">
-              <div className="result-item success">
-                <span className="result-number">{results.success}</span>
-                <span className="result-label">Usuarios Creados</span>
+        {activeTab === 'single' ? (
+          <div className="admin-section">
+            <h2>👤 Crear Nuevo Usuario</h2>
+            <form onSubmit={handleCreateUser} style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '500px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px' }}>Nombre Completo:</label>
+                <input
+                  type="text"
+                  value={newUser.fullName}
+                  onChange={e => setNewUser({ ...newUser, fullName: e.target.value })}
+                  required
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  placeholder="Ej. Juan Pérez"
+                />
               </div>
-              <div className="result-item error">
-                <span className="result-number">{results.errors}</span>
-                <span className="result-label">Errores</span>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px' }}>Correo Electrónico:</label>
+                <input
+                  type="email"
+                  value={newUser.email}
+                  onChange={e => setNewUser({ ...newUser, email: e.target.value })}
+                  required
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  placeholder="email@ejemplo.com"
+                />
               </div>
-              <div className="result-item total">
-                <span className="result-number">{results.processed.length}</span>
-                <span className="result-label">Total Procesados</span>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px' }}>Contraseña:</label>
+                <input
+                  type="text"
+                  value={newUser.password}
+                  onChange={e => setNewUser({ ...newUser, password: e.target.value })}
+                  required
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  placeholder="Mínimo 6 caracteres"
+                />
               </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px' }}>Rol:</label>
+                <select
+                  value={newUser.role}
+                  onChange={e => setNewUser({ ...newUser, role: e.target.value as any })}
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                >
+                  <option value="student">Estudiante</option>
+                  <option value="professor">Profesor</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  padding: '10px',
+                  background: '#4CAF50',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  marginTop: '10px'
+                }}
+              >
+                {loading ? '⏳ Creando...' : '✨ Crear Usuario'}
+              </button>
+
+              {creationStatus && (
+                <div style={{
+                  marginTop: '15px',
+                  padding: '10px',
+                  borderRadius: '5px',
+                  background: creationStatus.type === 'success' ? '#d4edda' : '#f8d7da',
+                  color: creationStatus.type === 'success' ? '#155724' : '#721c24',
+                  border: `1px solid ${creationStatus.type === 'success' ? '#c3e6cb' : '#f5c6cb'}`
+                }}>
+                  {creationStatus.message}
+                </div>
+              )}
+            </form>
+          </div>
+        ) : (
+          <div className="admin-section">
+            <h2>📊 Inserción de Usuarios (Masiva)</h2>
+            <p>Selecciona qué usuarios insertar en Supabase:</p>
+
+            <div className="cohort-selector">
+              <label>
+                <input
+                  type="radio"
+                  name="cohort"
+                  value="all"
+                  checked={selectedCohort === 'all'}
+                  onChange={(e) => setSelectedCohort(e.target.value)}
+                />
+                Todos los usuarios ({usersData.length})
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="cohort"
+                  value="IPDC1"
+                  checked={selectedCohort === 'IPDC1'}
+                  onChange={(e) => setSelectedCohort(e.target.value)}
+                />
+                Solo IPDC1 ({usersData.filter(u => u.cohort === 'IPDC1').length})
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="cohort"
+                  value="IPDC3"
+                  checked={selectedCohort === 'IPDC3'}
+                  onChange={(e) => setSelectedCohort(e.target.value)}
+                />
+                Solo IPDC3 ({usersData.filter(u => u.cohort === 'IPDC3').length})
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="cohort"
+                  value="IPDC5"
+                  checked={selectedCohort === 'IPDC5'}
+                  onChange={(e) => setSelectedCohort(e.target.value)}
+                />
+                Solo IPDC5 ({usersData.filter(u => u.cohort === 'IPDC5').length})
+              </label>
             </div>
 
-            {results.errorDetails.length > 0 && (
-              <div className="errors-details">
-                <h3>❌ Errores Detallados:</h3>
-                <div className="error-list">
-                  {results.errorDetails.map((error: ErrorDetail, index: number) => (
-                    <div key={index} className="error-item">
-                      <strong>{error.email}</strong>: {error.error}
+            <div className="button-group">
+              <button
+                className="insert-btn"
+                onClick={() => insertUsers(selectedCohort)}
+                disabled={loading}
+              >
+                {loading ? '⏳ Insertando usuarios...' : '🚀 Insertar Usuarios'}
+              </button>
+
+              <button
+                className="insert-btn slower"
+                onClick={() => insertUsersWithLongerPauses(selectedCohort)}
+                disabled={loading}
+              >
+                {loading ? '⏳ Insertando usuarios...' : '🐌 Insertar con Pausas Largas'}
+              </button>
+
+              {failedUsers.length > 0 && (
+                <button
+                  className="insert-btn retry"
+                  onClick={insertFailedUsers}
+                  disabled={loading}
+                >
+                  {loading ? '⏳ Reintentando...' : `🔄 Reintentar Fallidos (${failedUsers.length})`}
+                </button>
+              )}
+            </div>
+
+            {results && (
+              <div className="results-section">
+                <h2>📈 Resultados</h2>
+                <div className="results-summary">
+                  <div className="result-item success">
+                    <span className="result-number">{results.success}</span>
+                    <span className="result-label">Usuarios Creados</span>
+                  </div>
+                  <div className="result-item error">
+                    <span className="result-number">{results.errors}</span>
+                    <span className="result-label">Errores</span>
+                  </div>
+                  <div className="result-item total">
+                    <span className="result-number">{results.processed.length}</span>
+                    <span className="result-label">Total Procesados</span>
+                  </div>
+                </div>
+
+                {results.errorDetails.length > 0 && (
+                  <div className="errors-details">
+                    <h3>❌ Errores Detallados:</h3>
+                    <div className="error-list">
+                      {results.errorDetails.map((error: ErrorDetail, index: number) => (
+                        <div key={index} className="error-item">
+                          <strong>{error.email}</strong>: {error.error}
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                )}
+
+                <div className="processed-list">
+                  <h3>📋 Lista de Procesamiento:</h3>
+                  <div className="processed-items">
+                    {results.processed.map((item: ProcessedItem, index: number) => (
+                      <div key={index} className={`processed-item ${item.status}`}>
+                        <span className="status-icon">
+                          {item.status === 'success' ? '✅' : '❌'}
+                        </span>
+                        <span className="email">{item.email}</span>
+                        <span className="message">{item.message}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
 
-            <div className="processed-list">
-              <h3>📋 Lista de Procesamiento:</h3>
-              <div className="processed-items">
-                {results.processed.map((item: ProcessedItem, index: number) => (
-                  <div key={index} className={`processed-item ${item.status}`}>
-                    <span className="status-icon">
-                      {item.status === 'success' ? '✅' : '❌'}
-                    </span>
-                    <span className="email">{item.email}</span>
-                    <span className="message">{item.message}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="admin-info">
+              <h3>ℹ️ Información Importante:</h3>
+              <ul>
+                <li>Los usuarios se crean con la contraseña: <code>ingles2025</code></li>
+                <li>Los usuarios pueden necesitar confirmar su email</li>
+                <li>Si un email ya existe, mostrará error (esto es normal)</li>
+                <li>El proceso incluye pausas para evitar límites de Supabase</li>
+              </ul>
             </div>
           </div>
         )}
-
-        <div className="admin-info">
-          <h3>ℹ️ Información Importante:</h3>
-          <ul>
-            <li>Los usuarios se crean con la contraseña: <code>ingles2025</code></li>
-            <li>Los usuarios pueden necesitar confirmar su email</li>
-            <li>Si un email ya existe, mostrará error (esto es normal)</li>
-            <li>El proceso incluye pausas para evitar límites de Supabase</li>
-          </ul>
-        </div>
       </div>
     </div>
   )
