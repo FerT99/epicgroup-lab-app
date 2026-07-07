@@ -486,69 +486,71 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                 showAddTypeModal && (
                     <div className="modal-overlay" onClick={() => setShowAddTypeModal(false)}>
                         <div
-                            className="school-modal-content type-selection-content"
+                            className="type-selection-content"
                             style={{
                                 background: '#ffffff',
-                                color: '#1e293b',
+                                color: '#1f295a',
                                 borderRadius: '24px',
                                 border: '1px solid rgba(0, 0, 0, 0.1)',
                                 boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                                padding: '2rem'
+                                padding: '2rem',
+                                maxWidth: '500px',
+                                width: '100%'
                             }}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="modal-header" style={{ borderBottom: 'none', paddingBottom: '0' }}>
-                                <h2 style={{ color: '#1e293b', fontSize: '1.8rem', fontWeight: 'bold' }}>¿Qué deseas agregar?</h2>
+                            <div className="modal-header" style={{ borderBottom: 'none', paddingBottom: '0', background: 'transparent' }}>
+                                <h2 style={{ color: '#1f295a', fontSize: '1.8rem', fontWeight: 'bold', margin: 0 }}>¿Qué deseas agregar?</h2>
                             </div>
                             <div className="type-selection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.5rem' }}>
                                 <button
                                     className="selection-card"
-                                    style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '16px', padding: '1.5rem', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 4px 12px rgba(37,99,235,0.2)' }}
+                                    style={{ background: '#1f295a', color: '#ffffff', border: 'none', borderRadius: '30px', padding: '1.5rem', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '1.5rem', cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
                                     onClick={() => {
                                         setShowAddTypeModal(false)
                                         handleCreateGrade()
                                     }}
                                 >
-                                    <span className="selection-icon" style={{ fontSize: '2rem' }}>📚</span>
+                                    <span className="selection-icon" style={{ fontSize: '2rem', filter: 'none' }}>📚</span>
                                     <div>
                                         <div className="selection-title" style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.25rem', color: '#ffffff' }}>Grado</div>
-                                        <div className="selection-desc" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>Crear nuevo grado</div>
+                                        <div className="selection-desc" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem' }}>Crear nuevo grado</div>
                                     </div>
                                 </button>
 
                                 <button
                                     className="selection-card"
-                                    style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '16px', padding: '1.5rem', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 4px 12px rgba(37,99,235,0.2)' }}
+                                    style={{ background: '#1f295a', color: '#ffffff', border: 'none', borderRadius: '30px', padding: '1.5rem', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '1.5rem', cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
                                     onClick={() => {
                                         setShowAddTypeModal(false)
                                         setShowStudentModal(true)
                                     }}
                                 >
-                                    <span className="selection-icon" style={{ fontSize: '2rem' }}>👨‍🎓</span>
+                                    <span className="selection-icon" style={{ fontSize: '2rem', filter: 'none' }}>👨‍🎓</span>
                                     <div>
                                         <div className="selection-title" style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.25rem', color: '#ffffff' }}>Alumnos</div>
-                                        <div className="selection-desc" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>Gestionar estudiantes</div>
+                                        <div className="selection-desc" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem' }}>Gestionar estudiantes</div>
                                     </div>
                                 </button>
 
                                 <button
                                     className="selection-card"
-                                    style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '16px', padding: '1.5rem', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 4px 12px rgba(37,99,235,0.2)' }}
+                                    style={{ background: '#1f295a', color: '#ffffff', border: 'none', borderRadius: '30px', padding: '1.5rem', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '1.5rem', cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
                                     onClick={() => {
                                         setShowAddTypeModal(false)
                                         setShowTeacherModal(true)
                                     }}
                                 >
-                                    <span className="selection-icon" style={{ fontSize: '2rem' }}>👨‍🏫</span>
+                                    <span className="selection-icon" style={{ fontSize: '2rem', filter: 'none' }}>👨‍🏫</span>
                                     <div>
                                         <div className="selection-title" style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.25rem', color: '#ffffff' }}>Maestros</div>
-                                        <div className="selection-desc" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>Gestionar docentes</div>
+                                        <div className="selection-desc" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem' }}>Gestionar docentes</div>
                                     </div>
                                 </button>
 
                                 <button
                                     className="selection-card"
-                                    style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '16px', padding: '1.5rem', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 4px 12px rgba(37,99,235,0.2)', opacity: selectedGrade ? 1 : 0.6 }}
+                                    style={{ background: '#1f295a', color: '#ffffff', border: 'none', borderRadius: '30px', padding: '1.5rem', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '1.5rem', cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', opacity: selectedGrade ? 1 : 0.6 }}
                                     onClick={() => {
                                         if (!selectedGrade) {
                                             alert('Por favor selecciona un grado primero para agregar un curso.')
@@ -560,10 +562,10 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                                         }
                                     }}
                                 >
-                                    <span className="selection-icon" style={{ fontSize: '2rem' }}>📖</span>
+                                    <span className="selection-icon" style={{ fontSize: '2rem', filter: 'none' }}>📖</span>
                                     <div>
                                         <div className="selection-title" style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.25rem', color: '#ffffff' }}>Curso</div>
-                                        <div className="selection-desc" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>Agregar nuevo curso</div>
+                                        <div className="selection-desc" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem' }}>Agregar nuevo curso</div>
                                     </div>
                                 </button>
                             </div>
@@ -713,16 +715,27 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                 showCourseTypeModal && (
                     <div className="modal-overlay" onClick={() => setShowCourseTypeModal(false)}>
                         <div
-                            className="school-modal-content type-selection-content"
+                            className="type-selection-content"
+                            style={{
+                                background: '#ffffff',
+                                color: '#1f295a',
+                                borderRadius: '24px',
+                                border: '1px solid rgba(0, 0, 0, 0.1)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                                padding: '2rem',
+                                maxWidth: '500px',
+                                width: '100%'
+                            }}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="modal-header">
-                                <h2>¿Qué deseas agregar al grado?</h2>
-                                <p>Selecciona una opción para continuar</p>
+                            <div className="modal-header" style={{ borderBottom: 'none', paddingBottom: '0', background: 'transparent' }}>
+                                <h2 style={{ color: '#1f295a', fontSize: '1.8rem', fontWeight: 'bold', margin: 0 }}>¿Qué deseas agregar al grado?</h2>
+                                <p style={{ color: '#4b5563', marginTop: '0.5rem' }}>Selecciona una opción para continuar</p>
                             </div>
                             <div className="type-selection-grid" style={{ gridTemplateColumns: 'repeat(1, 1fr)', maxWidth: '400px', margin: '0 auto' }}>
                                 <button
                                     className="selection-card"
+                                    style={{ background: '#1f295a', color: '#ffffff', border: 'none', borderRadius: '30px', padding: '1.5rem', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '1.5rem', cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
                                     onClick={() => {
                                         setShowCourseTypeModal(false)
                                         setSelectedSection(null)
@@ -731,10 +744,10 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                                         }
                                     }}
                                 >
-                                    <span className="selection-icon">📚</span>
+                                    <span className="selection-icon" style={{ fontSize: '2rem', filter: 'none' }}>📚</span>
                                     <div>
-                                        <div className="selection-title">Nuevo Curso</div>
-                                        <div className="selection-desc">Crear un nuevo curso desde cero</div>
+                                        <div className="selection-title" style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.25rem', color: '#ffffff' }}>Nuevo Curso</div>
+                                        <div className="selection-desc" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem' }}>Crear un nuevo curso desde cero</div>
                                     </div>
                                 </button>
                             </div>

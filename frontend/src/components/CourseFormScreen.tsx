@@ -147,12 +147,12 @@ const CourseFormScreen: React.FC<CourseFormScreenProps> = ({ user }) => {
                             <button
                                 className="btn-back"
                                 onClick={handleCancel}
-                                style={{ position: 'static' }}
+                                style={{ position: 'static', color: '#1f295a', borderColor: '#1f295a', width: 'max-content' }}
                             >
                                 ← Volver
                             </button>
                         </div>
-                        <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', textAlign: 'center' }}>
+                        <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#1f295a', textAlign: 'center' }}>
                             {isEditing ? 'Editar Curso' : 'Nuevo Curso'}
                         </h1>
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -168,102 +168,101 @@ const CourseFormScreen: React.FC<CourseFormScreenProps> = ({ user }) => {
                     )}
 
                     <div style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        backdropFilter: 'blur(10px)',
+                        background: '#ffffff',
                         padding: '3rem',
                         borderRadius: '30px',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(0, 0, 0, 0.1)',
                         width: '100%',
                         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
                     }}>
                         <div className="form-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem' }}>
                             {/* Basic Info */}
                             <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                                <label style={{ fontSize: '1.1rem', marginBottom: '0.8rem', color: '#e879f9' }}>Nombre Completo del Curso *</label>
+                                <label style={{ fontSize: '1.1rem', marginBottom: '0.8rem', color: '#1f295a', fontWeight: 'bold' }}>Nombre Completo del Curso *</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
                                     className="modern-input"
-                                    style={{ padding: '1rem', fontSize: '1.1rem', background: 'rgba(0,0,0,0.2)' }}
+                                    style={{ padding: '1rem', fontSize: '1.1rem', background: '#f3f4f6', color: '#1f295a', border: '1px solid #d1d5db' }}
                                     placeholder="Ej: Matemáticas Avanzadas I"
                                     autoFocus={!isEditing}
                                 />
                             </div>
 
                             <div className="form-group">
-                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Nombre Corto</label>
+                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#1f295a', fontWeight: 'bold' }}>Nombre Corto</label>
                                 <input
                                     type="text"
                                     name="short_name"
                                     value={formData.short_name}
                                     onChange={handleChange}
                                     className="modern-input"
-                                    style={{ padding: '1rem' }}
+                                    style={{ padding: '1rem', background: '#f3f4f6', color: '#1f295a', border: '1px solid #d1d5db' }}
                                     placeholder="Ej: MAT-101"
                                 />
                             </div>
 
                             <div className="form-group">
-                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>ID del Curso (Opcional)</label>
+                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#1f295a', fontWeight: 'bold' }}>ID del Curso (Opcional)</label>
                                 <input
                                     type="text"
                                     name="course_id"
                                     value={formData.course_id}
                                     onChange={handleChange}
                                     className="modern-input"
-                                    style={{ padding: '1rem' }}
+                                    style={{ padding: '1rem', background: '#f3f4f6', color: '#1f295a', border: '1px solid #d1d5db' }}
                                     placeholder="Identificador único"
                                 />
                             </div>
 
                             <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Descripción</label>
+                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#1f295a', fontWeight: 'bold' }}>Descripción</label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
                                     className="modern-input"
-                                    style={{ minHeight: '150px', resize: 'vertical', padding: '1rem', lineHeight: '1.6' }}
+                                    style={{ minHeight: '150px', resize: 'vertical', padding: '1rem', lineHeight: '1.6', background: '#f3f4f6', color: '#1f295a', border: '1px solid #d1d5db' }}
                                     placeholder="Descripción general del curso..."
                                 />
                             </div>
 
                             {/* Dates */}
                             <div className="form-group">
-                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Fecha de Inicio</label>
+                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#1f295a', fontWeight: 'bold' }}>Fecha de Inicio</label>
                                 <input
                                     type="date"
                                     name="start_date"
                                     value={formData.start_date}
                                     onChange={handleChange}
                                     className="modern-input"
-                                    style={{ padding: '1rem' }}
+                                    style={{ padding: '1rem', background: '#f3f4f6', color: '#1f295a', border: '1px solid #d1d5db' }}
                                 />
                             </div>
 
                             <div className="form-group">
-                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Fecha de Finalización</label>
+                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#1f295a', fontWeight: 'bold' }}>Fecha de Finalización</label>
                                 <input
                                     type="date"
                                     name="end_date"
                                     value={formData.end_date}
                                     onChange={handleChange}
                                     className="modern-input"
-                                    style={{ padding: '1rem' }}
+                                    style={{ padding: '1rem', background: '#f3f4f6', color: '#1f295a', border: '1px solid #d1d5db' }}
                                 />
                             </div>
 
                             {/* Settings */}
                             <div className="form-group">
-                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Visibilidad</label>
+                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#1f295a', fontWeight: 'bold' }}>Visibilidad</label>
                                 <select
                                     name="visibility"
                                     value={formData.visibility}
                                     onChange={handleChange}
                                     className="modern-input"
-                                    style={{ padding: '1rem' }}
+                                    style={{ padding: '1rem', background: '#f3f4f6', color: '#1f295a', border: '1px solid #d1d5db' }}
                                 >
                                     <option value="active">Mostrar</option>
                                     <option value="hidden">Ocultar</option>
@@ -272,14 +271,14 @@ const CourseFormScreen: React.FC<CourseFormScreenProps> = ({ user }) => {
                             </div>
 
                             <div className="form-group">
-                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Cantidad de Estudiantes</label>
+                                <label style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#1f295a', fontWeight: 'bold' }}>Cantidad de Estudiantes</label>
                                 <input
                                     type="number"
                                     name="max_students"
                                     value={formData.max_students}
                                     onChange={handleChange}
                                     className="modern-input"
-                                    style={{ padding: '1rem' }}
+                                    style={{ padding: '1rem', background: '#f3f4f6', color: '#1f295a', border: '1px solid #d1d5db' }}
                                     min="1"
                                 />
                             </div>
@@ -289,7 +288,7 @@ const CourseFormScreen: React.FC<CourseFormScreenProps> = ({ user }) => {
                             <button
                                 className="btn-cancel-modern"
                                 onClick={handleCancel}
-                                style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
+                                style={{ padding: '1rem 2rem', fontSize: '1.1rem', color: '#1f295a', borderColor: '#1f295a' }}
                             >
                                 Cancelar
                             </button>
