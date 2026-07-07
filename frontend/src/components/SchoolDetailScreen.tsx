@@ -626,37 +626,39 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                 showStudentModal && (
                     <div className="modal-overlay" onClick={() => setShowStudentModal(false)}>
                         <div
-                            className="school-modal-content"
                             style={{
                                 maxWidth: '700px',
                                 width: '90%',
-                                background: '#1e1e2e', // Explicit dark background
-                                color: '#ffffff',      // Explicit white text
+                                maxHeight: '90vh',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                background: '#ffffff',
+                                color: '#1f295a',
                                 borderRadius: '24px',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                                padding: '0' // Remove padding here, let header/body handle it
+                                border: '1px solid rgba(0, 0, 0, 0.1)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                                padding: '0'
                             }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="modal-header" style={{
-                                background: 'rgba(255,255,255,0.03)',
+                                background: 'transparent',
                                 padding: '2rem',
-                                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                                borderBottom: '1px solid rgba(0,0,0,0.1)',
                                 borderRadius: '24px 24px 0 0',
-                                marginBottom: 0
+                                marginBottom: 0,
+                                textAlign: 'center'
                             }}>
-                                <div className="modal-icon" style={{ fontSize: '3rem', marginBottom: '1rem' }}>👨‍🎓</div>
-                                <h2 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 'bold' }}>Gestión de Alumnos</h2>
+                                <h2 style={{ color: '#1f295a', fontSize: '1.8rem', fontWeight: 'bold', margin: 0 }}>Gestión de Alumnos</h2>
                             </div>
-                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto', padding: '2rem' }}>
+                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto', padding: '2rem', background: 'transparent' }}>
                                 <StudentManagement centerId={center?.id} centerName={center?.name} gradeId={selectedGrade?.id} />
                             </div>
-                            <div className="modal-actions" style={{ padding: '0 2rem 2rem 2rem', marginTop: '0' }}>
+                            <div className="modal-actions" style={{ padding: '0 2rem 2rem 2rem', marginTop: '0', display: 'flex', justifyContent: 'center' }}>
                                 <button
                                     className="btn-cancel-modern"
                                     onClick={() => setShowStudentModal(false)}
-                                    style={{ padding: '1rem', fontSize: '1rem' }}
+                                    style={{ padding: '1rem', fontSize: '1rem', background: '#e2e8f0', color: '#1f295a', maxWidth: '200px' }}
                                 >
                                     Cerrar
                                 </button>
@@ -670,37 +672,39 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                 showTeacherModal && (
                     <div className="modal-overlay" onClick={() => setShowTeacherModal(false)}>
                         <div
-                            className="school-modal-content"
                             style={{
                                 maxWidth: '900px',
                                 width: '90%',
-                                background: '#1e1e2e', // Explicit dark background
-                                color: '#ffffff',      // Explicit white text
+                                maxHeight: '90vh',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                background: '#ffffff',
+                                color: '#1f295a',
                                 borderRadius: '24px',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                                border: '1px solid rgba(0, 0, 0, 0.1)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
                                 padding: '0'
                             }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="modal-header" style={{
-                                background: 'rgba(255,255,255,0.03)',
+                                background: 'transparent',
                                 padding: '2rem',
-                                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                                borderBottom: '1px solid rgba(0,0,0,0.1)',
                                 borderRadius: '24px 24px 0 0',
-                                marginBottom: 0
+                                marginBottom: 0,
+                                textAlign: 'center'
                             }}>
-                                <div className="modal-icon" style={{ fontSize: '3rem', marginBottom: '1rem' }}>👨‍🏫</div>
-                                <h2 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 'bold' }}>Gestión de Maestros</h2>
+                                <h2 style={{ color: '#1f295a', fontSize: '1.8rem', fontWeight: 'bold', margin: 0 }}>Gestión de Maestros</h2>
                             </div>
-                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto', padding: '2rem' }}>
+                            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto', padding: '2rem', background: 'transparent' }}>
                                 {centerId && <TeacherManagement centerId={centerId} centerName={center?.name} />}
                             </div>
-                            <div className="modal-actions" style={{ padding: '0 2rem 2rem 2rem', marginTop: '0' }}>
+                            <div className="modal-actions" style={{ padding: '0 2rem 2rem 2rem', marginTop: '0', display: 'flex', justifyContent: 'center' }}>
                                 <button
                                     className="btn-cancel-modern"
                                     onClick={() => setShowTeacherModal(false)}
-                                    style={{ padding: '1rem', fontSize: '1rem' }}
+                                    style={{ padding: '1rem', fontSize: '1rem', background: '#e2e8f0', color: '#1f295a', maxWidth: '200px' }}
                                 >
                                     Cerrar
                                 </button>

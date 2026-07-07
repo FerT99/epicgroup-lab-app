@@ -104,44 +104,47 @@ const TeacherManagement: React.FC<TeacherManagementProps> = ({ centerId }) => {
             )}
 
             {/* CREATE FORM */}
-            <div className="form-grid" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: '#d946ef' }}>Registrar Nuevo Maestro</h4>
-                <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '1rem', alignItems: 'end' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem 0' }}>
+                <h4 style={{ color: '#1f295a', margin: '0 0 1.5rem 0', fontSize: '1.2rem', textAlign: 'center' }}>Registrar Nuevo Maestro</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', maxWidth: '400px' }}>
                     <div className="form-group">
-                        <label>Nombre Completo *</label>
+                        <label style={{ color: '#1f295a', fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>Nombre Completo *</label>
                         <input
                             type="text"
                             value={createForm.fullName}
                             onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
                             placeholder="Ej: Juan Pérez"
                             className="modern-input"
+                            style={{ background: '#f8fafc', color: '#1f295a', border: '1px solid rgba(31, 41, 90, 0.2)' }}
                         />
                     </div>
                     <div className="form-group">
-                        <label>Correo Electrónico *</label>
+                        <label style={{ color: '#1f295a', fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>Correo Electrónico *</label>
                         <input
                             type="email"
                             value={createForm.email}
                             onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
                             placeholder="ejemplo@escuela.com"
                             className="modern-input"
+                            style={{ background: '#f8fafc', color: '#1f295a', border: '1px solid rgba(31, 41, 90, 0.2)' }}
                         />
                     </div>
                     <div className="form-group">
-                        <label>Contraseña *</label>
+                        <label style={{ color: '#1f295a', fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>Contraseña *</label>
                         <input
                             type="text"
                             value={createForm.password}
                             onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
                             placeholder="Contraseña segura"
                             className="modern-input"
+                            style={{ background: '#f8fafc', color: '#1f295a', border: '1px solid rgba(31, 41, 90, 0.2)' }}
                         />
                     </div>
                     <button
                         className="btn-save-modern"
                         onClick={handleCreateTeacher}
                         disabled={!createForm.fullName || !createForm.email || !createForm.password || loading}
-                        style={{ height: '46px', marginTop: 'auto' }}
+                        style={{ height: '46px', marginTop: '0.5rem', background: '#1f295a', color: '#ffffff' }}
                     >
                         {loading ? 'Creando...' : 'Crear y Asignar'}
                     </button>
@@ -150,11 +153,11 @@ const TeacherManagement: React.FC<TeacherManagementProps> = ({ centerId }) => {
 
             {/* List Section */}
             <div className="assigned-list">
-                <h4 style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+                <h4 style={{ color: '#1f295a', marginBottom: '1rem', borderTop: '1px solid rgba(31,41,90,0.1)', paddingTop: '1rem' }}>
                     Maestros Asignados ({assignedTeachers.length})
                 </h4>
 
-                {loading && <p style={{ color: 'rgba(255,255,255,0.5)' }}>Cargando...</p>}
+                {loading && <p style={{ color: '#4b5563' }}>Cargando...</p>}
 
                 <div className="users-table-container" style={{ maxHeight: '300px' }}>
                     <table className="users-table">
@@ -185,8 +188,8 @@ const TeacherManagement: React.FC<TeacherManagementProps> = ({ centerId }) => {
                                             {(teacher.full_name || teacher.email || 'T').substring(0, 2).toUpperCase()}
                                         </div>
                                     </td>
-                                    <td style={{ fontWeight: '500' }}>{teacher.full_name || 'Maestro'}</td>
-                                    <td style={{ color: 'rgba(255,255,255,0.7)' }}>{teacher.email}</td>
+                                    <td style={{ fontWeight: '500', color: '#1f295a' }}>{teacher.full_name || 'Maestro'}</td>
+                                    <td style={{ color: '#4b5563' }}>{teacher.email}</td>
                                     <td>
                                         <button
                                             onClick={() => handleUnassign(teacher.id)}
@@ -199,7 +202,7 @@ const TeacherManagement: React.FC<TeacherManagementProps> = ({ centerId }) => {
                             ))}
                             {!loading && assignedTeachers.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: 'rgba(255,255,255,0.5)' }}>
+                                    <td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: '#4b5563' }}>
                                         No hay maestros asignados a este colegio.
                                     </td>
                                 </tr>

@@ -503,7 +503,11 @@ export const uploadGradeContent = async (
 
         if (!response.ok) {
             const errorData = await response.json()
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+            console.error('Upload Error Details:', errorData)
+            const errorMessage = errorData.details 
+                ? `${errorData.error}: ${JSON.stringify(errorData.details)}` 
+                : errorData.error || `HTTP error! status: ${response.status}`
+            throw new Error(errorMessage)
         }
 
         const result = await response.json()

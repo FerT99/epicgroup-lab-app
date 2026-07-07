@@ -449,18 +449,20 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName, cente
     }
 
     return (
-        <div className="hierarchy-config-modal-panel" style={{ marginTop: 0, background: '#1e1e2e', color: '#ffffff' }}>
+        <div className="hierarchy-config-modal-panel" style={{ marginTop: 0, background: 'transparent', color: '#1f295a' }}>
             {/* Tabs */}
             <div className="admin-tabs">
                 <button
                     className={`tab-button ${activeTab === 'manual' ? 'active' : ''}`}
                     onClick={() => setActiveTab('manual')}
+                    style={{ color: activeTab === 'manual' ? '#ffffff' : '#1f295a' }}
                 >
                     👤 Crear Manualmente
                 </button>
                 <button
                     className={`tab-button ${activeTab === 'csv' ? 'active' : ''}`}
                     onClick={() => setActiveTab('csv')}
+                    style={{ color: activeTab === 'csv' ? '#ffffff' : '#1f295a' }}
                 >
                     📂 Importar desde CSV
                 </button>
@@ -468,44 +470,47 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName, cente
 
             {/* Manual Creation Tab */}
             {activeTab === 'manual' && (
-                <div className="form-grid">
-                    <h4 style={{ color: '#fff', margin: 0 }}>Registrar Nuevo Alumno</h4>
-                    <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr auto', alignItems: 'end' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem 0' }}>
+                    <h4 style={{ color: '#1f295a', margin: '0 0 1.5rem 0', fontSize: '1.2rem', textAlign: 'center' }}>Registrar Nuevo Alumno</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', maxWidth: '400px' }}>
                         <div className="form-group">
-                            <label>Nombre Completo *</label>
+                            <label style={{ color: '#1f295a', fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>Nombre Completo *</label>
                             <input
                                 type="text"
                                 value={createForm.fullName}
                                 onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
                                 placeholder="Ej: Juanito Pérez"
                                 className="modern-input"
+                                style={{ background: '#f8fafc', color: '#1f295a', border: '1px solid rgba(31, 41, 90, 0.2)' }}
                             />
                         </div>
                         <div className="form-group">
-                            <label>Correo Electrónico *</label>
+                            <label style={{ color: '#1f295a', fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>Correo Electrónico *</label>
                             <input
                                 type="email"
                                 value={createForm.email}
                                 onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
                                 placeholder="juanito@escuela.com"
                                 className="modern-input"
+                                style={{ background: '#f8fafc', color: '#1f295a', border: '1px solid rgba(31, 41, 90, 0.2)' }}
                             />
                         </div>
                         <div className="form-group">
-                            <label>Contraseña *</label>
+                            <label style={{ color: '#1f295a', fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>Contraseña *</label>
                             <input
                                 type="text"
                                 value={createForm.password}
                                 onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
                                 placeholder="Contraseña"
                                 className="modern-input"
+                                style={{ background: '#f8fafc', color: '#1f295a', border: '1px solid rgba(31, 41, 90, 0.2)' }}
                             />
                         </div>
                         <button
                             className="btn-save-modern"
                             onClick={handleCreateStudent}
                             disabled={!createForm.fullName || !createForm.email || !createForm.password || creating}
-                            style={{ height: '46px', marginTop: 'auto' }}
+                            style={{ height: '46px', marginTop: '0.5rem', background: '#1f295a', color: '#ffffff' }}
                         >
                             {creating ? 'Creando...' : 'Crear Alumno'}
                         </button>
@@ -516,8 +521,8 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName, cente
             {/* CSV Import Tab */}
             {activeTab === 'csv' && (
                 <div className="csv-upload-section">
-                    <h4>Subir Archivo CSV</h4>
-                    <div className="csv-helper-text">
+                    <h4 style={{ color: '#1f295a' }}>Subir Archivo CSV</h4>
+                    <div className="csv-helper-text" style={{ color: '#4b5563' }}>
                         Formato requerido: <code>email, password, full_name, [cohort]</code>
                     </div>
 
@@ -526,30 +531,20 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName, cente
                         accept=".csv"
                         onChange={handleFileUpload}
                         className="modern-input"
-                        style={{ maxWidth: '400px', margin: '0 auto' }}
+                        style={{ maxWidth: '400px', margin: '0 auto', background: '#f8fafc', color: '#1f295a', border: '1px solid rgba(31, 41, 90, 0.2)' }}
                         disabled={parsing || loading}
                     />
 
-                    <div style={{ margin: '2rem 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
-
-                    <h5 style={{ color: 'rgba(255,255,255,0.6)' }}>O usar datos de prueba (Legacy):</h5>
-                    <div className="cohort-selector" style={{ justifyContent: 'center', flexDirection: 'row', flexWrap: 'wrap' }}>
-                        <label><input type="radio" value="all" checked={selectedCohort === 'all'} onChange={(e) => setSelectedCohort(e.target.value)} /> Todos</label>
-                        <label><input type="radio" value="IPDC1" checked={selectedCohort === 'IPDC1'} onChange={(e) => setSelectedCohort(e.target.value)} /> IPDC1</label>
-                        <label><input type="radio" value="IPDC3" checked={selectedCohort === 'IPDC3'} onChange={(e) => setSelectedCohort(e.target.value)} /> IPDC3</label>
-                        <label><input type="radio" value="IPDC5" checked={selectedCohort === 'IPDC5'} onChange={(e) => setSelectedCohort(e.target.value)} /> IPDC5</label>
-                    </div>
-
-                    <div className="button-group" style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                        <button className="insert-btn" onClick={() => insertUsers(selectedCohort)} disabled={loading}>
-                            {loading ? '⏳ Procesando...' : '📥 Importar Datos Prueba'}
-                        </button>
-                        {failedUsers.length > 0 && (
-                            <button className="insert-btn retry" onClick={insertFailedUsers} disabled={loading}>
-                                {loading ? '⏳ Reintentando...' : `🔄 Reintentar Fallidos (${failedUsers.length})`}
-                            </button>
-                        )}
-                    </div>
+                    {failedUsers.length > 0 && (
+                        <>
+                            <div style={{ margin: '2rem 0', borderTop: '1px solid rgba(31,41,90,0.1)' }}></div>
+                            <div className="button-group" style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                <button className="insert-btn retry" onClick={insertFailedUsers} disabled={loading}>
+                                    {loading ? '⏳ Reintentando...' : `🔄 Reintentar Fallidos (${failedUsers.length})`}
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
 
@@ -584,7 +579,7 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName, cente
 
             {/* User List & Delete */}
             <div className="user-list-section">
-                <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '2rem 0 1rem' }}>
+                <h3 style={{ color: '#1f295a', fontSize: '1.2rem', margin: '2rem 0 1rem' }}>
                     📋 Lista de Alumnos Registrados ({localUsers.length})
                 </h3>
                 <div className="users-table-container">
@@ -620,7 +615,7 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ centerName, cente
                             ))}
                             {localUsers.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                                    <td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: '#4b5563' }}>
                                         No se encontraron alumnos para este criterio.
                                     </td>
                                 </tr>

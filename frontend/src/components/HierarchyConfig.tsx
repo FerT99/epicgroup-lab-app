@@ -29,6 +29,7 @@ import StudentManagement from './StudentManagement'
 import CenterContentUpload from './CenterContentUpload'
 import './HierarchyConfig.css'
 import './ProfessorDashboard.css' // Import for the dashboard cards styling
+import { auth } from '../lib/supabase'
 
 interface HierarchyConfigProps {
     user: User
@@ -76,6 +77,18 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
     const [actionGradeId, setActionGradeId] = useState<string>('')
     const [actionGrades, setActionGrades] = useState<_GradeLevel[]>([])
     const [loadingActionGrades, setLoadingActionGrades] = useState(false)
+    const [showDropdown, setShowDropdown] = useState(false)
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as HTMLElement
+            if (!target.closest('.add-dropdown-container')) {
+                setShowDropdown(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
 
     // Load centers on mount
     useEffect(() => {
@@ -240,22 +253,78 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
         <>
             <div className="professor-dashboard-container" style={{ padding: '2rem' }}>
                 <div className="prof-main-col" style={{ width: '100%' }}>
-                    
+
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                         <h2 className="section-title-modern">Centros educativos</h2>
-                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                            <button className="btn-quick-action" onClick={() => openActionModal('pdf')} style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>
-                                📄 Cargar PDFs
+                        <div className="add-dropdown-container" style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setShowDropdown(!showDropdown)}
+                                style={{
+                                    background: '#2563eb',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    padding: '0.75rem 1.5rem',
+                                    borderRadius: '12px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    fontSize: '1rem',
+                                    fontWeight: 'bold',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                }}
+                            >
+                                Agregar... <span style={{ fontSize: '0.8rem', marginLeft: '0.2rem' }}>▼</span>
                             </button>
-                            <button className="btn-quick-action" onClick={() => openActionModal('student')} style={{ background: 'rgba(168, 85, 247, 0.2)', color: '#d8b4fe', border: '1px solid rgba(168, 85, 247, 0.3)', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>
-                                👥 Registrar Alumnos
-                            </button>
-                            <button className="btn-quick-action" onClick={() => openActionModal('course')} style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#86efac', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>
-                                📚 Crear Materia
-                            </button>
-                            <button className="btn-add-center" onClick={handleCreateCenter}>
-                                🏫 Agregar centro
-                            </button>
+
+                            {showDropdown && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    right: 0,
+                                    marginTop: '0.5rem',
+                                    background: '#ffffff',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                                    border: '1px solid rgba(0,0,0,0.05)',
+                                    minWidth: '220px',
+                                    zIndex: 100,
+                                    overflow: 'hidden'
+                                }}>
+                                    <button
+                                        onClick={() => { openActionModal('pdf'); setShowDropdown(false); }}
+                                        style={{ width: '100%', textAlign: 'left', padding: '1rem', background: 'transparent', border: 'none', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', color: '#1f295a', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                    >
+                                        📄 Cargar PDFs
+                                    </button>
+                                    <button
+                                        onClick={() => { openActionModal('student'); setShowDropdown(false); }}
+                                        style={{ width: '100%', textAlign: 'left', padding: '1rem', background: 'transparent', border: 'none', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', color: '#1f295a', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                    >
+                                        👥 Registrar Alumnos
+                                    </button>
+                                    <button
+                                        onClick={() => { openActionModal('course'); setShowDropdown(false); }}
+                                        style={{ width: '100%', textAlign: 'left', padding: '1rem', background: 'transparent', border: 'none', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', color: '#1f295a', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                    >
+                                        📚 Crear Materia
+                                    </button>
+                                    <button
+                                        onClick={() => { handleCreateCenter(); setShowDropdown(false); }}
+                                        style={{ width: '100%', textAlign: 'left', padding: '1rem', background: 'transparent', border: 'none', cursor: 'pointer', color: '#1f295a', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                    >
+                                        🏫 Agregar centro
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -306,19 +375,11 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                         )}
                     </div>
 
-                    <div className="middle-section" style={{ marginTop: '3rem' }}>
-                        <div>
-                            <h2 className="section-title-modern">Notificaciones</h2>
-                            <div className="notif-card" style={{ justifyContent: 'center', color: '#94a3b8', border: '1px dashed #cbd5e1', background: 'transparent', boxShadow: 'none' }}>
-                                <p style={{ margin: 0 }}>No tienes notificaciones recientes</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h2 className="section-title-modern">Para hacer hoy</h2>
-                            <div className="notif-card" style={{ justifyContent: 'center', color: '#94a3b8', border: '1px dashed #cbd5e1', background: 'transparent', boxShadow: 'none' }}>
-                                <p style={{ margin: 0 }}>No hay tareas pendientes para hoy</p>
-                            </div>
+                    <div className="content-section" style={{ marginTop: '3rem' }}>
+                        <h2 className="section-title-modern">Contenido</h2>
+                        <div className="notif-card" style={{ justifyContent: 'center', color: '#94a3b8', border: '1px dashed #cbd5e1', background: 'transparent', boxShadow: 'none', padding: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                            <div style={{ fontSize: '2.5rem', opacity: 0.5 }}>📄</div>
+                            <p style={{ margin: 0, textAlign: 'center' }}>Aún no hay PDFs o contenido cargado en la plataforma</p>
                         </div>
                     </div>
 
@@ -399,8 +460,26 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                 {/* Global Action Modal */}
                 {showActionModal && (
                     <div className="modal-overlay" onClick={() => setShowActionModal(false)}>
-                        <div className="school-modal-content" style={{ maxWidth: actionType === 'student' ? '900px' : '600px', width: '95%' }} onClick={(e) => e.stopPropagation()}>
-                            
+                        <div
+                            className={actionType === 'student' ? '' : 'school-modal-content'}
+                            style={actionType === 'student' ? {
+                                maxWidth: '900px',
+                                width: '95%',
+                                maxHeight: '90vh',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                background: '#ffffff',
+                                color: '#1f295a',
+                                borderRadius: '24px',
+                                border: '1px solid rgba(0, 0, 0, 0.1)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+                            } : {
+                                maxWidth: '600px',
+                                width: '95%'
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+
                             {actionType === 'pdf' && (
                                 <>
                                     {!actionCenterId ? (
@@ -430,8 +509,8 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                                             </div>
                                         </div>
                                     ) : (
-                                        <CenterContentUpload 
-                                            centerId={actionCenterId} 
+                                        <CenterContentUpload
+                                            centerId={actionCenterId}
                                             centerName={centers.find(c => c.id === actionCenterId)?.name || ''}
                                             onClose={() => setShowActionModal(false)}
                                         />
@@ -442,7 +521,7 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                             {actionType === 'student' && (
                                 <div style={{ maxHeight: '85vh', overflowY: 'auto' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem 1rem 0 0' }}>
-                                        <button className="btn-icon" onClick={() => setShowActionModal(false)} style={{ color: '#fff', fontSize: '1.5rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>×</button>
+                                        <button className="btn-icon" onClick={() => setShowActionModal(false)} style={{ color: '#1f295a', fontSize: '1.5rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>×</button>
                                     </div>
                                     <StudentManagement />
                                 </div>
