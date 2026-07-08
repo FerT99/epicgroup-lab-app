@@ -42,25 +42,25 @@ async function runTests() {
         const GRADE_ID = grades[0].id;
         console.log(`Using Grade: ${grades[0].name} (${GRADE_ID})`);
 
-        // Get Sections
-        const sections = await request('GET', `/api/admin/grades/${GRADE_ID}/sections`);
-        let section;
-        if (!sections || sections.length === 0) {
-            console.log('No sections found. Creating temporary section...');
-            section = await request('POST', '/api/admin/sections', {
+        // Get Subjects
+        const subjects = await request('GET', `/api/admin/grades/${GRADE_ID}/subjects`);
+        let subject;
+        if (!subjects || subjects.length === 0) {
+            console.log('No subjects found. Creating temporary subject...');
+            subject = await request('POST', '/api/admin/subjects', {
                 grade_id: GRADE_ID,
-                name: 'Test Section ' + Date.now(),
+                name: 'Test Subject ' + Date.now(),
                 max_students: 30,
                 is_active: true
             });
         } else {
-            section = sections[0];
+            subject = subjects[0];
         }
-        console.log(`Using Section: ${section.name} (${section.id})`);
+        console.log(`Using Subject: ${subject.name} (${subject.id})`);
 
         // 2. Create Module
         console.log('\n2. Creating Module...');
-        const newModule = await request('POST', `/api/admin/sections/${section.id}/modules`, {
+        const newModule = await request('POST', `/api/admin/subjects/${subject.id}/modules`, {
             title: 'Test Module ' + Date.now(),
             order_index: 0
         });
@@ -79,7 +79,7 @@ async function runTests() {
 
         // 4. Fetch Modules with Items
         console.log('\n4. Fetching Modules...');
-        const modules = await request('GET', `/api/admin/sections/${section.id}/modules`);
+        const modules = await request('GET', `/api/admin/subjects/${subject.id}/modules`);
         console.log(`Fetched ${modules.length} modules`);
 
         const fetchedModule = modules.find(m => m.id === newModule.id);

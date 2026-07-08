@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { auth, supabase } from '../lib/supabase'
 import type { User } from '@supabase/supabase-js'
 import userTeacherUrl from '../assets/user_teacher.png'
-import planetUrl from '../assets/planet_.png'
-import lookPlanetUrl from '../assets/lookplanet.png' // Assuming this is used for 'Información' or decoration
 import './ProfileScreen.css'
 
 import type { StudentData } from '../lib/api' // Import StudentData
@@ -25,38 +23,17 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
   const navigate = useNavigate()
 
   const userRole = getUserRole(user)
-  const isProfessor = userRole === 'professor' || userRole === 'admin' // Admin usually sees professor view in this context? Or just strict professor? 
-  // Base code had: 
-  // const isProfessor =
-  //   user.user_metadata?.role?.toLowerCase() === 'professor' ||
-  //   user.app_metadata?.role?.toLowerCase() === 'professor' ||
-  //   user.user_metadata?.is_professor === true;
-  // Let's stick to strict 'professor' for isProfessor boolean unless admin implies it.
-  // Actually, usually admin has super access. Let's keep it simple:
-  // const isProfessor = getUserRole(user) === 'professor'
+  const isProfessor = userRole === 'professor' || userRole === 'admin' 
 
   const getRoleDisplay = () => {
     const role = getUserRole(user)
     if (role === 'admin') return 'Admin'
     if (role === 'professor') return 'Profesor'
+    if (role === 'tutor') return 'Tutor'
     return 'Alumno'
   }
 
-  const handleLogout = async () => {
-    setLoading(true)
-    try {
-      await auth.signOut()
-      navigate('/login')
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleBack = () => {
-    navigate('/')
-  }
+  const [profileDetails, setProfileDetails] = useState<{ centers: string, grades: string, subjects: string } | null>(null)
 
   const handleUploadClick = () => {
     setUploadFeedback(null)
@@ -110,194 +87,135 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user }) => {
   }
 
   useEffect(() => {
-    const fetchStudentData = async () => {
-      if (user && !isProfessor) { // Fetch only if not professor (or maybe fetch for both if useful?)
-        try {
-          // Note: getStudentProgress expects a student ID. 
-          // If the auth user is a student, we use their ID.
-          // However, the API seems to expect a numeric ID usually?? 
-          // Wait, api.ts says `getStudentProgress(studentId: string)`. 
-          // Let's assume user.id (UUID) works if the backend supports it, 
-          // or we might need the numeric ID from the public users table.
+    const fetchProfileDetails = async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/api/users/${user.id}/profile-details?role=${userRole}`)
+        if (res.ok) {
+          const data = await res.json()
+          setProfileDetails(data)
+        }
+      } catch (err) {
+        console.error('Error fetching profile details:', err)
+      }
+    }
+    fetchProfileDetails()
 
-          // Actually, in StudentProgressScreen it uses `studentId` from params.
-          // Here we are the logged in user.
-          // Let's try passing user.id.
+    const fetchStudentData = async () => {
+      if (user && !isProfessor && userRole !== 'tutor' && userRole !== 'admin') { 
+        try {
           import('../lib/api').then(async ({ getStudentProgress }) => {
             const data = await getStudentProgress(user.id)
             setStudentData(data)
           }).catch(err => console.error("Failed to load api", err));
-
         } catch (error) {
           console.error('Error fetching student data:', error)
         }
       }
     }
     fetchStudentData()
-  }, [user, isProfessor])
+  }, [user, isProfessor, userRole])
 
   return (
-    <div className="profile-screen">
-      {/* Background Ornaments */}
-      <div className="bg-ornament ornament-1"></div>
-      <div className="bg-ornament ornament-2"></div>
-      <div className="character-circle"></div>
-
-      {/* Sidebar */}
-      <aside className="profile-sidebar">
-        <div className="sidebar-profile">
-          <div className="profile-avatar-wrapper">
-            <img src={user.user_metadata?.avatar_url || userTeacherUrl} alt="Profile" />
-          </div>
-          <h2 className="sidebar-name">{user.user_metadata?.full_name || user.email || 'Usuario'}</h2>
-          <p className="sidebar-email" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginTop: '5px' }}>
-            {user.email}
-          </p>
+    <div style={{ padding: '2rem 4rem', backgroundColor: '#f8fafc', minHeight: '100vh', color: '#1e293b' }}>
+      
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+        <div>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: 0, color: '#0f172a' }}>Configuración del Perfil</h1>
+          <p style={{ color: '#64748b', fontSize: '1.1rem', marginTop: '0.5rem' }}>Gestiona tu información y preferencias</p>
         </div>
-
-        <nav className="sidebar-menu">
-          <div className="menu-item active">
-            <div className="menu-icon-circle">
-              <span style={{ fontSize: '14px' }}>👤</span>
-            </div>
-            <span className="menu-label">Account</span>
-          </div>
-        </nav>
-
-        <div className="logout-container">
-          <button className="btn-back" onClick={handleBack} style={{ marginBottom: '10px' }}>
-            ← Volver
-          </button>
-          <button className="btn-logout" onClick={handleLogout} disabled={loading}>
-            {loading ? 'Cerrando...' : 'Cerrar Sesión'}
-          </button>
-        </div>
-      </aside>
-
-      {/* Decorative Character (Top Right) */}
-      <div className="character-float">
-        <img src={lookPlanetUrl} alt="Character Decoration" style={{ width: '100%', opacity: 0.9 }} />
       </div>
 
-      {/* Main Content */}
-      <main className="profile-main-content">
-        <header className="header-section">
-          <h1 className="academic-title">
-            Perfil <span>academico</span>
-          </h1>
-          <div className="header-underline"></div>
-        </header>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+        
+        {/* Left Column - User Info Card */}
+        <div style={{ background: '#ffffff', borderRadius: '24px', padding: '2rem', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <div style={{ width: '120px', height: '120px', borderRadius: '50%', overflow: 'hidden', border: '4px solid #f1f5f9', marginBottom: '1.5rem', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+            <img src={user.user_metadata?.avatar_url || userTeacherUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1e293b', margin: 0 }}>{user.user_metadata?.full_name || user.email || 'Usuario'}</h2>
+          <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>{user.email}</p>
+          
+          <div style={{ background: '#eff6ff', color: '#2563eb', padding: '0.5rem 1rem', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '1.5rem', border: '1px solid #bfdbfe' }}>
+            Rol: {getRoleDisplay()}
+          </div>
+        </div>
 
-        <div className="dashboard-grid">
-          {/* Main Column - Centered if no sidebar updates */}
-          <div className="left-column" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
-            {/* Combined Card */}
-            <div className="card">
-              {/* Section 1: Última actividad */}
-              <div className="section-block">
-                <span className="section-subtitle">
-                  {getRoleDisplay()}
-                  {user.user_metadata?.school_name ? ` en ${user.user_metadata.school_name}` : ''}
-                </span>
-                <h3 className="section-title">Última actividad</h3>
+        {/* Right Column - Details & Activity */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          
+          {/* Details Card */}
+          <div style={{ background: '#ffffff', borderRadius: '24px', padding: '2rem', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '1.5rem' }}>ℹ️</span> Información Académica
+            </h3>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
+                <div style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Centros Educativos</div>
+                <div style={{ fontWeight: 'bold', color: '#334155' }}>{profileDetails ? profileDetails.centers : 'Cargando...'}</div>
+              </div>
 
-                <div className="activity-header">
-                  <div className="activity-icon">
-                    <img src={planetUrl} alt="Planet" style={{ width: '60%', height: '60%', objectFit: 'contain' }} />
-                  </div>
-                  <div className="activity-label">Progreso <br />en Clases</div>
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
+                <div style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Grados</div>
+                <div style={{ fontWeight: 'bold', color: '#334155' }}>{profileDetails ? profileDetails.grades : 'Cargando...'}</div>
+              </div>
+
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #f1f5f9', gridColumn: '1 / -1' }}>
+                <div style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Materias</div>
+                <div style={{ fontWeight: 'bold', color: '#334155' }}>{profileDetails ? profileDetails.subjects : 'Cargando...'}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Activity / Progress Card */}
+          {(!isProfessor || userRole === 'admin') && (
+            <div style={{ background: '#ffffff', borderRadius: '24px', padding: '2rem', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
+              <h3 style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.5rem' }}>📊</span> {userRole === 'admin' ? 'Gestión Adicional' : 'Tu Progreso'}
+              </h3>
+              
+              {userRole === 'admin' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <p style={{ color: '#64748b' }}>Sube materiales PDF para los cursos de la plataforma.</p>
+                  <button 
+                    style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '12px', padding: '1rem', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', width: 'fit-content' }} 
+                    onClick={handleUploadClick}
+                  >
+                    {uploading ? 'Subiendo...' : 'Subir Cursos PDF'}
+                  </button>
+                  <input type="file" ref={fileInputRef} hidden accept="application/pdf" multiple onChange={handlePdfUpload} />
+                  {uploadFeedback && (
+                    <div style={{ padding: '1rem', borderRadius: '12px', background: uploadFeedback.status === 'success' ? '#dcfce7' : '#fee2e2', color: uploadFeedback.status === 'success' ? '#166534' : '#991b1b', marginTop: '0.5rem' }}>
+                      {uploadFeedback.message}
+                    </div>
+                  )}
                 </div>
-
-                <div className="progress-list">
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {!studentData || studentData.courses.length === 0 ? (
-                    <p style={{ color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>No hay cursos activos.</p>
+                    <p style={{ color: '#94a3b8', fontStyle: 'italic', margin: 0 }}>No hay cursos activos para mostrar progreso.</p>
                   ) : (
                     studentData.courses.map(course => (
-                      <div key={course.id} className="progress-item">
-                        <div className={`progress-bar ${course.color || 'purple'}`} style={{ width: `${course.progress}%` }}>
-                          <span>{course.name}</span>
-                          <span>{course.progress}%</span>
+                      <div key={course.id}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                          <span style={{ fontWeight: 'bold', color: '#334155' }}>{course.name}</span>
+                          <span style={{ color: '#2563eb', fontWeight: 'bold' }}>{course.progress}%</span>
+                        </div>
+                        <div style={{ width: '100%', height: '12px', background: '#f1f5f9', borderRadius: '6px', overflow: 'hidden' }}>
+                          <div style={{ width: `${course.progress}%`, height: '100%', background: '#2563eb', borderRadius: '6px' }}></div>
                         </div>
                       </div>
                     ))
                   )}
                 </div>
-              </div>
-
-              {/* Divider */}
-              <div style={{ width: '100%', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)', margin: '10px 0' }}></div>
-
-              {/* Section 2: Acerca del... */}
-              <div className="section-block">
-                <span className="section-subtitle">
-                  {getRoleDisplay()}
-                </span>
-                <h3 className="section-title">Acerca del {getRoleDisplay().toLowerCase()}</h3>
-
-                <div className="info-header">
-                  <div className="info-icon">
-                    <img src={lookPlanetUrl} alt="Info" style={{ width: '60%', height: '60%', objectFit: 'contain' }} />
-                  </div>
-                  <span className="info-text" style={{ fontWeight: '700' }}>Información</span>
-                </div>
-
-                <div className="info-list">
-                  <div className="info-item">
-                    <div className="info-item-left">
-                      <div className="dot orange"></div>
-                      <span className="info-text">Centro Educativo: {user.user_metadata?.school_name || 'N/A'}</span>
-                    </div>
-                    {/* <span className="chevron-right">»</span> */}
-                  </div>
-
-                  {!isProfessor && (
-                    <>
-                      <div className="info-item">
-                        <div className="info-item-left">
-                          <div className="dot purple"></div>
-                          <span className="info-text">Grado: {user.user_metadata?.grade || user.user_metadata?.cohort || 'N/A'}</span>
-                        </div>
-                      </div>
-                      <div className="info-item">
-                        <div className="info-item-left">
-                          <div className="dot yellow"></div>
-                          <span className="info-text">Sección: {user.user_metadata?.section || 'N/A'}</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {isProfessor && (
-                    <div className="info-item">
-                      <div className="info-item-left">
-                        <div className="dot lime"></div>
-                        <span className="info-text">Materia: {user.user_metadata?.subject || 'N/A'}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {userRole === 'admin' && (
-                  <div className="professor-upload-section" style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
-                    <button className="follow-btn" style={{ width: '100%' }} onClick={handleUploadClick}>
-                      {uploading ? 'Subiendo...' : 'Subir Cursos PDF'}
-                    </button>
-                    <input type="file" ref={fileInputRef} hidden accept="application/pdf" multiple onChange={handlePdfUpload} />
-                    {uploadFeedback && <p style={{ fontSize: '12px', marginTop: '10px', color: uploadFeedback.status === 'success' ? '#c5ff00' : '#ff4757' }}>{uploadFeedback.message}</p>}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
-          </div>
+          )}
 
-          {/* Right Column - Removed Mock Data */}
-          {/* 
-          <div className="right-column">
-             ... Mock Updates Removed ...
-          </div> 
-          */}
         </div>
-      </main>
+      </div>
     </div>
   )
 }

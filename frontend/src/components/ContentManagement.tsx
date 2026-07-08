@@ -170,7 +170,7 @@ const ContentManagement: React.FC<ContentManagementProps> = ({ gradeId, gradeNam
                 </div>
             )}
 
-            {/* Upload Section */}
+            {/* Upload Subject */}
             <div
                 style={{
                     background: 'rgba(255, 255, 255, 0.03)',

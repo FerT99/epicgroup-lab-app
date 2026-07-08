@@ -379,7 +379,7 @@
 }
 
 .empty-text {
-    color: #fff;
+    color: var(--epic-dark-blue, #1f295a);
 }
 
 /* Loading/Empty States */
@@ -467,7 +467,7 @@
     background: rgba(255, 255, 255, 0.25);
 }
 
-/* Item Cards (Grades, Sections, Subjects) */
+/* Item Cards (Grades, Subjects) */
 .item-card {
     background: #ffffff;
     /* White background */
@@ -676,7 +676,7 @@
 }
 
 /* CSV Upload Area */
-.csv-upload-section {
+.csv-upload-subject {
     background: rgba(255, 255, 255, 0.03);
     border: 2px dashed rgba(255, 255, 255, 0.1);
     border-radius: 12px;
@@ -685,7 +685,7 @@
     margin-bottom: 2rem;
 }
 
-.csv-upload-section h4 {
+.csv-upload-subject h4 {
     color: #fff;
     margin-top: 0;
     margin-bottom: 1rem;
@@ -814,14 +814,14 @@
 
 .center-title {
     text-align: center;
-    color: #ffffff;
+    color: var(--epic-dark-blue, #1f295a);
     font-size: 3.5rem;
     font-weight: 800;
     margin: 1rem 0 3rem 0;
 }
 
 .section-title {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--epic-dark-gray, #4b5563);
     font-size: 1.8rem;
     font-weight: 300;
     text-align: center;
@@ -829,4 +829,186 @@
     display: block;
     text-shadow: none;
     background: transparent;
+}
+
+/* =========================================
+   NEW LIST VIEW DESIGN (LIKE REFERENCE)
+   ========================================= */
+
+.filter-bar-modern {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+    width: 100%;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: var(--epic-dark-blue, #1f295a);
+}
+
+.modern-select {
+    padding: 0.6rem 2.5rem 0.6rem 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    background-color: white;
+    color: var(--epic-dark-gray, #4b5563);
+    font-size: 1rem;
+    font-weight: 500;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234b5563%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem top 50%;
+    background-size: 0.65rem auto;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    min-width: 200px;
+}
+
+.modern-select:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* LIST CONTAINER */
+.courses-list-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* LIST HEADER */
+.courses-list-header {
+    display: flex;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    color: #9ca3af;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+/* LIST COLUMNS GRID */
+.courses-list-header > div,
+.course-list-row > div {
+    display: flex;
+    align-items: center;
+}
+
+.col-course {
+    flex: 2;
+    min-width: 250px;
+    gap: 1rem;
+}
+
+.col-code {
+    flex: 1;
+    min-width: 150px;
+}
+
+.col-students {
+    flex: 1;
+    min-width: 150px;
+}
+
+.col-actions {
+    flex: 1;
+    min-width: 100px;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+/* ROW STYLING */
+.course-list-row {
+    display: flex;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.course-list-row:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transform: translateY(-1px);
+}
+
+.course-list-row:not(:last-child) {
+    border-bottom: 1px solid rgba(0,0,0,0.02);
+}
+.course-list-row:hover:not(:last-child) {
+    border-bottom-color: transparent;
+}
+
+.course-icon-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f3e8ff;
+    color: #9333ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.course-name {
+    font-weight: 600;
+    color: var(--epic-dark-blue, #1f295a);
+    font-size: 1.05rem;
+}
+
+.col-code, .col-students {
+    color: var(--epic-dark-gray, #4b5563);
+    font-size: 0.95rem;
+}
+
+/* SMALL ACTION BUTTONS */
+.btn-icon-small {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0;
+    transform: translateX(10px);
+}
+
+.course-list-row:hover .btn-icon-small {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.btn-icon-small:hover {
+    background: #f3e8ff;
+    color: #9333ea;
+}
+
+.btn-icon-small.delete:hover {
+    background: #fee2e2;
+    color: #ef4444;
 }

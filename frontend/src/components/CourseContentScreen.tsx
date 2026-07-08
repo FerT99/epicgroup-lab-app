@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { User } from '@supabase/supabase-js'
-import TopNavigation from './TopNavigation'
 import { getUserRole } from '../utils/getUserRole'
 import { auth } from '../lib/supabase'
 import {
-    getSectionById,
+    getSubjectById,
     getCourseModules,
     createCourseModule,
     updateCourseModule,
@@ -14,7 +13,11 @@ import {
     uploadModuleItem,
     updateModuleItem,
     deleteModuleItem,
-    type Section,
+    getSubjectProfessors,
+    assignSubjectProfessor,
+    unassignSubjectProfessor,
+    getCenterProfessors,
+    type Subject,
     type CourseModule,
     type ModuleItem
 } from '../lib/adminApi'
@@ -29,16 +32,22 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
     const navigate = useNavigate()
     const userRole = getUserRole(user)
 
-    const [section, setSection] = useState<Section | null>(null)
+    const [subject, setSubject] = useState<Subject | null>(null)
     const [modules, setModules] = useState<CourseModule[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+
+    // Professor state
+    const [subjectProfessors, setSubjectProfessors] = useState<any[]>([])
+    const [centerProfessors, setCenterProfessors] = useState<any[]>([])
+    const [showProfessorModal, setShowProfessorModal] = useState(false)
+    const [professorLoading, setProfessorLoading] = useState(false)
 
     // Modals state
     const [showModuleModal, setShowModuleModal] = useState(false)
     const [showItemModal, setShowItemModal] = useState(false)
     const [editingModule, setEditingModule] = useState<CourseModule | null>(null)
-    const [activeModuleId, setActiveModuleId] = useState<string | null>(null) // For adding item to specific module
+    const [activeModuleId, setActiveModuleId] = useState<string | null>(null)
 
     // Form states
     const [moduleForm, setModuleForm] = useState({ title: '' })
@@ -54,6 +63,8 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
         content_url: ''
     })
 
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+
     useEffect(() => {
         if (courseId) {
             loadData()
@@ -64,12 +75,14 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
         if (!courseId) return
         try {
             setLoading(true)
-            const [sectionData, modulesData] = await Promise.all([
-                getSectionById(courseId),
-                getCourseModules(courseId)
+            const [subjectData, modulesData, professorsData] = await Promise.all([
+                getSubjectById(courseId),
+                getCourseModules(courseId),
+                getSubjectProfessors(courseId)
             ])
-            setSection(sectionData)
+            setSubject(subjectData)
             setModules(modulesData)
+            setSubjectProfessors(professorsData)
         } catch (err: any) {
             setError(err.message || 'Error al cargar datos del curso')
         } finally {
@@ -77,17 +90,57 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
         }
     }
 
-    const handleNavigate = (path: string) => {
-        navigate(path)
+    // ========== PROFESSOR HANDLERS ==========
+
+    const loadCenterProfessors = async () => {
+        if (!centerId) return
+        try {
+            setProfessorLoading(true)
+            const data = await getCenterProfessors(centerId)
+            setCenterProfessors(data)
+        } catch (err: any) {
+            console.error('Error loading center professors:', err)
+        } finally {
+            setProfessorLoading(false)
+        }
     }
 
-    const handleLogout = async () => {
-        await auth.signOut()
+    const handleOpenProfessorModal = async () => {
+        await loadCenterProfessors()
+        setShowProfessorModal(true)
     }
 
-    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const handleAssignProfessor = async (userId: string) => {
+        if (!courseId) return
+        try {
+            setProfessorLoading(true)
+            await assignSubjectProfessor(courseId, userId)
+            const updated = await getSubjectProfessors(courseId)
+            setSubjectProfessors(updated)
+            setShowProfessorModal(false)
+        } catch (err: any) {
+            alert(err.message || 'Error al asignar profesor')
+        } finally {
+            setProfessorLoading(false)
+        }
+    }
 
-    // Module Handlers
+    const handleUnassignProfessor = async (userId: string) => {
+        if (!courseId || !confirm('¿Desasignar este profesor de la materia?')) return
+        try {
+            setProfessorLoading(true)
+            await unassignSubjectProfessor(courseId, userId)
+            const updated = await getSubjectProfessors(courseId)
+            setSubjectProfessors(updated)
+        } catch (err: any) {
+            alert(err.message || 'Error al desasignar profesor')
+        } finally {
+            setProfessorLoading(false)
+        }
+    }
+
+    // ========== MODULE HANDLERS ==========
+
     const handleCreateModule = () => {
         setEditingModule(null)
         setModuleForm({ title: '' })
@@ -125,7 +178,8 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
         }
     }
 
-    // Item Handlers
+    // ========== ITEM HANDLERS ==========
+
     const handleAddItem = (moduleId: string) => {
         setActiveModuleId(moduleId)
         setItemForm({
@@ -142,20 +196,17 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
         if (!activeModuleId) return
         try {
             if (itemForm.type === 'pdf' && selectedFile) {
-                // Handle file upload
                 await uploadModuleItem(activeModuleId, selectedFile, {
                     title: itemForm.title,
                     description: itemForm.description,
                     order_index: 999
                 })
             } else {
-                // Handle regular item creation
                 await createModuleItem(activeModuleId, {
                     ...itemForm,
                     order_index: 999
                 })
             }
-
             await loadData()
             setShowItemModal(false)
         } catch (err: any) {
@@ -179,16 +230,9 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
 
     return (
         <>
-            <TopNavigation
-                activeKey="schools"
-                userDisplayName={user.user_metadata?.first_name || user.email || 'Usuario'}
-                userRole={userRole}
-                onNavigate={handleNavigate}
-                onLogout={handleLogout}
-            />
-
             <div className="hierarchy-config" style={{ padding: '2rem 4rem' }}>
                 <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+
                     {/* Header */}
                     <div className="modern-header-row" style={{ marginBottom: '2rem' }}>
                         <div className="header-action-left" style={{ width: '150px' }}>
@@ -201,7 +245,7 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                         </div>
                         <div style={{ flex: 1, textAlign: 'center' }}>
                             <h1 style={{ margin: 0, fontSize: '2rem', color: '#fff' }}>
-                                {section?.name}
+                                {subject?.name}
                             </h1>
                             <p style={{ color: '#aaa', marginTop: '0.5rem' }}>Contenido del Curso</p>
                         </div>
@@ -221,6 +265,71 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                                 + Módulo
                             </button>
                         </div>
+                    </div>
+
+                    {/* PROFESSORS PANEL */}
+                    <div style={{
+                        background: 'rgba(108, 92, 231, 0.1)',
+                        border: '1px solid rgba(108, 92, 231, 0.3)',
+                        borderRadius: '12px',
+                        padding: '1.25rem 1.5rem',
+                        marginBottom: '2rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        flexWrap: 'wrap'
+                    }}>
+                        <span style={{ color: '#c084fc', fontWeight: '600', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>👨‍🏫 Profesores:</span>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
+                            {subjectProfessors.length === 0 ? (
+                                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', fontStyle: 'italic' }}>Sin profesores asignados</span>
+                            ) : (
+                                subjectProfessors.map(prof => (
+                                    <div key={prof.id} style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.4rem',
+                                        background: 'rgba(108, 92, 231, 0.25)',
+                                        border: '1px solid rgba(108, 92, 231, 0.5)',
+                                        borderRadius: '20px',
+                                        padding: '0.3rem 0.75rem 0.3rem 0.4rem'
+                                    }}>
+                                        <div style={{
+                                            width: '24px', height: '24px', borderRadius: '50%',
+                                            background: '#6c5ce7', display: 'flex', alignItems: 'center',
+                                            justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold', color: '#fff'
+                                        }}>
+                                            {(prof.full_name || prof.email || 'P').substring(0, 2).toUpperCase()}
+                                        </div>
+                                        <span style={{ fontSize: '0.875rem', color: '#e0d9ff' }}>{prof.full_name || prof.email}</span>
+                                        <button
+                                            onClick={() => handleUnassignProfessor(prof.id)}
+                                            disabled={professorLoading}
+                                            style={{
+                                                background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
+                                                cursor: 'pointer', fontSize: '0.8rem', padding: '0', lineHeight: 1,
+                                                display: 'flex', alignItems: 'center'
+                                            }}
+                                            title="Desasignar"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                        <button
+                            onClick={handleOpenProfessorModal}
+                            disabled={professorLoading}
+                            style={{
+                                background: 'rgba(108, 92, 231, 0.3)', border: '1px dashed rgba(108, 92, 231, 0.6)',
+                                color: '#c084fc', borderRadius: '20px', padding: '0.4rem 1rem',
+                                cursor: 'pointer', fontSize: '0.875rem', whiteSpace: 'nowrap',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            + Asignar Profesor
+                        </button>
                     </div>
 
                     {/* Modules List */}
@@ -336,7 +445,7 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                 </div>
             )}
 
-            {/* ITEM MODAL (MVP) */}
+            {/* ITEM MODAL */}
             {showItemModal && (
                 <div className="modal-overlay" onClick={() => setShowItemModal(false)}>
                     <div className="school-modal-content" onClick={e => e.stopPropagation()}>
@@ -374,7 +483,6 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                                     onChange={e => setItemForm({ ...itemForm, description: e.target.value })}
                                 />
                             </div>
-
                             {itemForm.type === 'pdf' ? (
                                 <div className="form-group" style={{ gridColumn: 'span 2' }}>
                                     <label>Archivo PDF</label>
@@ -409,6 +517,72 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                         <div className="modal-actions">
                             <button className="btn-cancel-modern" onClick={() => setShowItemModal(false)}>Cancelar</button>
                             <button className="btn-save-modern" onClick={handleSaveItem}>Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* PROFESSOR ASSIGNMENT MODAL */}
+            {showProfessorModal && (
+                <div className="modal-overlay" onClick={() => setShowProfessorModal(false)}>
+                    <div className="school-modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '550px' }}>
+                        <div className="modal-header">
+                            <div className="modal-icon">👨‍🏫</div>
+                            <h2>Asignar Profesor a la Materia</h2>
+                        </div>
+                        <div style={{ padding: '0 0 1rem 0' }}>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', margin: '0 0 1rem 0' }}>
+                                Selecciona un profesor del centro para asignarlo a esta materia.
+                            </p>
+                            {professorLoading ? (
+                                <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: '2rem' }}>Cargando...</p>
+                            ) : centerProfessors.filter(p => !subjectProfessors.some(sp => sp.id === p.id)).length === 0 ? (
+                                <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', padding: '2rem', fontStyle: 'italic' }}>
+                                    {centerProfessors.length === 0
+                                        ? 'No hay profesores asignados al centro todavía.'
+                                        : 'Todos los profesores del centro ya están asignados a esta materia.'}
+                                </p>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '350px', overflowY: 'auto' }}>
+                                    {centerProfessors
+                                        .filter(p => !subjectProfessors.some(sp => sp.id === p.id))
+                                        .map(prof => (
+                                            <div key={prof.id} style={{
+                                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                                padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.04)',
+                                                borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                    <div style={{
+                                                        width: '36px', height: '36px', borderRadius: '50%',
+                                                        background: '#6c5ce7', display: 'flex', alignItems: 'center',
+                                                        justifyContent: 'center', fontWeight: 'bold', color: '#fff', fontSize: '0.85rem'
+                                                    }}>
+                                                        {(prof.full_name || prof.email || 'P').substring(0, 2).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontWeight: '500', color: '#fff' }}>{prof.full_name || 'Sin nombre'}</div>
+                                                        <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>{prof.email}</div>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleAssignProfessor(prof.id)}
+                                                    disabled={professorLoading}
+                                                    style={{
+                                                        background: '#6c5ce7', color: '#fff', border: 'none',
+                                                        borderRadius: '6px', padding: '0.4rem 0.9rem',
+                                                        cursor: 'pointer', fontSize: '0.875rem', fontWeight: '500'
+                                                    }}
+                                                >
+                                                    Asignar
+                                                </button>
+                                            </div>
+                                        ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="modal-actions">
+                            <button className="btn-cancel-modern" onClick={() => setShowProfessorModal(false)}>Cerrar</button>
                         </div>
                     </div>
                 </div>

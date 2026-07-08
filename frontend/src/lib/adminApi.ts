@@ -25,7 +25,7 @@ export interface GradeLevel {
     updated_at: string
 }
 
-export interface Section {
+export interface Subject {
     id: string
     grade_id: string
     name: string
@@ -33,32 +33,17 @@ export interface Section {
     description?: string
     start_date?: string
     end_date?: string
-    course_id?: string
     visibility?: 'active' | 'hidden' | 'archived'
     max_students: number
     is_active: boolean
     created_at: string
     updated_at: string
 }
-
-export interface Subject {
-    id: string
-    section_id: string
-    name: string
-    description?: string
-    hours_per_week: number
-    is_active: boolean
-    created_at: string
-    updated_at: string
-}
-
 export interface Hierarchy {
     center: EducationalCenter
     grades: (GradeLevel & {
-        sections: (Section & {
-            subjects: Subject[]
+        subjects: Subject[]
         })[]
-    })[]
 }
 
 export interface GradeContent {
@@ -271,134 +256,27 @@ export const deleteGrade = async (id: string): Promise<void> => {
 }
 
 // ============================================
-// SECTIONS
-// ============================================
-
-export const getSectionsByGrade = async (gradeId: string): Promise<Section[]> => {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/grades/${gradeId}/sections`)
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-        return await response.json()
-    } catch (error) {
-        console.error('Error fetching sections:', error)
-        throw error
-    }
-}
-
-export const getSectionById = async (id: string): Promise<Section> => {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/sections/${id}`)
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-        return await response.json()
-    } catch (error) {
-        console.error('Error fetching section:', error)
-        throw error
-    }
-}
-
-export const createSection = async (
-    data: Partial<Section>
-): Promise<Section> => {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/sections`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        })
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-        return await response.json()
-    } catch (error) {
-        console.error('Error creating section:', error)
-        throw error
-    }
-}
-
-export const updateSection = async (
-    id: string,
-    data: Partial<Section>
-): Promise<Section> => {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/sections/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        })
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-        return await response.json()
-    } catch (error) {
-        console.error('Error updating section:', error)
-        throw error
-    }
-}
-
-// ============================================
-// SECTION PROFESSORS
-// ============================================
-
-export const getSectionProfessors = async (sectionId: string): Promise<any[]> => {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/sections/${sectionId}/professors`)
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-        return await response.json()
-    } catch (error) {
-        console.error('Error fetching section professors:', error)
-        throw error
-    }
-}
-
-export const assignSectionProfessor = async (sectionId: string, userId: string): Promise<any> => {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/sections/${sectionId}/professors`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId }),
-        })
-        if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
-        }
-        return await response.json()
-    } catch (error) {
-        console.error('Error assigning professor to section:', error)
-        throw error
-    }
-}
-
-export const unassignSectionProfessor = async (sectionId: string, userId: string): Promise<void> => {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/sections/${sectionId}/professors/${userId}`, {
-            method: 'DELETE',
-        })
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-    } catch (error) {
-        console.error('Error unassigning professor from section:', error)
-        throw error
-    }
-}
-
-export const deleteSection = async (id: string): Promise<void> => {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/sections/${id}`, {
-            method: 'DELETE',
-        })
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-    } catch (error) {
-        console.error('Error deleting section:', error)
-        throw error
-    }
-}
-
-// ============================================
 // SUBJECTS
 // ============================================
 
-export const getSubjectsBySection = async (sectionId: string): Promise<Subject[]> => {
+export const getSubjectsByGrade = async (gradeId: string): Promise<Subject[]> => {
     try {
-        const response = await fetch(`${API_URL}/api/admin/sections/${sectionId}/subjects`)
+        const response = await fetch(`${API_URL}/api/admin/grades/${gradeId}/subjects`)
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
         return await response.json()
     } catch (error) {
         console.error('Error fetching subjects:', error)
+        throw error
+    }
+}
+
+export const getSubjectById = async (id: string): Promise<Subject> => {
+    try {
+        const response = await fetch(`${API_URL}/api/admin/subjects/${id}`)
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+        return await response.json()
+    } catch (error) {
+        console.error('Error fetching subject:', error)
         throw error
     }
 }
@@ -434,6 +312,51 @@ export const updateSubject = async (
         return await response.json()
     } catch (error) {
         console.error('Error updating subject:', error)
+        throw error
+    }
+}
+
+// ============================================
+// SUBJECT PROFESSORS
+// ============================================
+
+export const getSubjectProfessors = async (subjectId: string): Promise<any[]> => {
+    try {
+        const response = await fetch(`${API_URL}/api/admin/subjects/${subjectId}/professors`)
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+        return await response.json()
+    } catch (error) {
+        console.error('Error fetching subject professors:', error)
+        throw error
+    }
+}
+
+export const assignSubjectProfessor = async (subjectId: string, userId: string): Promise<any> => {
+    try {
+        const response = await fetch(`${API_URL}/api/admin/subjects/${subjectId}/professors`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId }),
+        })
+        if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+        }
+        return await response.json()
+    } catch (error) {
+        console.error('Error assigning professor to subject:', error)
+        throw error
+    }
+}
+
+export const unassignSubjectProfessor = async (subjectId: string, userId: string): Promise<void> => {
+    try {
+        const response = await fetch(`${API_URL}/api/admin/subjects/${subjectId}/professors/${userId}`, {
+            method: 'DELETE',
+        })
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+    } catch (error) {
+        console.error('Error unassigning professor from subject:', error)
         throw error
     }
 }
@@ -557,7 +480,7 @@ export interface ModuleItem {
 
 export interface CourseModule {
     id: string
-    section_id: string
+    subject_id: string
     title: string
     order_index: number
     is_active: boolean
@@ -568,9 +491,9 @@ export interface CourseModule {
 
 // MODULES
 
-export const getCourseModules = async (sectionId: string): Promise<CourseModule[]> => {
+export const getCourseModules = async (subjectId: string): Promise<CourseModule[]> => {
     try {
-        const response = await fetch(`${API_URL}/api/admin/sections/${sectionId}/modules`)
+        const response = await fetch(`${API_URL}/api/admin/subjects/${subjectId}/modules`)
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
         return await response.json()
     } catch (error) {
@@ -579,9 +502,9 @@ export const getCourseModules = async (sectionId: string): Promise<CourseModule[
     }
 }
 
-export const createCourseModule = async (sectionId: string, title: string, order_index: number = 0): Promise<CourseModule> => {
+export const createCourseModule = async (subjectId: string, title: string, order_index: number = 0): Promise<CourseModule> => {
     try {
-        const response = await fetch(`${API_URL}/api/admin/sections/${sectionId}/modules`, {
+        const response = await fetch(`${API_URL}/api/admin/subjects/${subjectId}/modules`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, order_index }),

@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
 import { getProfessorAssignments, getAssignmentSubmissions, updateStudentGrade, type Assignment, type Submission } from '../lib/api'
-import TopNavigation from './TopNavigation'
 import './AssignmentsScreen.css'
 
 interface AssignmentsScreenProps {
@@ -117,16 +116,7 @@ const AssignmentsScreen: React.FC<AssignmentsScreenProps> = ({ user }) => {
 
     return (
         <div className="assignments-screen">
-            <TopNavigation
-                activeKey="assignments"
-                userDisplayName={displayName}
-                userRole={userRole}
-                onNavigate={handleNavigation}
-                onLogout={handleLogout}
-                logoutLoading={false}
-                notificationCount={0}
-                onOpenNotifications={() => { }}
-            />
+
 
             <div className="assignments-content">
                 <div className="assignments-paper">

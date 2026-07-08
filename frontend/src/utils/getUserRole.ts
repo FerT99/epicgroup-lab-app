@@ -36,5 +36,10 @@ export function getUserRole(user: User | null | undefined): string {
         return 'student'
     }
 
+    // Map tutor aliases
+    if (['tutor', 'parent', 'padre'].includes(normalizedRole)) {
+        return 'tutor'
+    }
+
     return normalizedRole
 }

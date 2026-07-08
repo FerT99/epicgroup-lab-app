@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import './CourseMapScreen.css'
 import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
-import TopNavigation from './TopNavigation'
 
 interface CourseMapScreenProps {
   user: User
@@ -84,16 +83,7 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user }) => {
 
   return (
     <div className="course-map-screen">
-      <TopNavigation
-        activeKey="progress"
-        userDisplayName={displayName}
-        userRole={userRole}
-        onNavigate={handleNavigation}
-        onLogout={handleLogout}
-        logoutLoading={isLoggingOut}
-        notificationCount={0} // TODO: Fetch from backend
-        onOpenNotifications={handleOpenNotifications}
-      />
+      
 
       {/* Contenido del mapa */}
       <div className="map-container">

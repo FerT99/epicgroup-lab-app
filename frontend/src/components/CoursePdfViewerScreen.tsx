@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
-import TopNavigation from './TopNavigation'
 import './CoursePdfViewerScreen.css'
 import type { User } from '@supabase/supabase-js'
 import pencilImage from '../assets/pencil.png'
@@ -66,16 +65,7 @@ const CoursePdfViewerScreen: React.FC<CoursePdfViewerScreenProps> = ({ user }) =
 
   return (
     <div className="course-pdf-viewer">
-      <TopNavigation
-        activeKey="progress"
-        userDisplayName={displayName}
-        userRole={userRole}
-        onNavigate={handleNavigation}
-        onLogout={handleLogout}
-        logoutLoading={isLoggingOut}
-        notificationCount={42}
-        onOpenNotifications={handleOpenNotifications}
-      />
+      
 
       <main className="course-pdf-viewer__main">
         <div className="course-detail-content">

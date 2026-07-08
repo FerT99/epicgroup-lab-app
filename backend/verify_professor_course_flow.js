@@ -95,14 +95,14 @@ async function runVerification() {
         const gradeId = gradeData.id;
         console.log(`   Grade Created: ${gradeId}`);
 
-        // 5. Create Section
-        console.log('5. Creating Section...');
-        const sectionData = await makeRequest('POST', '/admin/sections', {
-            name: 'Section A',
+        // 5. Create Subject
+        console.log('5. Creating Subject...');
+        const subjectData = await makeRequest('POST', '/admin/subjects', {
+            name: 'Test Subject',
             grade_id: gradeId
         });
-        const sectionId = sectionData.id;
-        console.log(`   Section Created: ${sectionId}`);
+        const subjectId = subjectData.id;
+        console.log(`   Subject Created: ${subjectId}`);
 
         // 6. Verify Professor Centers
         console.log('6. Verifying GET /api/professors/:id/centers ...');
@@ -119,15 +119,15 @@ async function runVerification() {
         const hierarchy = await makeRequest('GET', `/admin/centers/${centerId}/hierarchy`);
 
         const grades = hierarchy.grades || [];
-        const sections = grades[0]?.sections || [];
+        const subjects = grades[0]?.subjects || [];
 
         console.log(`   Grades found: ${grades.length}`);
-        console.log(`   Sections found in first grade: ${sections.length}`);
+        console.log(`   Subjects found in first grade: ${subjects.length}`);
 
-        if (sections.length > 0 && sections[0].id === sectionId) {
+        if (subjects.length > 0 && subjects[0].id === subjectId) {
             console.log('   ✅ Hierarchy fetch verification SUCCESS.');
         } else {
-            throw new Error('Hierarchy verification failed: Section not found.');
+            throw new Error('Hierarchy verification failed: Subject not found.');
         }
 
         console.log('--- Verification Complete: SUCCESS ---');

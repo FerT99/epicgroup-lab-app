@@ -86,8 +86,3 @@ Estos scripts utilizan el entorno Node aislado o la consola de depuración del n
 
 > [!CAUTION]
 > Cuando se ejecuten operaciones de *Mass Insertion*, es indispensable contar con los Triggers de SQL (`public.sync_users_trigger()`) activos para asegurar que toda cuenta nueva en `auth.users` genere automáticamente su perfil visible en `public.users`. Así mismo, evita múltiples ejecuciones inmediatas seguidas para no sobrecargar los nodos con solicitudes de registro de cuentas.
-
-### Scripts de Depuración
-
-- **`inspect_schema.js`**: Inspecciona el estado y disponibilidad de las tablas que componen la base de datos de administración sin requerir del dashboard de Supabase (Tabla `sections`, `courses`, esquema `spTable`).
-- **`debug_sections.js`**: Revisa las conectividades y asociaciones válidas entre calificaciones (`grades_levels`) y secciones.

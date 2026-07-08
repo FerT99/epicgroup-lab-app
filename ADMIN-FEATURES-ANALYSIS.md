@@ -23,7 +23,6 @@
 **Tablas Creadas** (en `admin-system-schema.sql`):
 - ✅ `educational_centers` - Centros educativos
 - ✅ `grades_levels` - Grados académicos
-- ✅ `sections` - Secciones por grado
 - ✅ `subjects` - Materias/asignaturas
 - ✅ `professor_subjects` - Asignación profesor-materia
 
@@ -58,7 +57,6 @@
 - [ ] `HierarchyConfigScreen.tsx` - Vista principal de configuración
 - [ ] `CenterManagement.tsx` - Gestión de centros
 - [ ] `GradeManagement.tsx` - Gestión de grados
-- [ ] `SectionManagement.tsx` - Gestión de secciones
 - [ ] `SubjectManagement.tsx` - Gestión de materias
 - [ ] Componente de árbol jerárquico visual
 
@@ -191,12 +189,6 @@
 - [ ] `PUT /api/admin/grades/:id` - Actualizar grado
 - [ ] `DELETE /api/admin/grades/:id` - Eliminar grado
 
-- [ ] `GET /api/admin/grades/:id/sections` - Listar secciones
-- [ ] `POST /api/admin/sections` - Crear sección
-- [ ] `PUT /api/admin/sections/:id` - Actualizar sección
-- [ ] `DELETE /api/admin/sections/:id` - Eliminar sección
-
-- [ ] `GET /api/admin/sections/:id/subjects` - Listar materias
 - [ ] `POST /api/admin/subjects` - Crear materia
 - [ ] `PUT /api/admin/subjects/:id` - Actualizar materia
 - [ ] `DELETE /api/admin/subjects/:id` - Eliminar materia
@@ -258,7 +250,6 @@
 - `frontend/src/components/admin/HierarchyConfigScreen.tsx`
 - `frontend/src/components/admin/CenterManagement.tsx`
 - `frontend/src/components/admin/GradeManagement.tsx`
-- `frontend/src/components/admin/SectionManagement.tsx`
 - `frontend/src/components/admin/SubjectManagement.tsx`
 - `frontend/src/components/admin/UserManagement.tsx`
 - `frontend/src/components/admin/ContentManagement.tsx`

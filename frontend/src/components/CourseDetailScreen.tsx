@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { User } from '@supabase/supabase-js'
-import TopNavigation from './TopNavigation'
 import { getUserRole } from '../utils/getUserRole'
 import { auth } from '../lib/supabase'
-import { getSectionById, Section } from '../lib/adminApi'
+import { getSubjectById, Subject } from '../lib/adminApi'
 import './DashboardScreen.css' // Reusing dashboard styles for consistency
 
 interface CourseDetailScreenProps {
@@ -16,7 +15,7 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
     const navigate = useNavigate()
     const userRole = getUserRole(user)
 
-    const [section, setSection] = useState<Section | null>(null)
+    const [subject, setSubject] = useState<Subject | null>(null)
     const [grade, setGrade] = useState<{ center_id: string } | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -27,16 +26,16 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
 
     useEffect(() => {
         if (courseId) {
-            loadSection(courseId)
+            loadSubject(courseId)
             loadProfessors(courseId)
         }
     }, [courseId])
 
-    const loadSection = async (id: string) => {
+    const loadSubject = async (id: string) => {
         try {
             setLoading(true)
-            const data = await getSectionById(id)
-            setSection(data)
+            const data = await getSubjectById(id)
+            setSubject(data)
 
             // Fetch grade to get center_id
             if (data.grade_id) {
@@ -53,8 +52,8 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
 
     const loadProfessors = async (id: string) => {
         try {
-            const { getSectionProfessors } = await import('../lib/adminApi')
-            const data = await getSectionProfessors(id)
+            const { getSubjectProfessors } = await import('../lib/adminApi')
+            const data = await getSubjectProfessors(id)
             setProfessors(data)
         } catch (error) {
             console.error('Error loading professors:', error)
@@ -64,8 +63,8 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
     const handleAssignProfessor = async (userId: string) => {
         if (!courseId) return
         try {
-            const { assignSectionProfessor } = await import('../lib/adminApi')
-            await assignSectionProfessor(courseId, userId)
+            const { assignSubjectProfessor } = await import('../lib/adminApi')
+            await assignSubjectProfessor(courseId, userId)
             await loadProfessors(courseId)
             setShowProfessorModal(false)
         } catch (error: any) {
@@ -76,8 +75,8 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
     const handleUnassignProfessor = async (userId: string) => {
         if (!courseId || !confirm('¿Estás seguro de quitar a este profesor del curso?')) return
         try {
-            const { unassignSectionProfessor } = await import('../lib/adminApi')
-            await unassignSectionProfessor(courseId, userId)
+            const { unassignSubjectProfessor } = await import('../lib/adminApi')
+            await unassignSubjectProfessor(courseId, userId)
             await loadProfessors(courseId)
         } catch (error: any) {
             alert('Error : ' + error.message)
@@ -95,13 +94,7 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
     if (loading) {
         return (
             <div className="dashboard-screen">
-                <TopNavigation
-                    activeKey="courses"
-                    userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
-                    userRole={userRole}
-                    onNavigate={handleNavigate}
-                    onLogout={handleLogout}
-                />
+                
                 <div className="dashboard-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
                     <p>Cargando curso...</p>
                 </div>
@@ -109,16 +102,10 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
         )
     }
 
-    if (error || !section) {
+    if (error || !subject) {
         return (
             <div className="dashboard-screen">
-                <TopNavigation
-                    activeKey="courses"
-                    userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
-                    userRole={userRole}
-                    onNavigate={handleNavigate}
-                    onLogout={handleLogout}
-                />
+                
                 <div className="dashboard-content" style={{ padding: '2rem', textAlign: 'center' }}>
                     <h2>❌ Error</h2>
                     <p>{error || 'No se encontró el curso'}</p>
@@ -132,33 +119,27 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
 
     return (
         <div className="dashboard-screen">
-            <TopNavigation
-                activeKey="courses"
-                userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
-                userRole={userRole}
-                onNavigate={handleNavigate}
-                onLogout={handleLogout}
-            />
+            
 
             <div className="dashboard-content">
                 <div className="welcome-section" style={{ minHeight: 'auto', padding: '3rem 2rem' }}>
                     <div className="welcome-content">
                         <div className="welcome-text">
                             <span className="medal-icon" style={{ fontSize: '1.5rem', display: 'block', marginBottom: '1rem' }}>📚</span>
-                            <h1 className="welcome-title">{section.name}</h1>
-                            {section.short_name && <h2 className="user-name" style={{ fontSize: '1.5rem', opacity: 0.9 }}>{section.short_name}</h2>}
+                            <h1 className="welcome-title">{subject.name}</h1>
+                            {subject.short_name && <h2 className="user-name" style={{ fontSize: '1.5rem', opacity: 0.9 }}>{subject.short_name}</h2>}
                             <p className="progress-text" style={{ maxWidth: '600px', marginTop: '1rem' }}>
-                                {section.description || 'Sin descripción disponible.'}
+                                {subject.description || 'Sin descripción disponible.'}
                             </p>
 
                             <div className="progress-info" style={{ marginTop: '2rem' }}>
                                 <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px 20px', borderRadius: '12px', marginRight: '10px' }}>
                                     <span style={{ display: 'block', fontSize: '0.8rem', opacity: 0.8 }}>Inicio</span>
-                                    <strong>{section.start_date ? new Date(section.start_date).toLocaleDateString() : 'N/A'}</strong>
+                                    <strong>{subject.start_date ? new Date(subject.start_date).toLocaleDateString() : 'N/A'}</strong>
                                 </div>
                                 <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px 20px', borderRadius: '12px' }}>
                                     <span style={{ display: 'block', fontSize: '0.8rem', opacity: 0.8 }}>Fin</span>
-                                    <strong>{section.end_date ? new Date(section.end_date).toLocaleDateString() : 'N/A'}</strong>
+                                    <strong>{subject.end_date ? new Date(subject.end_date).toLocaleDateString() : 'N/A'}</strong>
                                 </div>
                             </div>
                         </div>
@@ -167,7 +148,7 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
 
                 <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
 
-                    {/* Professors Section */}
+                    {/* Professors Subject */}
                     {userRole === 'admin' && ( // Only admins see this for now, or allow logic check
                         <div style={{ marginBottom: '3rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -242,7 +223,7 @@ const CourseDetailScreen: React.FC<CourseDetailScreenProps> = ({ user }) => {
                 </div>
 
                 <React.Suspense fallback={null}>
-                    {showProfessorModal && courseId && section && grade && (
+                    {showProfessorModal && courseId && subject && grade && (
                         <ProfessorAssignmentModal
                             isOpen={showProfessorModal}
                             onClose={() => setShowProfessorModal(false)}

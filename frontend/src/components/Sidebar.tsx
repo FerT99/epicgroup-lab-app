@@ -1,124 +1,91 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './Sidebar.css'
-import astronautaImage from '../assets/astronauta.png'
-import NavbarProfileControls from './NavbarProfileControls'
-import { auth } from '../lib/supabase'
+import logoImage from '../assets/epic2.png'
+import { FileText, Users, Calendar, Layout, BookOpen, Settings, User as UserIcon } from 'lucide-react'
 
-interface SidebarProps {
-  isCollapsed?: boolean
+interface NavItem {
+    key: string
+    label: string
+    path: string
+    icon: React.ReactNode
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
+interface SidebarProps {
+    activeKey?: string
+    userRole?: string
+    onNavigate: (path: string) => void
+}
 
-  const handleNavigation = (path: string) => {
-    navigate(path)
-  }
+const PROFESSOR_NAV_ITEMS: NavItem[] = [
+    { key: 'dashboard', label: 'Inicio', path: '/dashboard', icon: <Layout size={20} /> },
+    { key: 'alumnos', label: 'Alumnos', path: '/alumnos', icon: <Users size={20} /> },
+    { key: 'assignments', label: 'Tareas', path: '/assignments', icon: <FileText size={20} /> },
+    { key: 'profile', label: 'Configuración de perfil', path: '/profile', icon: <UserIcon size={20} /> },
+]
 
-  const isActive = (path: string) => {
-    return location.pathname === path
-  }
+const ADMIN_NAV_ITEMS: NavItem[] = [
+    { key: 'admin-home', label: 'Inicio', path: '/dashboard', icon: <Layout size={20} /> },
+    { key: 'dashboard-admin', label: 'Panel de administración', path: '/admin', icon: <Settings size={20} /> },
+    { key: 'profile', label: 'Configuración de perfil', path: '/profile', icon: <UserIcon size={20} /> },
+]
 
-  const displayName = 'Raquel López'
+const STUDENT_NAV_ITEMS: NavItem[] = [
+    { key: 'dashboard', label: 'Inicio', path: '/dashboard', icon: <Layout size={20} /> },
+    { key: 'assignments', label: 'Tareas', path: '/assignments', icon: <FileText size={20} /> },
+    { key: 'profile', label: 'Configuración de perfil', path: '/profile', icon: <UserIcon size={20} /> },
+]
 
-  const handleLogout = async () => {
-    setIsLoggingOut(true)
-    try {
-      await auth.signOut()
-      navigate('/login')
-    } catch (error) {
-      console.error('Error al cerrar sesión desde la barra lateral:', error)
-    } finally {
-      setIsLoggingOut(false)
+const TUTOR_NAV_ITEMS: NavItem[] = [
+    { key: 'dashboard', label: 'Inicio', path: '/dashboard', icon: <Layout size={20} /> },
+    { key: 'assignments', label: 'Tareas', path: '/assignments', icon: <FileText size={20} /> },
+    { key: 'profile', label: 'Configuración de perfil', path: '/profile', icon: <UserIcon size={20} /> },
+]
+
+const Sidebar: React.FC<SidebarProps> = ({ userRole, onNavigate }) => {
+    const navigate = useNavigate()
+    const location = useLocation()
+
+    const navItems = userRole === 'admin' 
+        ? ADMIN_NAV_ITEMS 
+        : userRole === 'student' 
+            ? STUDENT_NAV_ITEMS 
+            : userRole === 'tutor' 
+                ? TUTOR_NAV_ITEMS 
+                : PROFESSOR_NAV_ITEMS
+
+    const isActive = (path: string) => location.pathname.startsWith(path)
+
+    const handleNavigation = (path: string) => {
+        onNavigate(path)
+        navigate(path)
     }
-  }
 
-  return (
-    <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      {!isCollapsed && (
-        <div className="welcome-section">
-          <div className="welcome-card">
-            <div className="welcome-avatar">
-              <img src={astronautaImage} alt="Astronauta" className="astronaut-image" />
+    return (
+        <aside className="sidebar-container">
+            <div className="sidebar-logo" onClick={() => handleNavigation('/dashboard')}>
+                <img src={logoImage} alt="EPICGROUP LAB" className="logo-image" />
             </div>
-            <div className="welcome-content">
-              <h3 className="welcome-greeting">¡Hola!</h3>
-              <p className="welcome-name">Raquel López</p>
-              <div className="achievement-badge">
-                <span className="badge-number">1</span>
-                <span className="medal-icon">🥇</span>
-                <span className="achievement-score">3.5</span>
-                <span className="arrow-icon">→</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      <nav className="sidebar-nav">
-        <ul className="nav-list">
-          <li
-            className={`nav-item ${isActive('/my-courses') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/my-courses')}
-          >
-            <div className="nav-icon">📚</div>
-            {!isCollapsed && <span className="nav-text">Inicio</span>}
-          </li>
-          <li
-            className={`nav-item ${isActive('/progress') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/progress')}
-          >
-            <div className="nav-icon">📊</div>
-            {!isCollapsed && <span className="nav-text">Progreso</span>}
-          </li>
-          <li
-            className={`nav-item ${isActive('/quotes') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/quotes')}
-          >
-            <div className="nav-icon">💬</div>
-            {!isCollapsed && <span className="nav-text">Agenda</span>}
-          </li>
-          <li
-            className={`nav-item ${isActive('/assignments') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/assignments')}
-          >
-            <div className="nav-icon">📝</div>
-            {!isCollapsed && <span className="nav-text">Tareas</span>}
-          </li>
-          <li className="nav-item">
-            <div className="nav-icon">🔔</div>
-            {!isCollapsed && <span className="nav-text">Recordatorios</span>}
-          </li>
-        </ul>
-      </nav>
-
-      <div className="sidebar-footer">
-        {!isCollapsed ? (
-          <NavbarProfileControls
-            userDisplayName={displayName}
-            onNavigate={handleNavigation}
-            onLogout={handleLogout}
-            logoutLoading={isLoggingOut}
-            notificationCount={12}
-            onOpenNotifications={() => console.log('Abrir notificaciones')}
-            settingsPath=""
-          />
-        ) : (
-          <button
-            className="sidebar-collapsed-user"
-            type="button"
-            onClick={() => handleNavigation('/profile')}
-            title="Ver perfil"
-          >
-            RL
-          </button>
-        )}
-      </div>
-    </div>
-  )
+            <nav className="sidebar-nav">
+                <ul className="sidebar-nav-list">
+                    {navItems.map((item) => {
+                        const active = isActive(item.path) && (item.path !== '/dashboard' || location.pathname === '/dashboard')
+                        return (
+                            <li
+                                key={item.key}
+                                className={`sidebar-nav-item ${active ? 'active' : ''}`}
+                                onClick={() => handleNavigation(item.path)}
+                            >
+                                <div className="sidebar-icon">{item.icon}</div>
+                                <span className="sidebar-text">{item.label}</span>
+                            </li>
+                        )
+                    })}
+                </ul>
+            </nav>
+        </aside>
+    )
 }
 
 export default Sidebar

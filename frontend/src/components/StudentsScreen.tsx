@@ -5,7 +5,6 @@ import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
 import './StudentsScreen.css'
 import { getStudentsByProfessor, type Student } from '../lib/api'
-import TopNavigation from './TopNavigation'
 
 interface StudentsScreenProps {
     user: User
@@ -30,17 +29,15 @@ const StudentsScreen: React.FC<StudentsScreenProps> = ({ user }) => {
                 // Intentamos cargar los alumnos reales
                 const data = await getStudentsByProfessor(user.id)
 
-                // Si hay datos, los usamos. Si no, usamos los datos mock para visualización.
-                if (data && data.length > 0) {
+                // Solo usamos alumnos reales
+                if (data) {
                     setStudents(data)
                 } else {
-                    console.log('No students found')
                     setStudents([])
                 }
             } catch (err: any) {
                 console.error('Error fetching students:', err)
-                // En caso de error, mostramos lista vacía
-                console.log('Error fetching students')
+                setError('Error al cargar alumnos')
                 setStudents([])
             } finally {
                 setLoading(false)
@@ -74,16 +71,7 @@ const StudentsScreen: React.FC<StudentsScreenProps> = ({ user }) => {
 
     return (
         <div className="students-screen">
-            <TopNavigation
-                activeKey="reminder"
-                userDisplayName={displayName}
-                userRole={userRole}
-                onNavigate={handleNavigation}
-                onLogout={handleLogout}
-                logoutLoading={loading}
-                notificationCount={0}
-                onOpenNotifications={() => console.log('Abrir notificaciones')}
-            />
+
 
             <div className="students-content">
                 {/* Main Paper Container */}
@@ -195,11 +183,6 @@ const StudentsScreen: React.FC<StudentsScreenProps> = ({ user }) => {
                 {/* Decorative Arms (simplified CSS shapes) */}
                 <div className="arm-left"></div>
                 <div className="arm-right"></div>
-
-                {/* Ver Calificaciones Button - Bottom Right */}
-                <button className="view-grades-btn" onClick={() => navigate('/calificaciones')}>
-                    Ver Calificaciones
-                </button>
             </div>
         </div>
     )

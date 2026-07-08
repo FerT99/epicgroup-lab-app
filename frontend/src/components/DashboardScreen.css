@@ -1,16 +1,24 @@
 /* Dashboard sin sidebar */
 .dashboard-screen {
-  width: 100vw;
-  min-height: 105vh;
+  width: 100%;
+  height: 100%;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-image: url('/src/assets/image1.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  position: fixed;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-screen.prof-dashboard {
+  background-image: none;
+  background-color: transparent;
 }
 
 /* Logo EPICGROUP LAB en esquina superior izquierda */
@@ -105,31 +113,36 @@
 
 .dashboard-content {
   width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 0;
+  position: relative;
 }
 
 /* Sección de bienvenida con fondo transparente */
 .welcome-section {
-  position: absolute;
+  position: relative;
   background: rgba(139, 92, 246, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  min-height: 115vh;
-  padding: 120px 60px 60px 60px;
+  min-height: 60vh;
+  padding: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   overflow: hidden;
   width: 100%;
   box-sizing: border-box;
+  flex: 1;
 }
 
 
 
 .welcome-text {
   max-width: 500px;
-  margin-left: 10%;
-  margin-right: 40px;
-  margin-top: -15%;
+  margin-left: 5%;
+  z-index: 10;
+  position: relative;
 }
 
 .welcome-title {

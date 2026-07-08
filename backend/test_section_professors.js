@@ -7,16 +7,16 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const API_URL = 'http://localhost:3001/api/admin';
 
-async function testSectionProfessors() {
-    console.log('Running Section Professors Test...');
+async function testSubjectProfessors() {
+    console.log('Running Subject Professors Test...');
 
-    // 1. Get a random section and a random user (professor)
-    const { data: section } = await supabase.from('sections').select('id, name').limit(1).single();
-    if (!section) {
-        console.error('No sections found to test with.');
+    // 1. Get a random subject and a random user (professor)
+    const { data: subject } = await supabase.from('subjects').select('id, name').limit(1).single();
+    if (!subject) {
+        console.error('No subject found to test with.');
         return;
     }
-    console.log(`Using Section: ${section.name} (${section.id})`);
+    console.log(`Using Subject: ${subject.name} (${subject.id})`);
 
     const { data: user } = await supabase.from('users').select('id, email').limit(1).single();
     if (!user) {
@@ -28,7 +28,7 @@ async function testSectionProfessors() {
     // 2. Fetch initial professors
     try {
         console.log('\nFetching initial professors...');
-        const res1 = await fetch(`${API_URL}/sections/${section.id}/professors`);
+        const res1 = await fetch(`${API_URL}/subjects/${subject.id}/professors`);
         const professors1 = await res1.json();
         console.log('Initial professors count:', professors1.length);
     } catch (e) {
@@ -38,7 +38,7 @@ async function testSectionProfessors() {
     // 3. Assign professor
     try {
         console.log('\nAssigning professor...');
-        const res2 = await fetch(`${API_URL}/sections/${section.id}/professors`, {
+        const res2 = await fetch(`${API_URL}/subjects/${subject.id}/professors`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: user.id })
@@ -56,7 +56,7 @@ async function testSectionProfessors() {
     // 4. Fetch again to verify
     try {
         console.log('\nVerifying assignment...');
-        const res3 = await fetch(`${API_URL}/sections/${section.id}/professors`);
+        const res3 = await fetch(`${API_URL}/subjects/${subject.id}/professors`);
         if (!res3.ok) {
             console.error('Fetch failed:', res3.status, await res3.text());
             return;
@@ -80,7 +80,7 @@ async function testSectionProfessors() {
     // 5. Unassign professor
     try {
         console.log('\nUnassigning professor...');
-        const res4 = await fetch(`${API_URL}/sections/${section.id}/professors/${user.id}`, {
+        const res4 = await fetch(`${API_URL}/subjects/${subject.id}/professors/${user.id}`, {
             method: 'DELETE'
         });
         if (res4.ok) {
@@ -95,7 +95,7 @@ async function testSectionProfessors() {
     // 6. Final verification
     try {
         console.log('\nFinal verification...');
-        const res5 = await fetch(`${API_URL}/sections/${section.id}/professors`);
+        const res5 = await fetch(`${API_URL}/subjects/${subject.id}/professors`);
         if (!res5.ok) {
             console.error('Fetch failed:', res5.status, await res5.text());
             return;
@@ -119,4 +119,4 @@ async function testSectionProfessors() {
     }
 }
 
-testSectionProfessors();
+testSubjectProfessors();

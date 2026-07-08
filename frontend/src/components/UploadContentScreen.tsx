@@ -1,6 +1,5 @@
 import React from 'react'
 import { User } from '@supabase/supabase-js'
-import TopNavigation from './TopNavigation'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
@@ -39,16 +38,7 @@ const UploadContentScreen: React.FC<UploadContentScreenProps> = ({ user }) => {
 
   return (
     <div className="upload-content-screen">
-      <TopNavigation
-        activeKey="dashboard"
-        userDisplayName={displayName}
-        userRole={userRole}
-        onNavigate={handleNavigation}
-        onLogout={handleLogout}
-        logoutLoading={false}
-        notificationCount={42}
-        onOpenNotifications={handleOpenNotifications}
-      />
+      
 
       <div className="upload-content-container">
         {/* Lado izquierdo - Sección decorativa */}

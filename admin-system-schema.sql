@@ -151,84 +151,11 @@ CREATE POLICY "Admins can delete grades" ON public.grades_levels
     );
 
 
--- 3. TABLA DE SECCIONES
--- ============================================
-CREATE TABLE IF NOT EXISTS public.sections (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    grade_id UUID REFERENCES public.grades_levels(id) ON DELETE CASCADE,
-    name VARCHAR(50) NOT NULL, -- Ej: "A", "B", "C"
-    max_students INTEGER DEFAULT 30,
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(grade_id, name)
-);
-
--- Índices para sections
-CREATE INDEX IF NOT EXISTS idx_sections_grade ON public.sections(grade_id);
-CREATE INDEX IF NOT EXISTS idx_sections_active ON public.sections(is_active);
-
--- RLS para sections
-ALTER TABLE public.sections ENABLE ROW LEVEL SECURITY;
-
--- Política: Administradores pueden ver todas las secciones
-CREATE POLICY "Admins can view all sections" ON public.sections
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND (
-                auth.users.raw_user_meta_data->>'role' = 'admin'
-                OR auth.users.raw_app_meta_data->>'role' = 'admin'
-            )
-        )
-    );
-
--- Política: Administradores pueden crear secciones
-CREATE POLICY "Admins can create sections" ON public.sections
-    FOR INSERT WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND (
-                auth.users.raw_user_meta_data->>'role' = 'admin'
-                OR auth.users.raw_app_meta_data->>'role' = 'admin'
-            )
-        )
-    );
-
--- Política: Administradores pueden actualizar secciones
-CREATE POLICY "Admins can update sections" ON public.sections
-    FOR UPDATE USING (
-        EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND (
-                auth.users.raw_user_meta_data->>'role' = 'admin'
-                OR auth.users.raw_app_meta_data->>'role' = 'admin'
-            )
-        )
-    );
-
--- Política: Administradores pueden eliminar secciones
-CREATE POLICY "Admins can delete sections" ON public.sections
-    FOR DELETE USING (
-        EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND (
-                auth.users.raw_user_meta_data->>'role' = 'admin'
-                OR auth.users.raw_app_meta_data->>'role' = 'admin'
-            )
-        )
-    );
-
-
 -- 4. TABLA DE MATERIAS/ASIGNATURAS
 -- ============================================
 CREATE TABLE IF NOT EXISTS public.subjects (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    section_id UUID REFERENCES public.sections(id) ON DELETE CASCADE,
+    grade_id UUID REFERENCES public.grades_levels(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL, -- Ej: "Matemáticas", "Español"
     description TEXT,
     hours_per_week INTEGER DEFAULT 0,
@@ -238,7 +165,7 @@ CREATE TABLE IF NOT EXISTS public.subjects (
 );
 
 -- Índices para subjects
-CREATE INDEX IF NOT EXISTS idx_subjects_section ON public.subjects(section_id);
+CREATE INDEX IF NOT EXISTS idx_subjects_grade ON public.subjects(grade_id);
 CREATE INDEX IF NOT EXISTS idx_subjects_name ON public.subjects(name);
 CREATE INDEX IF NOT EXISTS idx_subjects_active ON public.subjects(is_active);
 
@@ -304,7 +231,7 @@ CREATE POLICY "Admins can delete subjects" ON public.subjects
 ALTER TABLE public.users 
 ADD COLUMN IF NOT EXISTS center_id UUID REFERENCES public.educational_centers(id) ON DELETE SET NULL,
 ADD COLUMN IF NOT EXISTS grade_id UUID REFERENCES public.grades_levels(id) ON DELETE SET NULL,
-ADD COLUMN IF NOT EXISTS section_id UUID REFERENCES public.sections(id) ON DELETE SET NULL,
+ADD COLUMN IF NOT EXISTS subject_id UUID REFERENCES public.subjects(id) ON DELETE SET NULL,
 ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'student', -- 'admin', 'professor', 'student'
 ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'active', -- 'active', 'suspended', 'inactive'
 ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMPTZ,
@@ -313,7 +240,7 @@ ADD COLUMN IF NOT EXISTS suspended_reason TEXT;
 -- Índices para users
 CREATE INDEX IF NOT EXISTS idx_users_center ON public.users(center_id);
 CREATE INDEX IF NOT EXISTS idx_users_grade ON public.users(grade_id);
-CREATE INDEX IF NOT EXISTS idx_users_section ON public.users(section_id);
+CREATE INDEX IF NOT EXISTS idx_users_subject ON public.users(subject_id);
 CREATE INDEX IF NOT EXISTS idx_users_role ON public.users(role);
 CREATE INDEX IF NOT EXISTS idx_users_status ON public.users(status);
 
@@ -374,7 +301,7 @@ RETURNS TABLE(
     user_role VARCHAR,
     center_name VARCHAR,
     grade_name VARCHAR,
-    section_name VARCHAR
+    subject_name VARCHAR
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -384,11 +311,11 @@ BEGIN
         u.role,
         ec.name as center_name,
         gl.name as grade_name,
-        s.name as section_name
+        s.name as subject_name
     FROM public.users u
     LEFT JOIN public.educational_centers ec ON u.center_id = ec.id
     LEFT JOIN public.grades_levels gl ON u.grade_id = gl.id
-    LEFT JOIN public.sections s ON u.section_id = s.id
+    LEFT JOIN public.subjects s ON u.subject_id = s.id
     WHERE u.id = user_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -442,13 +369,6 @@ CREATE TRIGGER update_grades_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION public.update_updated_at_column();
 
--- Trigger para actualizar updated_at en sections
-DROP TRIGGER IF EXISTS update_sections_updated_at ON public.sections;
-CREATE TRIGGER update_sections_updated_at
-    BEFORE UPDATE ON public.sections
-    FOR EACH ROW
-    EXECUTE FUNCTION public.update_updated_at_column();
-
 -- Trigger para actualizar updated_at en subjects
 DROP TRIGGER IF EXISTS update_subjects_updated_at ON public.subjects;
 CREATE TRIGGER update_subjects_updated_at
@@ -489,8 +409,7 @@ END $$;
 -- ============================================
 COMMENT ON TABLE public.educational_centers IS 'Centros educativos/escuelas';
 COMMENT ON TABLE public.grades_levels IS 'Grados académicos dentro de cada centro';
-COMMENT ON TABLE public.sections IS 'Secciones dentro de cada grado';
-COMMENT ON TABLE public.subjects IS 'Materias/asignaturas por sección';
+COMMENT ON TABLE public.subjects IS 'Materias/asignaturas por grado';
 COMMENT ON TABLE public.professor_subjects IS 'Asignación de profesores a materias';
 
 
@@ -501,5 +420,5 @@ SELECT
     (SELECT COUNT(*) FROM information_schema.columns WHERE table_name = t.table_name AND table_schema = 'public') as column_count
 FROM information_schema.tables t
 WHERE table_schema = 'public' 
-AND table_name IN ('educational_centers', 'grades_levels', 'sections', 'subjects', 'professor_subjects')
+AND table_name IN ('educational_centers', 'grades_levels', 'subjects', 'professor_subjects')
 ORDER BY table_name;
