@@ -244,17 +244,17 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                             </button>
                         </div>
                         <div style={{ flex: 1, textAlign: 'center' }}>
-                            <h1 style={{ margin: 0, fontSize: '2rem', color: '#fff' }}>
+                            <h1 style={{ margin: 0, fontSize: '2rem', color: '#1f295a' }}>
                                 {subject?.name}
                             </h1>
-                            <p style={{ color: '#aaa', marginTop: '0.5rem' }}>Contenido del Curso</p>
+                            <p style={{ color: '#1f295a', marginTop: '0.5rem', opacity: 0.8 }}>Contenido del Curso</p>
                         </div>
                         <div className="header-action-right" style={{ width: '150px', display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
                             <button
                                 className="btn-icon"
                                 onClick={() => navigate(`/admin/school/${centerId}/grade/${gradeId}/course/${courseId}/edit`)}
                                 title="Configuración del Curso"
-                                style={{ background: 'rgba(255,255,255,0.1)', padding: '0.8rem' }}
+                                style={{ background: 'rgba(31, 41, 90, 0.1)', padding: '0.8rem' }}
                             >
                                 ⚙️
                             </button>
@@ -282,7 +282,7 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                         <span style={{ color: '#c084fc', fontWeight: '600', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>👨‍🏫 Profesores:</span>
                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
                             {subjectProfessors.length === 0 ? (
-                                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', fontStyle: 'italic' }}>Sin profesores asignados</span>
+                                <span style={{ color: 'rgba(31, 41, 90, 0.5)', fontSize: '0.9rem', fontStyle: 'italic' }}>Sin profesores asignados</span>
                             ) : (
                                 subjectProfessors.map(prof => (
                                     <div key={prof.id} style={{
@@ -301,12 +301,12 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                                         }}>
                                             {(prof.full_name || prof.email || 'P').substring(0, 2).toUpperCase()}
                                         </div>
-                                        <span style={{ fontSize: '0.875rem', color: '#e0d9ff' }}>{prof.full_name || prof.email}</span>
+                                        <span style={{ fontSize: '0.875rem', color: '#1f295a' }}>{prof.full_name || prof.email}</span>
                                         <button
                                             onClick={() => handleUnassignProfessor(prof.id)}
                                             disabled={professorLoading}
                                             style={{
-                                                background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
+                                                background: 'transparent', border: 'none', color: '#1f295a', opacity: 0.5,
                                                 cursor: 'pointer', fontSize: '0.8rem', padding: '0', lineHeight: 1,
                                                 display: 'flex', alignItems: 'center'
                                             }}
@@ -335,30 +335,30 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                     {/* Modules List */}
                     <div className="modules-container" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                         {modules.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '4rem', color: '#666', border: '2px dashed #333', borderRadius: '1rem' }}>
+                            <div style={{ textAlign: 'center', padding: '4rem', color: '#1f295a', border: '2px dashed rgba(31, 41, 90, 0.3)', borderRadius: '1rem' }}>
                                 <p>No hay módulos creados. Comienza agregando uno.</p>
                             </div>
                         ) : (
                             modules.map(module => (
                                 <div key={module.id} style={{
-                                    background: 'rgba(30, 30, 46, 0.8)',
+                                    background: '#ffffff',
                                     borderRadius: '12px',
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    border: '1px solid rgba(31, 41, 90, 0.2)',
                                     overflow: 'hidden'
                                 }}>
                                     {/* Module Header */}
                                     <div style={{
                                         padding: '1.5rem',
-                                        background: 'rgba(255, 255, 255, 0.05)',
-                                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                                        background: 'rgba(31, 41, 90, 0.05)',
+                                        borderBottom: '1px solid rgba(31, 41, 90, 0.1)',
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         alignItems: 'center'
                                     }}>
-                                        <h3 style={{ margin: 0, color: '#e879f9' }}>{module.title}</h3>
+                                        <h3 style={{ margin: 0, color: '#1f295a' }}>{module.title}</h3>
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <button onClick={() => handleEditModule(module)} className="btn-icon">✏️</button>
-                                            <button onClick={() => handleDeleteModule(module.id)} className="btn-icon">🗑️</button>
+                                            <button onClick={() => handleEditModule(module)} className="btn-icon" style={{ background: 'rgba(31, 41, 90, 0.1)', color: '#1f295a' }}>✏️</button>
+                                            <button onClick={() => handleDeleteModule(module.id)} className="btn-icon" style={{ background: 'rgba(31, 41, 90, 0.1)', color: '#1f295a' }}>🗑️</button>
                                         </div>
                                     </div>
 
@@ -369,32 +369,33 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                                                 {module.items.map(item => (
                                                     <div key={item.id} style={{
                                                         padding: '1rem',
-                                                        background: 'rgba(0, 0, 0, 0.2)',
+                                                        background: '#1f295a',
                                                         borderRadius: '8px',
                                                         display: 'flex',
                                                         alignItems: 'center',
-                                                        gap: '1rem'
+                                                        gap: '1rem',
+                                                        color: '#ffffff'
                                                     }}>
                                                         <div style={{ fontSize: '1.5rem' }}>
                                                             {item.type === 'pdf' ? '📄' : item.type === 'video' ? '🎥' : item.type === 'assignment' ? '📝' : '🔗'}
                                                         </div>
                                                         <div style={{ flex: 1 }}>
                                                             <div style={{ fontWeight: 'bold' }}>{item.title}</div>
-                                                            {item.description && <div style={{ fontSize: '0.85rem', color: '#888' }}>{item.description}</div>}
+                                                            {item.description && <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>{item.description}</div>}
                                                         </div>
                                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                             {item.content_url && (
-                                                                <a href={item.content_url} target="_blank" rel="noopener noreferrer" className="btn-icon" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+                                                                <a href={item.content_url} target="_blank" rel="noopener noreferrer" className="btn-icon" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.2)', color: '#fff' }}>
                                                                     ⬇️
                                                                 </a>
                                                             )}
-                                                            <button onClick={() => handleDeleteItem(item.id)} className="btn-icon">🗑️</button>
+                                                            <button onClick={() => handleDeleteItem(item.id)} className="btn-icon" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff' }}>🗑️</button>
                                                         </div>
                                                     </div>
                                                 ))}
                                             </div>
                                         ) : (
-                                            <p style={{ color: '#666', fontStyle: 'italic', padding: '1rem' }}>Sin contenido</p>
+                                            <p style={{ color: 'rgba(31, 41, 90, 0.5)', fontStyle: 'italic', padding: '1rem' }}>Sin contenido</p>
                                         )}
 
                                         <div style={{ marginTop: '1rem', textAlign: 'right' }}>
@@ -402,8 +403,8 @@ const CourseContentScreen: React.FC<CourseContentScreenProps> = ({ user }) => {
                                                 onClick={() => handleAddItem(module.id)}
                                                 style={{
                                                     background: 'transparent',
-                                                    border: '1px dashed rgba(255,255,255,0.3)',
-                                                    color: '#aaa',
+                                                    border: '1px dashed rgba(255,255,255,0.5)',
+                                                    color: '#ffffff',
                                                     padding: '0.5rem 1rem',
                                                     borderRadius: '6px',
                                                     cursor: 'pointer'

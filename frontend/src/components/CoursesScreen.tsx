@@ -14,7 +14,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ user }) => {
 
   return (
     <div className="courses-screen">
-      <Sidebar isCollapsed={false} />
+      <Sidebar userRole={user.user_metadata?.role || 'student'} onNavigate={(path) => navigate(path)} />
 
       <div className="main-content">
         <div className="content-header">

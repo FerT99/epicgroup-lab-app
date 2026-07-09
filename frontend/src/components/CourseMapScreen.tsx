@@ -4,6 +4,13 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import './CourseMapScreen.css'
 import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
+import { useEffect } from 'react'
+
+import image30 from '../assets/image30.png'
+import image36 from '../assets/image36.png'
+import image37 from '../assets/image37.png'
+import image38 from '../assets/image38.png'
+import image39 from '../assets/image39.png'
 
 interface CourseMapScreenProps {
   user: User
@@ -48,28 +55,50 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user }) => {
 
   const userRole = getUserRole(user)
 
-  // TODO: Fetch course modules/planets from backend based on activeCourseId
-  const basePlanets: Array<{
-    id: number
-    number: number
-    stars: number
-    completed: boolean
-    image: string
-    position: { top: string; left: string }
-    title: string
-    defaultPdfUrl: string
-  }> = []
+  const [coursePlanets, setCoursePlanets] = useState<any[]>([])
 
-  const coursePlanets = basePlanets.map((planet) => ({
-    ...planet,
-    pdfUrl: planetResources[planet.id] ?? planet.defaultPdfUrl
-  }))
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        if (activeCourseId === 'general') return;
+        const res = await fetch(`http://localhost:3001/api/admin/subjects/${activeCourseId}/modules`);
+        if (!res.ok) throw new Error('Error fetching modules');
+        const data = await res.json();
+        
+        // Define some planet images and positions
+        const images = [image30, image36, image37, image38, image39];
+        const positions = [
+          { top: '80%', left: '20%' },
+          { top: '60%', left: '50%' },
+          { top: '35%', left: '30%' },
+          { top: '20%', left: '70%' },
+          { top: '10%', left: '40%' }
+        ];
+
+        const planets = data.map((module: any, index: number) => ({
+          id: module.id,
+          number: index + 1,
+          stars: 0,
+          completed: false,
+          image: images[index % images.length],
+          position: positions[index % positions.length],
+          title: module.title,
+          pdfUrl: '' // PDF will be resolved inside planet screen
+        }));
+
+        setCoursePlanets(planets);
+      } catch (err) {
+        console.error("Error fetching modules:", err);
+      }
+    };
+    fetchModules();
+  }, [activeCourseId]);
 
   const handlePlanetClick = (planetId: number) => {
     const planet = coursePlanets.find((item) => item.id === planetId)
     if (!planet) return
 
-    navigate(`/ course / ${activeCourseId} /content/${planetId} `, {
+    navigate(`/course/${activeCourseId}/planet/${planetId}`, {
       state: {
         pdfUrl: planet.pdfUrl,
         title: planet.title
@@ -83,10 +112,34 @@ const CourseMapScreen: React.FC<CourseMapScreenProps> = ({ user }) => {
 
   return (
     <div className="course-map-screen">
-      
+
 
       {/* Contenido del mapa */}
       <div className="map-container">
+        <button 
+          onClick={() => navigate('/dashboard')} 
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            zIndex: 100,
+            background: 'rgba(255,255,255,0.1)',
+            border: '1px solid rgba(255,255,255,0.3)',
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius: '20px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            backdropFilter: 'blur(5px)',
+            transition: 'all 0.3s'
+          }}
+          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+        >
+          ← Volver
+        </button>
+
         <div className="course-map-header">
           <h1>{activeCourseTitle}</h1>
           <p>Selecciona un planeta para abrir el material del módulo.</p>

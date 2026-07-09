@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import './QuotesScreen.css'
 import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
+import TopNavigation from './TopNavigation'
 
 interface QuotesScreenProps {
   user: User

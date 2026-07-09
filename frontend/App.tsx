@@ -19,6 +19,7 @@ import CourseFormScreen from './src/components/CourseFormScreen'
 import CoursePdfViewerScreen from './src/components/CoursePdfViewerScreen'
 import UploadContentScreen from './src/components/UploadContentScreen'
 import CourseContentScreen from './src/components/CourseContentScreen'
+import PlanetDetailScreen from './src/components/PlanetDetailScreen'
 import MainLayout from './src/components/MainLayout'
 // import LandingPage from './src/components/LandingPage'
 import './App.css'
@@ -115,7 +116,6 @@ useEffect(() => {
                     <Route path="/alumnos" element={<StudentsScreen user={user} />} />
                     <Route path="/alumnos/:studentId" element={<StudentProgressScreen user={user} />} />
                     <Route path="/calificaciones" element={<GradesScreen user={user} />} />
-                    <Route path="/course-map" element={<CourseMapScreen user={user} />} />
                     <Route path="/course/:courseId/content/:resourceId" element={<CoursePdfViewerScreen user={user} />} />
                     <Route path="/profile" element={<ProfileScreen user={user} />} />
                     <Route path="/admin" element={<HierarchyConfig user={user} />} />
@@ -132,6 +132,18 @@ useEffect(() => {
                 <Navigate to="/login" replace />
               )
             }
+          />
+          <Route
+            path="/course-map"
+            element={user ? <CourseMapScreen user={user} /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="/assignments"
+            element={user ? <AssignmentsScreen user={user} /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="/course/:courseId/planet/:planetId"
+            element={user ? <PlanetDetailScreen user={user} /> : <Navigate to="/login" replace />}
           />
         </Routes>
       </div>

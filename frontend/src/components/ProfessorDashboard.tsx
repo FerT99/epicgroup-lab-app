@@ -124,7 +124,7 @@ const ProfessorDashboard: React.FC<ProfessorDashboardProps> = ({ user }) => {
                   if (course.isAdminCenter) {
                     navigate(`/admin/school/${course.centerId}`)
                   } else {
-                    navigate(`/progress`, { state: { selectedCourse: course } })
+                    navigate(`/course/${course.id}/planet/1`, { state: { title: course.title, courseTitle: course.title } })
                   }
                 }}>
                   <div className="class-header">

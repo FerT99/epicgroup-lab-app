@@ -261,7 +261,7 @@ export const deleteGrade = async (id: string): Promise<void> => {
 
 export const getSubjectsByGrade = async (gradeId: string): Promise<Subject[]> => {
     try {
-        const response = await fetch(`${API_URL}/api/admin/grades/${gradeId}/sections`)
+        const response = await fetch(`${API_URL}/api/admin/grades/${gradeId}/subjects`)
         if (!response.ok) {
             const errorData = await response.json()
             console.error('Error Details:', errorData)

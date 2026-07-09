@@ -20,7 +20,7 @@ interface SidebarProps {
 const PROFESSOR_NAV_ITEMS: NavItem[] = [
     { key: 'dashboard', label: 'Inicio', path: '/dashboard', icon: <Layout size={20} /> },
     { key: 'alumnos', label: 'Alumnos', path: '/alumnos', icon: <Users size={20} /> },
-    { key: 'assignments', label: 'Tareas', path: '/assignments', icon: <FileText size={20} /> },
+    { key: 'assignments', label: 'Cursos', path: '/assignments', icon: <BookOpen size={20} /> },
     { key: 'profile', label: 'Configuración de perfil', path: '/profile', icon: <UserIcon size={20} /> },
 ]
 
@@ -32,13 +32,13 @@ const ADMIN_NAV_ITEMS: NavItem[] = [
 
 const STUDENT_NAV_ITEMS: NavItem[] = [
     { key: 'dashboard', label: 'Inicio', path: '/dashboard', icon: <Layout size={20} /> },
-    { key: 'assignments', label: 'Tareas', path: '/assignments', icon: <FileText size={20} /> },
+    { key: 'assignments', label: 'Cursos', path: '/assignments', icon: <BookOpen size={20} /> },
     { key: 'profile', label: 'Configuración de perfil', path: '/profile', icon: <UserIcon size={20} /> },
 ]
 
 const TUTOR_NAV_ITEMS: NavItem[] = [
     { key: 'dashboard', label: 'Inicio', path: '/dashboard', icon: <Layout size={20} /> },
-    { key: 'assignments', label: 'Tareas', path: '/assignments', icon: <FileText size={20} /> },
+    { key: 'assignments', label: 'Cursos', path: '/assignments', icon: <BookOpen size={20} /> },
     { key: 'profile', label: 'Configuración de perfil', path: '/profile', icon: <UserIcon size={20} /> },
 ]
 
