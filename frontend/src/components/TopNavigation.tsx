@@ -20,21 +20,21 @@ interface TopNavigationProps {
   notificationCount?: number
   onOpenNotifications?: () => void
   logoDestination?: string
+  backgroundColor?: string
 }
 
 // Admin navigation items
 const ADMIN_NAV_ITEMS: NavItem[] = [
   { key: 'admin-home', label: 'Inicio', path: '/dashboard' },
-  { key: 'schools', label: 'Escuelas', path: '/admin' },
+  { key: 'schools', label: 'Panel administrativo', path: '/admin' },
   { key: 'agenda', label: 'Agenda', path: '/quotes' },
 ]
 
 // Professor navigation items (current default)
 const PROFESSOR_NAV_ITEMS: NavItem[] = [
   { key: 'my-courses', label: 'Inicio', path: '/dashboard' },
-  { key: 'quotes', label: 'Agenda', path: '/quotes' },
-  { key: 'reminder', label: 'Alumnos', path: '/alumnos' },
-  { key: 'progress', label: 'Mis cursos', path: '/progress' },
+  { key: 'tracking', label: 'Mis cursos', path: '/assignments' },
+  { key: 'agenda', label: 'Mi agenda', path: '/quotes' },
 ]
 
 const TopNavigation: React.FC<TopNavigationProps> = ({
@@ -47,6 +47,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({
   notificationCount = 0,
   onOpenNotifications,
   logoDestination = '/dashboard',
+  backgroundColor,
 }) => {
   // Select navigation items based on role
   const navItems = userRole === 'admin' ? ADMIN_NAV_ITEMS : PROFESSOR_NAV_ITEMS
@@ -64,7 +65,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({
   }
 
   return (
-    <header className="top-navigation" role="banner">
+    <header className="top-navigation" role="banner" style={{ backgroundColor }}>
       <div className="top-navigation__bar">
         <div className="top-navigation__content">
           <button
@@ -101,7 +102,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({
             </nav>
           </div>
 
-          <div className="top-navigation__right">
+          <div className="top-navigation__right" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <NavbarProfileControls
               userDisplayName={userDisplayName}
               onNavigate={onNavigate}
@@ -110,6 +111,9 @@ const TopNavigation: React.FC<TopNavigationProps> = ({
               notificationCount={notificationCount}
               onOpenNotifications={onOpenNotifications}
             />
+            <button className="hamburger-btn" onClick={() => console.log('Menu opened')} aria-label="Menu">
+              <span className="hamburger-icon">=</span>
+            </button>
           </div>
         </div>
       </div>

@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
-import { auth } from '../lib/supabase'
 import { getUserRole } from '../utils/getUserRole'
 import './DashboardScreen.css'
-import astronautaImage from '../assets/image10.png'
-import elementoDecorativo1 from '../assets/image11.png'
-import elementoDecorativo2 from '../assets/image_9.png'
-import ProfessorDashboard from './ProfessorDashboard'
+import astronautaImage from '../assets/astronauta_flotando.png'
+import elementoDecorativo1 from '../assets/E_elemento.png'
+import manoRosa from '../assets/mano_rosa.png'
+import medallaIcon from '../assets/medalla.png'
+import rectanguloRosa from '../assets/rectangulo_rosa.png'
 
 interface DashboardScreenProps {
   user: User
@@ -15,60 +15,53 @@ interface DashboardScreenProps {
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
-
-  const handleNavigation = (path: string) => {
-    navigate(path)
-  }
-
-  const handleLogout = async () => {
-    setLoading(true)
-    try {
-      await auth.signOut()
-      navigate('/login')
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const displayName = user.user_metadata?.full_name || user.email || 'Usuario'
   const userRole = getUserRole(user)
-  const handleOpenNotifications = () => console.log('Abrir notificaciones')
-  const showProfessorDashboard = ['professor', 'student', 'admin', 'tutor'].includes(userRole)
+  const isAdmin = userRole === 'admin'
 
-return (
-  <div className={`dashboard-screen ${showProfessorDashboard ? 'prof-dashboard' : ''}`}>
-    <div className="dashboard-content" style={showProfessorDashboard ? { padding: 0 } : {}}>
-      {showProfessorDashboard ? (
-        <ProfessorDashboard user={user} />
-      ) : (
-          /* Sección de bienvenida con fondo morado para estudiantes u otros roles */
-          <div className="welcome-section">
-            <div className="welcome-content">
-              <div className="welcome-text">
-                <h1 className="welcome-title">¡Bienvenid@! </h1>
-                <h2 className="user-name">{user.user_metadata?.full_name || user.email}</h2>
-                <div className="progress-info">
-                  <span className="medal-icon">🏅</span>
-                  <p className="progress-text" color="white">¡Sigue así, estás más cerca de llegar al siguiente nivel!</p>
-                </div>
-                <button className="level-up-btn" onClick={() => navigate('/progress')}>Ver mi mapa</button>
+  return (
+    <div className="dashboard-screen">
+      <div className="dashboard-content">
+        <div className="welcome-section">
+          <div className="welcome-content">
+            <div className="welcome-text">
+              <h1 className="welcome-title">¡Bienvenid@!</h1>
+              <h2 className="user-name">{user.user_metadata?.full_name || user.email || 'Usuario'}</h2>
+              <div className="progress-info" onClick={() => navigate(isAdmin ? '/admin' : '/assignments')}>
+                <img src={medallaIcon} alt="Medalla" className="medal-icon-img" />
+                <span className="grades-text">{isAdmin ? 'Ver centros educativos >' : 'Ver mis cursos >'}</span>
               </div>
-            </div>
-
-            {/* Elementos espaciales */}
-            <div className="space-composition">
-              <img src={astronautaImage} alt="Astronauta" className="astronaut-image_fl" />
-              <img src={elementoDecorativo1} alt="Elemento decorativo" className="space-image_Element_E" />
-              <img src={elementoDecorativo2} alt="Elemento decorativo" className="space-image_green" />
+              <p className="agenda-text">
+                {isAdmin ? (
+                  'Haz click para revisar tus centros educativos'
+                ) : (
+                  <>
+                    Haz click para checar a tus alumnos<br />
+                    y cursos pendientes ¡Accede a tu agenda!
+                  </>
+                )}
+              </p>
+              <button className="level-up-btn" onClick={() => navigate(isAdmin ? '/quotes' : '/alumnos')}>
+                {isAdmin ? 'Ver mi agenda' : 'Ver mis alumnos'}
+              </button>
             </div>
           </div>
-        )}
+
+          <div className="space-composition">
+            <img src={manoRosa} alt="Mano Rosa" className="space-image_mano_rosa" />
+            <img src={astronautaImage} alt="Astronauta" className="astronaut-image_fl" />
+            <img src={elementoDecorativo1} alt="Elemento decorativo" className="space-image_Element_E" />
+          </div>
+
+          <div className="bottom-rectangle-container">
+            <img src={rectanguloRosa} alt="Rectangulo" className="bottom-rectangle-img" />
+            <div className="down-arrow-circle">
+              <span className="down-arrow">˅</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-)
+  )
 }
 
 export default DashboardScreen

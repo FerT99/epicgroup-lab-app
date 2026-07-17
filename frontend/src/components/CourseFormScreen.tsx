@@ -129,7 +129,7 @@ const CourseFormScreen: React.FC<CourseFormScreenProps> = ({ user }) => {
 
     return (
         <>
-            
+
 
             <div className="hierarchy-config" style={{ marginTop: '0px', padding: '2rem 4rem' }}>
                 <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
@@ -145,12 +145,12 @@ const CourseFormScreen: React.FC<CourseFormScreenProps> = ({ user }) => {
                             <button
                                 className="btn-back"
                                 onClick={handleCancel}
-                                style={{ position: 'static', color: '#1f295a', borderColor: '#1f295a', width: 'max-content' }}
+                                style={{ position: 'static', color: '#ffffffff', borderColor: '#1f295a', width: 'max-content' }}
                             >
                                 ← Volver
                             </button>
                         </div>
-                        <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#1f295a', textAlign: 'center' }}>
+                        <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#ffffffff', textAlign: 'center' }}>
                             {isEditing ? 'Editar Curso' : 'Nuevo Curso'}
                         </h1>
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

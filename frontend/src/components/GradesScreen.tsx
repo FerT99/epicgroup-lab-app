@@ -72,17 +72,6 @@ const GradesScreen: React.FC<GradesScreenProps> = ({ user }) => {
 
     return (
         <div className="grades-screen">
-            <TopNavigation
-                activeKey="grades"
-                userDisplayName={displayName}
-                userRole={userRole}
-                onNavigate={handleNavigation}
-                onLogout={handleLogout}
-                logoutLoading={loading}
-                notificationCount={0} // TODO: Fetch from backend
-                onOpenNotifications={() => console.log('Abrir notificaciones')}
-            />
-
             <div className="grades-content">
                 {/* Main Paper Container */}
                 <div className="grades-paper-container">

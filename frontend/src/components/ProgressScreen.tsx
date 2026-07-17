@@ -194,19 +194,8 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ user }) => {
     setNewNote('')
   }
 
-  return (
+    return (
     <div className="progress-screen">
-      <TopNavigation
-        activeKey="progress"
-        userDisplayName={user.user_metadata?.full_name || user.email || 'Usuario'}
-        userRole={userRole}
-        onNavigate={handleNavigation}
-        onLogout={handleLogout}
-        logoutLoading={isLoggingOut}
-        notificationCount={0}
-        onOpenNotifications={() => console.log('Abrir notificaciones')}
-      />
-
       {!selectedCourse ? (
         <div className="progress-content">
           <h1 className="progress-title">Mis cursos</h1>

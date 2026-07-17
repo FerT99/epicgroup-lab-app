@@ -1,47 +1,27 @@
 .main-layout-wrapper {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 0;
-    background: transparent;
-}
-
-.main-layout-container {
-    display: flex;
-    width: 100%;
-    max-width: none;
-    height: 100vh;
-    min-height: 100vh;
-    background-color: var(--white);
-    border-radius: 0;
-    overflow: hidden;
-}
-
-.main-layout-content-area {
-    flex: 1;
-    display: flex;
     flex-direction: column;
-    background-color: var(--white);
-    overflow: hidden;
+    min-height: 100vh;
+    width: 100%;
+    background-image: url('../assets/image1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .main-layout-main {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
     overflow-y: auto;
-    padding: 2rem;
-    background-color: var(--epic-light-blue, #f5f7fc);
-    color: var(--epic-dark-blue, #1f295a); /* Asegurar que el texto sea oscuro sobre el fondo claro */
 }
 
-/* Modificaciones globales necesarias para adaptar el body y root */
+/* Fix mobile scaling if necessary */
 @media (max-width: 1024px) {
     .main-layout-wrapper {
-        padding: 0;
-    }
-    .main-layout-container {
-        border-radius: 0;
-        height: 100vh;
         min-height: 100vh;
     }
 }

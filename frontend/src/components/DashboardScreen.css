@@ -3,12 +3,7 @@
   width: 100%;
   height: 100%;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-image: url('/src/assets/image1.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 20px;
-  overflow: hidden;
+  background-color: transparent;
   position: relative;
   margin: 0;
   padding: 0;
@@ -123,23 +118,20 @@
 /* Sección de bienvenida con fondo transparente */
 .welcome-section {
   position: relative;
-  background: rgba(139, 92, 246, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  min-height: 60vh;
+  background-color: transparent;
+  min-height: 100vh;
   padding: 60px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   overflow: hidden;
   width: 100%;
   box-sizing: border-box;
   flex: 1;
 }
 
-
-
 .welcome-text {
-  max-width: 500px;
+  max-width: 600px;
   margin-left: 5%;
   z-index: 10;
   position: relative;
@@ -147,105 +139,144 @@
 
 .welcome-title {
   color: white;
-  font-size: 52px;
+  font-size: 64px;
   font-weight: 700;
-  margin: 0 0 20px 0;
+  margin: 0 0 10px 0;
   letter-spacing: 1px;
   line-height: 1.1;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
 
 .user-name {
   color: white;
-  font-size: 36px;
-  font-weight: 600;
-  margin: 0 0 28px 0;
+  font-size: 48px;
+  font-weight: 300;
+  margin: 0 0 30px 0;
   line-height: 1.2;
 }
 
 .progress-info {
-  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  cursor: pointer;
 }
 
-.medal-icon {
-  color: white;
-  font-size: 30px;
+.medal-icon-img {
+  width: 32px;
+  height: 32px;
   margin-right: 12px;
-  display: inline-block;
 }
 
-.progress-text {
-  color: rgb(255, 255, 255);
+.grades-text {
+  color: white;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.agenda-text {
+  color: white;
   font-size: 16px;
-  margin: 12px 0 0 0;
+  font-weight: 300;
+  margin: 0 0 30px 0;
   line-height: 1.5;
 }
 
 .level-up-btn {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: #d977e6;
   border: none;
-  border-radius: 12px;
-  padding: 16px 32px;
+  border-radius: 25px;
+  padding: 12px 32px;
   color: white;
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .level-up-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* Elementos espaciales */
 .space-composition {
   position: absolute;
-  right: 20px;
+  right: 0;
   top: 0;
-  width: 55%;
+  width: 60%;
   height: 100%;
   pointer-events: none;
   z-index: 5;
 }
 
-/* Elemento verde (space-image_green) */
-.space-image_green {
+.space-image_mano_rosa {
   position: absolute;
-  width: 410px;
-  height: 490px;
-  right: -6%;
-  top: 0%;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
-  animation: spaceFloat 8s ease-in-out infinite;
-  animation-delay: 4s;
-  z-index: 10;
+  width: auto;
+  height: 110%;
+  right: -5%;
+  top: -5%;
+  z-index: 15;
 }
 
-/* Astronauta (astronaut-image_fl) */
 .astronaut-image_fl {
   position: absolute;
-  width: 352px;
-  height: 380px;
-  bottom: 50%;
-  right: 30%;
+  width: 380px;
+  height: auto;
+  bottom: 20%;
+  left: 10%;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
-  animation: spaceFloat 8s ease-in-out infinite;
-  animation-delay: 0s;
+  animation: spaceFloat 6s ease-in-out infinite;
   z-index: 10;
 }
 
-/* Elemento E (space-image_Element_E) */
 .space-image_Element_E {
   position: absolute;
-  width: 234px;
-  height: 255px;
-  left: 40%;
-  top: 35%;
+  width: 150px;
+  height: auto;
+  bottom: 10%;
+  right: 25%;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
   animation: spaceFloat 8s ease-in-out infinite;
   animation-delay: 2s;
   z-index: 10;
+}
+
+.bottom-rectangle-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 20;
+}
+
+.bottom-rectangle-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  max-height: 40px;
+}
+
+.down-arrow-circle {
+  position: absolute;
+  bottom: 10px;
+  width: 40px;
+  height: 40px;
+  background-color: #d977e6;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  z-index: 25;
 }
 
 @keyframes spaceFloat {

@@ -8,7 +8,7 @@
   --dash-dark-btn: #111827;
 }
 
-.dashboard-screen {
+.quotes-screen-container {
   background-color: #d8b4fe;
   /* Light purple background for the whole area */
   min-height: 100vh;
@@ -16,7 +16,7 @@
   flex-direction: column;
 }
 
-.dashboard-content {
+.quotes-content {
   display: flex;
   flex: 1;
   padding: 0;
@@ -24,7 +24,7 @@
 }
 
 /* Sidebar Styles */
-.dashboard-sidebar {
+.quotes-sidebar {
   width: 320px;
   background-color: #a78bfa;
   padding: 2rem;
@@ -210,7 +210,7 @@
 
 
 /* Main Board Area */
-.dashboard-main {
+.quotes-main {
   flex: 1;
   display: flex;
   padding: 2rem;

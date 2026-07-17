@@ -276,7 +276,7 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                         )}
                     </div>
 
-                    <h1 className="center-title" style={{ margin: 0, fontSize: '2.5rem' }}>{center ? center.name : 'Cargando...'}</h1>
+                    <h1 className="center-title" style={{ margin: 0, fontSize: '2.5rem', color: 'white' }}>{center ? center.name : 'Cargando...'}</h1>
 
                     <div className="header-action-right" style={{ width: '150px', justifyContent: 'flex-end' }}>
                         <button
@@ -577,18 +577,21 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
             {
                 showGradeModal && (
                     <div className="modal-overlay" onClick={() => setShowGradeModal(false)}>
-                        <div className="school-modal-content" onClick={(e) => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <div className="modal-icon">📚</div>
-                                <h2>{editingGrade ? 'Editar Grado' : 'Nuevo Grado'}</h2>
+                        <div className="school-modal-content" style={{ background: '#ffffff' }} onClick={(e) => e.stopPropagation()}>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 0 1rem 0' }}>
+                                <button className="btn-icon" onClick={() => setShowGradeModal(false)} style={{ color: '#1f295a', fontSize: '1.5rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>×</button>
+                            </div>
+                            <div style={{ textAlign: 'center', padding: '0 0 2rem 0' }}>
+                                <h2 style={{ color: '#1f295a', margin: 0 }}>{editingGrade ? 'Editar Grado' : 'Nuevo Grado'}</h2>
                             </div>
                             <div className="form-grid">
                                 <div className="form-group">
-                                    <label>Nivel*</label>
+                                    <label style={{ color: '#1f295a', fontWeight: 'bold' }}>Nivel*</label>
                                     <select
                                         value={gradeForm.name}
                                         onChange={(e) => setGradeForm({ ...gradeForm, name: e.target.value })}
                                         className="modern-input"
+                                        style={{ background: '#f8fafc', color: '#1f295a', border: '1px solid rgba(31, 41, 90, 0.2)' }}
                                         autoFocus
                                     >
                                         <option value="">Seleccione un nivel...</option>
@@ -603,11 +606,12 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>{gradeForm.name && gradeForm.name !== 'Primaria' ? 'Semestre' : 'Grado'}</label>
+                                    <label style={{ color: '#1f295a', fontWeight: 'bold' }}>{gradeForm.name && gradeForm.name !== 'Primaria' ? 'Semestre' : 'Grado'}</label>
                                     <select
                                         value={gradeForm.level || ''}
                                         onChange={(e) => setGradeForm({ ...gradeForm, level: parseInt(e.target.value) })}
                                         className="modern-input"
+                                        style={{ background: '#f8fafc', color: '#1f295a', border: '1px solid rgba(31, 41, 90, 0.2)' }}
                                     >
                                         <option value="">Seleccione un {gradeForm.name && gradeForm.name !== 'Primaria' ? 'semestre' : 'grado'}...</option>
                                         {[1, 2, 3, 4, 5, 6].map(num => (
@@ -617,13 +621,14 @@ const SchoolDetailScreen: React.FC<SchoolDetailScreenProps> = ({ user }) => {
                                 </div>
                             </div>
                             <div className="modal-actions">
-                                <button className="btn-cancel-modern" onClick={() => setShowGradeModal(false)}>
+                                <button className="btn-cancel-modern" style={{ color: '#1f295a', borderColor: '#1f295a' }} onClick={() => setShowGradeModal(false)}>
                                     Cancelar
                                 </button>
                                 <button
                                     className="btn-save-modern"
                                     onClick={handleSaveGrade}
                                     disabled={!gradeForm.name || loading}
+                                    style={{ background: '#1f295a', color: '#ffffff' }}
                                 >
                                     {loading ? 'Guardando...' : 'Guardar'}
                                 </button>

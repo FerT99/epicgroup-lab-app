@@ -217,14 +217,14 @@
 }
 
 .school-modal-content {
-    background: #1e1e2e !important;
+    background: #1e1e2e;
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 2rem;
     border-radius: 24px;
     width: 100%;
     max-width: 500px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    color: #fff !important;
+    color: #fff;
 }
 
 .type-selection-content {
@@ -852,7 +852,7 @@
 
 .filter-group label {
     font-weight: 600;
-    color: var(--epic-dark-blue, #1f295a);
+    color: #ffffff;
 }
 
 .modern-select {
@@ -895,8 +895,8 @@
 .courses-list-header {
     display: flex;
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    color: #9ca3af;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
     font-size: 0.85rem;
     font-weight: 500;
     text-transform: capitalize;
@@ -945,13 +945,13 @@
 }
 
 .course-list-row:hover {
-    background: #ffffff;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    background: #d966ff;
+    box-shadow: 0 4px 15px rgba(217, 102, 255, 0.3);
     transform: translateY(-1px);
 }
 
 .course-list-row:not(:last-child) {
-    border-bottom: 1px solid rgba(0,0,0,0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .course-list-row:hover:not(:last-child) {
     border-bottom-color: transparent;
@@ -972,12 +972,12 @@
 
 .course-name {
     font-weight: 600;
-    color: var(--epic-dark-blue, #1f295a);
+    color: #ffffff;
     font-size: 1.05rem;
 }
 
 .col-code, .col-students {
-    color: var(--epic-dark-gray, #4b5563);
+    color: rgba(255, 255, 255, 0.9);
     font-size: 0.95rem;
 }
 
@@ -985,7 +985,7 @@
 .btn-icon-small {
     background: transparent;
     border: none;
-    color: #9ca3af;
+    color: #ffffff;
     width: 32px;
     height: 32px;
     border-radius: 8px;
@@ -1004,11 +1004,11 @@
 }
 
 .btn-icon-small:hover {
-    background: #f3e8ff;
-    color: #9333ea;
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
 }
 
 .btn-icon-small.delete:hover {
-    background: #fee2e2;
-    color: #ef4444;
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
 }

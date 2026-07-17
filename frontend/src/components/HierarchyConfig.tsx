@@ -225,12 +225,12 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                 <div className="prof-main-col" style={{ width: '100%' }}>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 className="section-title-modern">Centros educativos</h2>
+                        <h2 className="section-title-modern" style={{ color: 'white' }}>Centros educativos</h2>
                         <div className="add-dropdown-container" style={{ position: 'relative' }}>
                             <button
                                 onClick={() => setShowDropdown(!showDropdown)}
                                 style={{
-                                    background: '#2563eb',
+                                    background: '#d966ff',
                                     color: '#ffffff',
                                     border: 'none',
                                     padding: '0.75rem 1.5rem',
@@ -305,9 +305,9 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                             <p style={{ gridColumn: '1 / -1', color: '#64748b' }}>No tienes centros registrados actualmente.</p>
                         ) : (
                             centers.map(center => (
-                                <div key={center.id} className="class-card" style={{ position: 'relative' }} onClick={() => navigate(`/admin/school/${center.id}`)}>
+                                <div key={center.id} className="class-card" style={{ position: 'relative', background: 'white', color: '#d966ff' }} onClick={() => navigate(`/admin/school/${center.id}`)}>
                                     <div className="class-header">
-                                        <h3>{center.name}</h3>
+                                        <h3 style={{ color: '#d966ff' }}>{center.name}</h3>
                                         <div style={{ opacity: 0.7 }}>🏫</div>
                                     </div>
                                     <div className="class-stats">
@@ -324,7 +324,7 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                                                 handleEditCenter(center)
                                             }}
                                             title="Editar"
-                                            style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', padding: '0.5rem', cursor: 'pointer', color: '#fff' }}
+                                            style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', padding: '0.5rem', cursor: 'pointer', color: '#d966ff' }}
                                         >
                                             ✏️
                                         </button>
@@ -335,7 +335,7 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                                                 handleDeleteCenter(center.id)
                                             }}
                                             title="Eliminar"
-                                            style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', padding: '0.5rem', cursor: 'pointer', color: '#fff' }}
+                                            style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', padding: '0.5rem', cursor: 'pointer', color: '#d966ff' }}
                                         >
                                             🗑️
                                         </button>
@@ -346,10 +346,10 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                     </div>
 
                     <div className="content-section" style={{ marginTop: '3rem' }}>
-                        <h2 className="section-title-modern">Contenido</h2>
+                        <h2 className="section-title-modern" style={{ color: 'white' }}>Contenido</h2>
                         <div className="notif-card" style={{ justifyContent: 'center', color: '#94a3b8', border: '1px dashed #cbd5e1', background: 'transparent', boxShadow: 'none', padding: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                             <div style={{ fontSize: '2.5rem', opacity: 0.5 }}>📄</div>
-                            <p style={{ margin: 0, textAlign: 'center' }}>Aún no hay PDFs o contenido cargado en la plataforma</p>
+                            <p style={{ margin: 0, textAlign: 'center', color: 'white' }}>Aún no hay PDFs o contenido cargado en la plataforma</p>
                         </div>
                     </div>
 
@@ -430,7 +430,11 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                 {/* Global Action Modal */}
                 {showActionModal && (
                     <div className="modal-overlay" onClick={() => setShowActionModal(false)}>
-                        <div className="school-modal-content" style={{ maxWidth: actionType === 'student' ? '900px' : '600px', width: '95%' }} onClick={(e) => e.stopPropagation()}>
+                        <div className="school-modal-content" style={{ 
+                            maxWidth: actionType === 'student' ? '900px' : '600px', 
+                            width: '95%',
+                            background: ['student', 'course'].includes(actionType as string) ? '#ffffff' : undefined
+                        }} onClick={(e) => e.stopPropagation()}>
 
                             {actionType === 'pdf' && (
                                 <>
@@ -473,7 +477,7 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                             {actionType === 'student' && (
                                 <div style={{ maxHeight: '85vh', overflowY: 'auto' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem 1rem 0 0' }}>
-                                        <button className="btn-icon" onClick={() => setShowActionModal(false)} style={{ color: '#1f295a', fontSize: '1.5rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>×</button>
+                                        <button className="btn-icon" onClick={() => setShowActionModal(false)} style={{ color: '#d966ff', fontSize: '1.5rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>×</button>
                                     </div>
                                     <StudentManagement />
                                 </div>
@@ -481,18 +485,22 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
 
                             {actionType === 'course' && (
                                 <div style={{ padding: '1rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 0 1rem 0' }}>
+                                        <button className="btn-icon" onClick={() => setShowActionModal(false)} style={{ color: '#d966ff', fontSize: '1.5rem', background: 'transparent', border: 'none', cursor: 'pointer' }}>×</button>
+                                    </div>
                                     <div className="modal-header">
                                         <div className="modal-icon">📚</div>
-                                        <h2>Crear Materia</h2>
-                                        <p>Selecciona el centro y grado donde se creará la materia.</p>
+                                        <h2 style={{ color: '#d966ff' }}>Crear Materia</h2>
+                                        <p style={{ color: '#d966ff' }}>Selecciona el centro y grado donde se creará la materia.</p>
                                     </div>
                                     <div className="form-grid">
                                         <div className="form-group">
-                                            <label>Centro Educativo</label>
+                                            <label style={{ color: '#d966ff', fontWeight: 'bold' }}>Centro Educativo</label>
                                             <select
                                                 value={actionCenterId}
                                                 onChange={(e) => handleActionCenterChange(e.target.value)}
                                                 className="modern-input"
+                                                style={{ background: '#f8fafc', color: '#d966ff', border: '1px solid rgba(217, 102, 255, 0.2)' }}
                                             >
                                                 <option value="">Seleccione un centro...</option>
                                                 {centers.map(c => (
@@ -502,14 +510,15 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                                         </div>
                                         {actionCenterId && (
                                             <div className="form-group">
-                                                <label>Grado</label>
+                                                <label style={{ color: '#d966ff', fontWeight: 'bold' }}>Grado</label>
                                                 {loadingActionGrades ? (
-                                                    <p style={{ color: '#888', marginTop: '0.5rem' }}>Cargando grados...</p>
+                                                    <p style={{ color: '#d966ff', marginTop: '0.5rem' }}>Cargando grados...</p>
                                                 ) : (
                                                     <select
                                                         value={actionGradeId}
                                                         onChange={(e) => setActionGradeId(e.target.value)}
                                                         className="modern-input"
+                                                        style={{ background: '#f8fafc', color: '#d966ff', border: '1px solid rgba(217, 102, 255, 0.2)' }}
                                                     >
                                                         <option value="">Seleccione un grado...</option>
                                                         {actionGrades.map(g => (
@@ -521,13 +530,14 @@ const HierarchyConfig: React.FC<HierarchyConfigProps> = ({ user }) => {
                                         )}
                                     </div>
                                     <div className="modal-actions" style={{ marginTop: '2rem' }}>
-                                        <button className="btn-cancel-modern" onClick={() => setShowActionModal(false)}>
+                                        <button className="btn-cancel-modern" style={{ color: '#d966ff', borderColor: '#d966ff' }} onClick={() => setShowActionModal(false)}>
                                             Cancelar
                                         </button>
                                         <button
                                             className="btn-save-modern"
                                             onClick={handleActionNext}
                                             disabled={!actionCenterId || !actionGradeId}
+                                            style={{ background: '#d966ff', color: '#ffffff' }}
                                         >
                                             Continuar a Crear Materia
                                         </button>

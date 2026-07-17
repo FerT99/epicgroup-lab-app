@@ -59,7 +59,43 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
     date: string
     time: string
     description: string
-  }>>([])
+  }>>([
+    {
+      id: '1',
+      title: 'Startech Class',
+      date: '2020-08-12',
+      time: '09 AM - 10 AM',
+      description: 'Mock'
+    },
+    {
+      id: '2',
+      title: 'English Class',
+      date: '2020-08-12',
+      time: '10 AM - 06 PM',
+      description: 'Mock'
+    },
+    {
+      id: '3',
+      title: 'Review',
+      date: '2020-08-13',
+      time: '09 AM - 12 PM',
+      description: 'Mock'
+    },
+    {
+      id: '4',
+      title: 'Class Game',
+      date: '2020-08-13',
+      time: '12 PM - 04 PM',
+      description: 'Mock'
+    },
+    {
+      id: '5',
+      title: 'Califications',
+      date: '2020-08-13',
+      time: '04 PM - 06 PM',
+      description: 'Mock'
+    }
+  ])
 
   const handleCreateTask = () => {
     setTaskForm({
@@ -125,21 +161,10 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
   const userRole = getUserRole(user)
 
   return (
-    <div className="quotes-screen">
-      <TopNavigation
-        activeKey="quotes"
-        userDisplayName={displayName}
-        userRole={userRole}
-        onNavigate={handleNavigation}
-        onLogout={handleLogout}
-        logoutLoading={isLoggingOut}
-        notificationCount={0}
-        onOpenNotifications={() => console.log('Abrir notificaciones')}
-      />
-
-      <div className="dashboard-content">
+    <div className="quotes-screen-container">
+      <div className="quotes-content">
         {/* Sidebar Left */}
-        <aside className="dashboard-sidebar">
+        <aside className="quotes-sidebar">
           <div className="user-profile-header">
             <div className="user-avatar-circle"></div>
             <div className="user-info">
@@ -189,7 +214,7 @@ const QuotesScreen: React.FC<QuotesScreenProps> = ({ user }) => {
         </aside>
 
         {/* Main Content Columns */}
-        <main className="dashboard-main">
+        <main className="quotes-main">
           {columns.length === 0 ? (
             <div className="empty-state-main">
               <p>No hay tareas programadas.</p>

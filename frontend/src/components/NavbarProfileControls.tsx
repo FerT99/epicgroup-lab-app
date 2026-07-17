@@ -145,8 +145,6 @@ const NavbarProfileControls: React.FC<NavbarProfileControlsProps> = ({
                 onClick={() => handleNavigate(settingsPath)}
                 role="menuitem"
               >
-                <span className="dropdown-item-icon" aria-hidden="true">⚙️</span>
-                <span>Configuración</span>
               </button>
             )}
             {onLogout && (
